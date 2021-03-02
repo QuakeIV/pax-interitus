@@ -1,0 +1,9 @@
+
+.mono
+.import
+
+*.x86_64
+*.csproj.old
+*.pck
+*.deb
+mono_crash.*
