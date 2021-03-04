@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using n = System.Numerics;
 
 // distance units for the purposes of the solar system sim are in millimeters
 
@@ -13,6 +14,12 @@ public class FixedV2D
     {
         x = nx;
         y = ny;
+    }
+    
+    public FixedV2D(double nx, double ny)
+    {
+        x = (long)nx;
+        y = (long)ny;
     }
     
     public FixedV2D(FixedV2D other)
@@ -50,13 +57,17 @@ public class OrbitObject
     public FixedV2D position = new FixedV2D();
     
     public ulong orbital_radius = 0; //in mm, ideally later replaced with more parameters later
-    public ulong mass = 0; //in exagrams (10^18 grams) (quadrillions (10^15) of kgs), ideally later replaced with more parameters later
+    public ulong mass           = 0; //in exagrams (10^18 grams) (quadrillions (10^15) of kgs), ideally later replaced with more parameters later
     public ulong orbital_period = 0; //in milliseconds
+    public ulong orbit_clock    = 0; //in milliseconds
     public OrbitObject parent; //object which this object orbits
     
-    private FixedV2D rel_position  = new FixedV2D();
-    private List<FixedV2D> rel_racetrack = new List<FixedV2D>();
+    private const int racetrack_points = 64; //64 seems to be a good number of points;
+    private ulong racetrack_delta_time = 64; //in milliseconds
+    private FixedV2D[] rel_racetrack   = new FixedV2D[racetrack_points];
     private List<OrbitObject> children = new List<OrbitObject>();
+    
+    private static Random rnd = new Random();
     
     public OrbitObject(ulong mass) : this(null, 0, mass) {}
     
@@ -70,19 +81,22 @@ public class OrbitObject
         if (parent != null)
         {
             //doing sine/cosine math in double land, and then converting back to the fixed reference frame
-            const int racetrack_points = 32; //32 seems to be a good number of points;
+            double radius_d = (double) orbital_radius;
             for (int i = 0; i < racetrack_points; i++)
             {
-                
+                double angle = (2.0*Math.PI*i)/racetrack_points;
+                rel_racetrack[i] = new FixedV2D(radius_d*Math.Cos(angle), radius_d*Math.Sin(angle));
             }
             
             //period in milliseconds (doing calculation in double land, and then converting back to the integral reference frame)
             const double G = 66743000; //gravitational constant, in cubic mm per exagram millisecond squared
-            double temp_radius = (double)orbital_radius;
-            double temp_mass   = (double)p.mass;
             //did some algebra, assuming newtonian gravity, newtonian motion this should yield orbital period
-            double period      = temp_radius*Math.PI*2.0*Math.Sqrt(((temp_radius) / (temp_mass * G)));
-            orbital_period     = (ulong)period;
+            double period_d = (radius_d*Math.PI*2.0*Math.Sqrt(((radius_d) / (p.mass * G))));
+            orbital_period = (ulong)period_d;
+            //worst case roundoff error here is I think racetrack_points - 1 milliseconds (this is the true reference for orbital period in terms of calculating position)
+            racetrack_delta_time = orbital_period/racetrack_points;
+            //start the planet at a random spot in its orbit
+            orbit_clock = (ulong)(rnd.NextDouble()*period_d);
         }
     }
     
@@ -114,9 +128,68 @@ public class OrbitObject
             return false;
     }
     
+    //for incrementing orbital calculations
+    public ulong muldiv(ulong x, ulong mul, ulong div)
+    {
+        ulong max_mul = ulong.MaxValue / x;
+        if (max_mul < mul)
+        {
+            //we will overflow, handle
+            
+            ulong low  = x * mul; //lower bits should automatically be correct
+            
+            ulong overflows = mul / max_mul; //number of overflows, uncorrected
+            ulong overflow_remainder = mul % max_mul; //remainder
+            ulong leftover = (ulong.MaxValue - max_mul * x) + 1;
+            ulong cur_leftover = 0;
+            ulong i = 0;
+            while (i < overflows)
+            {
+                if (overflow_remainder == 0)
+                {
+                    overflows--;
+                    overflow_remainder = mul;
+                }
+                else
+                {
+                    overflow_remainder--;
+                    cur_leftover = (x + cur_leftover);
+                }
+                
+                i += cur_leftover / leftover;
+                cur_leftover %= leftover;
+            }
+            
+            n.BigInteger answer = new n.BigInteger(overflows);
+            answer *= (new n.BigInteger(ulong.MaxValue) + 1);
+            answer += low;
+            GD.Print("calculated:" + answer);
+            n.BigInteger true_answer = (new n.BigInteger(x)) * (new n.BigInteger(mul));
+            GD.Print("true      :" + true_answer);
+            if (answer == true_answer)
+                GD.Print("WEW");
+            else
+                GD.Print("SHITE");
+            
+            return 0;
+            
+        }
+        else
+        {
+            //we will not overflow, proceed as normal
+            return (x * mul) / div;
+        }
+    }
+    
     public void UpdatePosition()
     {
+        int index  = (int)(orbit_clock/racetrack_delta_time);
+        int next   = (index + 1) % racetrack_points; //wraps back around to 0 if we are about to overflow
+        FixedV2D d = rel_racetrack[index] - rel_racetrack[next];
         
+        //just increment by a const for now, pending a better solution
+        orbit_clock += 1000000;
+        orbit_clock %= orbital_period;
     }
 }
 
@@ -132,6 +205,19 @@ public class Renderer : Godot.Node2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        OrbitObject thing = new OrbitObject(1000000);
+        thing.muldiv(ulong.MaxValue, 100, 1);
+        thing.muldiv(ulong.MaxValue, 99, 1);
+        thing.muldiv(ulong.MaxValue, 11, 1);
+        thing.muldiv((ulong)Math.Pow(2,32), (ulong)Math.Pow(2,33), 1);
+        thing.muldiv(ulong.MaxValue, 100, 1);
+        thing.muldiv(ulong.MaxValue, 1337, 1);
+        thing.muldiv(ulong.MaxValue, 1087349213, 1);
+        thing.muldiv(ulong.MaxValue, 100000, 1);
+        thing.muldiv(12908015, 980923491,1);
+        thing.muldiv(19374, 109840198234,1);
+        thing.muldiv(12938012, 98713981309,1);
+        GD.Print("DONE");
     }
 
     Vector2 GetScreenCoordinate(FixedV2D a)
@@ -173,7 +259,6 @@ public class Renderer : Godot.Node2D
         const int nbPoints = 32;
         var points = new FixedV2D[nbPoints];
 
-        //this can be replaced with the orbit racetrack whenever that gets calculated
         for (int i = 0; i < nbPoints; ++i)
         {
             double anglePoint = (2.0*Math.PI * i) / nbPoints;
@@ -209,7 +294,7 @@ public class Renderer : Godot.Node2D
     }
     
     
-    private float currentZoom = 0.00000000000001f; //1.0f;
+    private float currentZoom = 0.000000000001f; //1.0f;
     // member variables here
     private Vector2 mouse1;
     private bool pressed = false;
