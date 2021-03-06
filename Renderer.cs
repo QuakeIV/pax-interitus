@@ -58,12 +58,12 @@ public class OrbitObject
     
     public ulong orbital_radius = 0; //in mm, ideally later replaced with more parameters later
     public ulong mass           = 0; //in exagrams (10^18 grams) (quadrillions (10^15) of kgs), ideally later replaced with more parameters later
-    public ulong orbital_period = 0; //in milliseconds
-    public ulong orbit_clock    = 0; //in milliseconds
+    public long  orbital_period = 0; //in milliseconds
+    public long  orbit_clock    = 0; //in milliseconds
     public OrbitObject parent; //object which this object orbits
     
     private const int racetrack_points = 64; //64 seems to be a good number of points;
-    private ulong racetrack_delta_time = 64; //in milliseconds
+    private long  racetrack_delta_time = 64; //in milliseconds
     private FixedV2D[] rel_racetrack   = new FixedV2D[racetrack_points];
     private List<OrbitObject> children = new List<OrbitObject>();
     
@@ -92,11 +92,11 @@ public class OrbitObject
             const double G = 66743000; //gravitational constant, in cubic mm per exagram millisecond squared
             //did some algebra, assuming newtonian gravity, newtonian motion this should yield orbital period
             double period_d = (radius_d*Math.PI*2.0*Math.Sqrt(((radius_d) / (p.mass * G))));
-            orbital_period = (ulong)period_d;
+            orbital_period = (long)period_d;
             //worst case roundoff error here is I think racetrack_points - 1 milliseconds (this is the true reference for orbital period in terms of calculating position)
             racetrack_delta_time = orbital_period/racetrack_points;
             //start the planet at a random spot in its orbit
-            orbit_clock = (ulong)(rnd.NextDouble()*period_d);
+            orbit_clock = (long)(rnd.NextDouble()*period_d);
         }
     }
     
@@ -129,56 +129,59 @@ public class OrbitObject
     }
     
     //for incrementing orbital calculations
-    public ulong muldiv(ulong x, ulong mul, ulong div)
+    public long muldiv(long x, long mul, long div)
     {
-        ulong max_mul = ulong.MaxValue / x;
-        if (max_mul < mul)
-        {
+        var trueval = new n.BigInteger(x);
+        trueval*= mul;
+//        if ((long.MaxValue / x) < mul || )
+//        {
             //we will overflow, handle
             
-            ulong low  = x * mul; //lower bits should automatically be correct
+            long hix = x >> 32;
+            long lox = x & (long)(uint.MaxValue | (long)0b1000000000000000000000000000000000000000000000000000000000000000);
+            long him = mul >> 32;
+            long lom = mul & uint.MaxValue;
             
-            ulong overflows = mul / max_mul; //number of overflows, uncorrected
-            ulong overflow_remainder = mul % max_mul; //remainder
-            ulong leftover = (ulong.MaxValue - max_mul * x) + 1;
-            ulong cur_leftover = 0;
-            ulong i = 0;
-            while (i < overflows)
+            long hi  = hix * him;
+            long mi1 = hix * lom;
+            long mi2 = him * lox;
+            long lo  = lox * lom;
+            
+            //add higher 32 bits of middle into lower 32 bits of high
+            hi += mi1 >> 32;
+            hi += mi2 >> 32;
+            mi1 &= uint.MaxValue;
+            mi2 &= uint.MaxValue;
+            mi1 += mi2;
+            mi1 += lo >> 32; //add upper order bits of lo into low end of mid to catch overflow
+            hi += mi1 >> 32; //add mid overflows back into hi
+            
+            //low order middle is now equal to high order lo, so overwrite
+            lo = (lo & uint.MaxValue) | (mi1 << 32);
+            
+            var calc = new n.BigInteger(hi);
+            calc <<= 64;
+            calc += lo;
+            
+            if (calc != trueval)
             {
-                if (overflow_remainder == 0)
-                {
-                    overflows--;
-                    overflow_remainder = mul;
-                }
-                else
-                {
-                    overflow_remainder--;
-                    cur_leftover = (x + cur_leftover);
-                }
-                
-                i += cur_leftover / leftover;
-                cur_leftover %= leftover;
+                GD.Print("MATH ERROR IN MULDIV");
+                GD.Print(calc);
+                GD.Print(trueval);
             }
-            
-            n.BigInteger answer = new n.BigInteger(overflows);
-            answer *= (new n.BigInteger(ulong.MaxValue) + 1);
-            answer += low;
-            GD.Print("calculated:" + answer);
-            n.BigInteger true_answer = (new n.BigInteger(x)) * (new n.BigInteger(mul));
-            GD.Print("true      :" + true_answer);
-            if (answer == true_answer)
-                GD.Print("WEW");
             else
-                GD.Print("SHITE");
+            {
+                GD.Print("WIN");
+            }
             
             return 0;
             
-        }
-        else
-        {
-            //we will not overflow, proceed as normal
-            return (x * mul) / div;
-        }
+//        }
+//        else
+//        {
+//            //we will not overflow, proceed as normal
+//            return (x * mul) / div;
+//        }
     }
     
     public void UpdatePosition()
@@ -186,6 +189,8 @@ public class OrbitObject
         int index  = (int)(orbit_clock/racetrack_delta_time);
         int next   = (index + 1) % racetrack_points; //wraps back around to 0 if we are about to overflow
         FixedV2D d = rel_racetrack[index] - rel_racetrack[next];
+        
+        muldiv(d.x, orbit_clock%racetrack_delta_time, racetrack_delta_time);
         
         //just increment by a const for now, pending a better solution
         orbit_clock += 1000000;
@@ -206,17 +211,18 @@ public class Renderer : Godot.Node2D
     public override void _Ready()
     {
         OrbitObject thing = new OrbitObject(1000000);
-        thing.muldiv(ulong.MaxValue, 100, 1);
-        thing.muldiv(ulong.MaxValue, 99, 1);
-        thing.muldiv(ulong.MaxValue, 11, 1);
-        thing.muldiv((ulong)Math.Pow(2,32), (ulong)Math.Pow(2,33), 1);
-        thing.muldiv(ulong.MaxValue, 100, 1);
-        thing.muldiv(ulong.MaxValue, 1337, 1);
-        thing.muldiv(ulong.MaxValue, 1087349213, 1);
-        thing.muldiv(ulong.MaxValue, 100000, 1);
+        thing.muldiv(long.MaxValue, 100, 1);
+        thing.muldiv(long.MaxValue, 99, 1);
+        thing.muldiv(long.MaxValue, 11, 1);
+        thing.muldiv((long)Math.Pow(2,32), (long)Math.Pow(2,33), 1);
+        thing.muldiv(long.MaxValue, 100, 1);
+        thing.muldiv(long.MaxValue, 1337, 1);
+        thing.muldiv(long.MaxValue, 1087349213, 1);
+        thing.muldiv(long.MaxValue, 100000, 1);
         thing.muldiv(12908015, 980923491,1);
         thing.muldiv(19374, 109840198234,1);
         thing.muldiv(12938012, 98713981309,1);
+        thing.muldiv(20187349821, 98713981309,1);
         GD.Print("DONE");
     }
 

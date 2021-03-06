@@ -1,7 +1,6 @@
 <Project Sdk="Godot.NET.Sdk/3.2.3">
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <RootNamespace>2drender</RootNamespace>
     <!-- Workaround for using .NET 5 in Godot 3.2.3: https://github.com/godotengine/godot/issues/43717#issuecomment-739422982 -->
     <GodotUseNETFrameworkRefAssemblies>true</GodotUseNETFrameworkRefAssemblies>
   </PropertyGroup>
