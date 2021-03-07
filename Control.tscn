@@ -1,5 +1,6 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
+[ext_resource path="res://StartStop.cs" type="Script" id=1]
 [ext_resource path="res://Renderer.cs" type="Script" id=2]
 [ext_resource path="res://universecontainerdriver.cs" type="Script" id=3]
 
@@ -57,7 +58,7 @@ __meta__ = {
 margin_left = 5.0
 margin_top = 5.0
 margin_right = 105.0
-margin_bottom = 139.0
+margin_bottom = 173.0
 size_flags_horizontal = 8
 size_flags_vertical = 3
 __meta__ = {
@@ -87,6 +88,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="StartStop" type="Button" parent="MainContainer/Panel/MarginContainer/InterfaceContainer"]
+margin_top = 138.0
+margin_right = 100.0
+margin_bottom = 168.0
+rect_min_size = Vector2( 100, 30 )
+size_flags_horizontal = 9
+size_flags_vertical = 8
+text = "STOP"
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="UniverseContainer" type="ViewportContainer" parent="MainContainer"]
 margin_left = 114.0
 margin_right = 1024.0
@@ -111,4 +125,5 @@ render_target_update_mode = 3
 
 [node name="Renderer" type="Node2D" parent="MainContainer/UniverseContainer/Viewport"]
 script = ExtResource( 2 )
+[connection signal="StartStopPress" from="MainContainer/Panel/MarginContainer/InterfaceContainer/StartStop" to="MainContainer/UniverseContainer/Viewport/Renderer" method="_on_StartStop_StartStopPress"]
 [connection signal="size_changed" from="MainContainer/UniverseContainer/Viewport" to="MainContainer/UniverseContainer/Viewport/Renderer" method="_on_Viewport_size_changed"]

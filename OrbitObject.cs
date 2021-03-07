@@ -11,12 +11,11 @@ public class OrbitObject
     public static Renderer view;
     
     public ulong orbital_radius     = 0; //in mm, ideally later replaced with more parameters later
-    public ulong mass               = 0; //in exagrams (10^18 grams) (quadrillions (10^15) of kgs), ideally later replaced with more parameters later
     public long  orbital_period     = 0; //in milliseconds
     public long  orbit_clock        = 0; //in milliseconds
     public static Color orbit_color = new Color(0, 1, 0);
     public OrbitObject parent = null; //object which this object orbits
-    public Celestial body; //object itself (null if this is a barycenter for instance)
+    public Celestial body = null; //object itself (contains mass, null if this is an effectively massless object)
     
     private const int racetrack_points = 64; //64 seems to be a good number of points;
     private long  racetrack_delta_time; //in milliseconds
@@ -25,17 +24,16 @@ public class OrbitObject
     
     private static Random rnd = new Random();
     
-    public OrbitObject(ulong m) : this(null, 0, m) {}
+    public OrbitObject() : this(null, 0) {}
     
-    public OrbitObject(ulong m, Celestial c) : this(null, 0, m) { body = c; c.parent = this; }
+    public OrbitObject(Celestial c) : this(null, 0) { body = c; c.parent = this; }
     
-    public OrbitObject(OrbitObject p, ulong r, ulong m, Celestial c) : this(p, r, m) { body = c; c.parent = this; }
+    public OrbitObject(OrbitObject p, ulong r, Celestial c) : this(p, r) { body = c; c.parent = this; }
     
-    public OrbitObject(OrbitObject p, ulong r, ulong m)
+    public OrbitObject(OrbitObject p, ulong r)
     {
         parent         = p;
         orbital_radius = r;
-        mass           = m;
         body = null;
         
         // only define an orbit if there is a parent object
@@ -52,7 +50,7 @@ public class OrbitObject
             //period in milliseconds (doing calculation in double land, and then converting back to the integral reference frame)
             const double G = 66743000; //gravitational constant, in cubic mm per exagram millisecond squared
             //did some algebra, assuming newtonian gravity, newtonian motion this should yield orbital period
-            double period_d = (radius_d*Math.PI*2.0*Math.Sqrt(((radius_d) / (p.mass * G))));
+            double period_d = (radius_d*Math.PI*2.0*Math.Sqrt(((radius_d) / (p.body.mass * G))));
             orbital_period = (long)period_d;
             //worst case roundoff error here is I think racetrack_points - 1 milliseconds (this is the true reference for orbital period in terms of calculating position)
             racetrack_delta_time = orbital_period/racetrack_points;
@@ -74,16 +72,16 @@ public class OrbitObject
         return c;
     }
     
-    public OrbitObject AddChild(ulong r, ulong m)
+    public OrbitObject AddChild(ulong r)
     {
-        OrbitObject c = new OrbitObject(this, r, m);
+        OrbitObject c = new OrbitObject(this, r);
         children.Add(c);
         return c;
     }
     
-    public OrbitObject AddChild(ulong r, ulong m, Celestial c)
+    public OrbitObject AddChild(ulong r, Celestial c)
     {
-        OrbitObject child = new OrbitObject(this, r, m);
+        OrbitObject child = new OrbitObject(this, r);
         child.body = c;
         c.parent = child;
         children.Add(child);
@@ -123,6 +121,7 @@ public class OrbitObject
     //for incrementing orbital calculations
     public long muldiv(long x, long mul, long div)
     {
+        //TODO: make this not horribly ineffecient (biginteger is horribly ineffecient)
         var trueval = new n.BigInteger(x);
         trueval*= mul;
         trueval/= div;
@@ -136,13 +135,15 @@ public class OrbitObject
     
     public void Draw()
     {
-        //draw children first, so that parents will supersede them in rendering
-        foreach (OrbitObject child in children)
-            child.Draw();
-        
+        //draw orbit first (bottomost layer)
         if (parent != null)
             DrawOrbit();
         
+        //draw children next, so that parent body will supersede them in rendering
+        foreach (OrbitObject child in children)
+            child.Draw();
+        
+        //draw own body
         if (body != null)
             body.Draw();
         else
@@ -169,5 +170,25 @@ public class OrbitObject
         
         foreach (OrbitObject child in children)
             child.UpdatePosition(1000);
+    }
+    
+    public bool ClickEvent(InputEventMouseButton mouse)
+    {
+        //try to catch the event ourselves first
+        if (body.ClickEvent(mouse))
+            return true;
+        
+        foreach (OrbitObject child in children)
+        {
+            if (child.ClickEvent(mouse))
+                return true;
+        }
+        return false;
+    }
+    
+    public bool AltClickEvent(InputEventMouseButton mouse)
+    {
+        GD.Print(mouse);
+        return false;
     }
 }
