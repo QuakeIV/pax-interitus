@@ -12,7 +12,7 @@ public class OrbitObject
     
     public ulong orbital_radius     = 0; //in mm, ideally later replaced with more parameters later
     public long  orbital_period     = 0; //in milliseconds
-    public long  orbit_clock        = 0; //in milliseconds
+    public long  orbit_clock_offset = 0; //initial position, in milliseconds
     public static Color orbit_color = new Color(0, 1, 0);
     public OrbitObject parent = null; //object which this object orbits
     public Celestial body = null; //object itself (contains mass, null if this is an effectively massless object)
@@ -55,7 +55,7 @@ public class OrbitObject
             //worst case roundoff error here is I think racetrack_points - 1 milliseconds (this is the true reference for orbital period in terms of calculating position)
             racetrack_delta_time = orbital_period/racetrack_points;
             //start the planet at a random spot in its orbit
-            orbit_clock = (long)(rnd.NextDouble()*period_d);
+            orbit_clock_offset = (long)(rnd.NextDouble()*period_d);
         }
     }
     
@@ -150,10 +150,11 @@ public class OrbitObject
             DrawPosition();
     }
     
-    public void UpdatePosition(long deltaTime)
+    public void UpdatePosition()
     {
         if (parent != null)
         {
+            long orbit_clock = (Universe.time + orbit_clock_offset) % orbital_period;
             int index  = (int)(orbit_clock/racetrack_delta_time);
             int next   = (index + 1) % racetrack_points; //wraps back around to 0 if we are about to overflow
             FixedV2D d = rel_racetrack[next] - rel_racetrack[index];
@@ -162,14 +163,10 @@ public class OrbitObject
             d.y = muldiv(d.y, orbit_clock%racetrack_delta_time, racetrack_delta_time);
             
             position = d + rel_racetrack[index] + parent.position;
-            
-            //just increment by a const for now, pending a better solution
-            orbit_clock += deltaTime;
-            orbit_clock %= orbital_period;
         }
         
         foreach (OrbitObject child in children)
-            child.UpdatePosition(1000);
+            child.UpdatePosition();
     }
     
     public bool ClickEvent(InputEventMouseButton mouse)

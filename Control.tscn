@@ -1,14 +1,17 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://StartStop.cs" type="Script" id=1]
+[ext_resource path="res://widgets/StartStop.cs" type="Script" id=1]
 [ext_resource path="res://Renderer.cs" type="Script" id=2]
 [ext_resource path="res://universecontainerdriver.cs" type="Script" id=3]
+[ext_resource path="res://widgets/DisplayWarp.cs" type="Script" id=4]
 
 [sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0.521569, 0.180392, 0.180392, 1 )
+bg_color = Color( 0.172549, 0.337255, 0.568627, 1 )
 
 [sub_resource type="Theme" id=2]
 VScrollBar/styles/scroll = null
+
+[sub_resource type="StyleBoxEmpty" id=6]
 
 [sub_resource type="Environment" id=3]
 
@@ -34,16 +37,16 @@ __meta__ = {
 }
 
 [node name="Panel" type="Panel" parent="MainContainer"]
-margin_right = 110.0
+margin_right = 160.0
 margin_bottom = 600.0
-rect_min_size = Vector2( 110, 0 )
+rect_min_size = Vector2( 160, 0 )
 size_flags_horizontal = 8
 size_flags_vertical = 3
 custom_styles/panel = SubResource( 1 )
 
 [node name="MarginContainer" type="MarginContainer" parent="MainContainer/Panel"]
-margin_right = 40.0
-margin_bottom = 40.0
+margin_right = 160.0
+margin_bottom = 226.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_constants/margin_right = 5
@@ -57,19 +60,18 @@ __meta__ = {
 [node name="InterfaceContainer" type="GridContainer" parent="MainContainer/Panel/MarginContainer"]
 margin_left = 5.0
 margin_top = 5.0
-margin_right = 105.0
-margin_bottom = 173.0
-size_flags_horizontal = 8
+margin_right = 155.0
+margin_bottom = 231.0
 size_flags_vertical = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="ItemList" type="ItemList" parent="MainContainer/Panel/MarginContainer/InterfaceContainer"]
-margin_right = 100.0
+margin_right = 150.0
 margin_bottom = 100.0
 rect_min_size = Vector2( 100, 100 )
-size_flags_horizontal = 8
+size_flags_horizontal = 3
 size_flags_vertical = 8
 theme = SubResource( 2 )
 items = [ "Item 0", null, false, "Item 1", null, false, "Item 2", null, false, "Item 3", null, false, "Item 4", null, false, "Item 5", null, false, "Item 6", null, false, "Item 7", null, false ]
@@ -77,36 +79,99 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Button" type="Button" parent="MainContainer/Panel/MarginContainer/InterfaceContainer"]
+[node name="StartStop" type="Button" parent="MainContainer/Panel/MarginContainer/InterfaceContainer"]
 margin_top = 104.0
-margin_right = 100.0
+margin_right = 150.0
 margin_bottom = 134.0
 rect_min_size = Vector2( 100, 30 )
 size_flags_horizontal = 9
 size_flags_vertical = 8
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="StartStop" type="Button" parent="MainContainer/Panel/MarginContainer/InterfaceContainer"]
-margin_top = 138.0
-margin_right = 100.0
-margin_bottom = 168.0
-rect_min_size = Vector2( 100, 30 )
-size_flags_horizontal = 9
-size_flags_vertical = 8
-text = "STOP"
+toggle_mode = true
+text = "PAUSE"
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="TimeContainer" type="GridContainer" parent="MainContainer/Panel/MarginContainer/InterfaceContainer"]
+margin_top = 138.0
+margin_right = 150.0
+margin_bottom = 168.0
+columns = 3
+
+[node name="ReduceWarp" type="Button" parent="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer"]
+margin_right = 30.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 30, 30 )
+text = "-"
+
+[node name="DisplayWarp" type="Button" parent="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer"]
+margin_left = 34.0
+margin_right = 116.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 20, 0 )
+size_flags_horizontal = 3
+custom_styles/focus = SubResource( 6 )
+button_mask = 0
+text = "1x"
+script = ExtResource( 4 )
+
+[node name="IncreaseWarp2" type="Button" parent="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer"]
+margin_left = 120.0
+margin_right = 150.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 30, 30 )
+text = "+"
+
+[node name="PresetTime" type="GridContainer" parent="MainContainer/Panel/MarginContainer/InterfaceContainer"]
+margin_top = 172.0
+margin_right = 150.0
+margin_bottom = 192.0
+columns = 4
+
+[node name="warp1" type="Button" parent="MainContainer/Panel/MarginContainer/InterfaceContainer/PresetTime"]
+margin_right = 32.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 32, 0 )
+text = "1x"
+
+[node name="warp1k" type="Button" parent="MainContainer/Panel/MarginContainer/InterfaceContainer/PresetTime"]
+margin_left = 36.0
+margin_right = 68.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 32, 0 )
+text = "1k"
+
+[node name="warp1Mx" type="Button" parent="MainContainer/Panel/MarginContainer/InterfaceContainer/PresetTime"]
+margin_left = 72.0
+margin_right = 104.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 32, 0 )
+text = "1M"
+
+[node name="warpmax" type="Button" parent="MainContainer/Panel/MarginContainer/InterfaceContainer/PresetTime"]
+margin_left = 108.0
+margin_right = 150.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 42, 0 )
+text = "MAX"
+
+[node name="Button" type="Button" parent="MainContainer/Panel/MarginContainer/InterfaceContainer"]
+margin_top = 196.0
+margin_right = 150.0
+margin_bottom = 226.0
+rect_min_size = Vector2( 100, 30 )
+size_flags_horizontal = 9
+size_flags_vertical = 8
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="UniverseContainer" type="ViewportContainer" parent="MainContainer"]
-margin_left = 114.0
+margin_left = 164.0
 margin_right = 1024.0
 margin_bottom = 600.0
-grow_horizontal = 2
-grow_vertical = 2
+rect_min_size = Vector2( 10, 10 )
 mouse_filter = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -117,7 +182,7 @@ __meta__ = {
 }
 
 [node name="Viewport" type="Viewport" parent="MainContainer/UniverseContainer"]
-size = Vector2( 910, 600 )
+size = Vector2( 860, 600 )
 own_world = true
 world = SubResource( 4 )
 handle_input_locally = false
@@ -126,4 +191,10 @@ render_target_update_mode = 3
 [node name="Renderer" type="Node2D" parent="MainContainer/UniverseContainer/Viewport"]
 script = ExtResource( 2 )
 [connection signal="StartStopPress" from="MainContainer/Panel/MarginContainer/InterfaceContainer/StartStop" to="MainContainer/UniverseContainer/Viewport/Renderer" method="_on_StartStop_StartStopPress"]
+[connection signal="pressed" from="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer/ReduceWarp" to="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer/DisplayWarp" method="_on_ReduceWarp_pressed"]
+[connection signal="pressed" from="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer/IncreaseWarp2" to="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer/DisplayWarp" method="_on_IncreaseWarp2_pressed"]
+[connection signal="pressed" from="MainContainer/Panel/MarginContainer/InterfaceContainer/PresetTime/warp1" to="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer/DisplayWarp" method="_on_warp1_pressed"]
+[connection signal="pressed" from="MainContainer/Panel/MarginContainer/InterfaceContainer/PresetTime/warp1k" to="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer/DisplayWarp" method="_on_warp1k_pressed"]
+[connection signal="pressed" from="MainContainer/Panel/MarginContainer/InterfaceContainer/PresetTime/warp1Mx" to="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer/DisplayWarp" method="_on_warp1Mx_pressed"]
+[connection signal="pressed" from="MainContainer/Panel/MarginContainer/InterfaceContainer/PresetTime/warpmax" to="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer/DisplayWarp" method="_on_warpmax_pressed"]
 [connection signal="size_changed" from="MainContainer/UniverseContainer/Viewport" to="MainContainer/UniverseContainer/Viewport/Renderer" method="_on_Viewport_size_changed"]

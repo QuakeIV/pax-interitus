@@ -101,7 +101,6 @@ public class Renderer : Godot.Node2D
         //mercury
         cel = new Celestial(2439700000, 330110000U, new Color(192f/255f, 193f/255f, 180f/255f));
         OrbitObject mercury = sol.AddChild(57909050000000, cel);
-        GD.Print(mercury.orbital_period);
         
         //venus
         cel = new Celestial(6051800000, 4867500000U, new Color(239f/255f, 119f/255f, 14f/255f));
@@ -141,7 +140,8 @@ public class Renderer : Godot.Node2D
         //realtime for now
         if (!paused)
         {
-            sol.UpdatePosition((long)(delta*1000));
+            Universe.UpdateTime(delta);
+            sol.UpdatePosition();
             Update();
         }
     }

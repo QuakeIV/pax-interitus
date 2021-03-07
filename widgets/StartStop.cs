@@ -32,13 +32,13 @@ public class StartStop : Button
     public void setStart()
     {
         stop = false;
-        Text = "STOP";
+        Text = "PAUSE";
     }
     
     public void setStop()
     {
         stop = true;
-        Text = "START";
+        Text = "PAUSED";
     }
 
 //  // Called every frame. 'delta' is the elapsed time since the previous frame.
