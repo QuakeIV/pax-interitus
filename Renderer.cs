@@ -2,79 +2,11 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-
-// planet, star, or other celestial objects (stars and planets probably to be split later)
-public class Celestial
-{
-    public static Renderer view;
-    public OrbitObject parent;
-    
-    public ulong mass = 1; //in exagrams (10^18 grams) (quadrillions (10^15) of kgs), ideally later replaced with more parameters later
-    public ulong radius; //in mm, radius of the object itself
-    public Color color;
-    
-    public Celestial(ulong r, ulong m, Color c)
-    {
-        radius = r;
-        mass = m;
-        color = c;
-    }
-    
-    public Celestial(ulong r, ulong m)
-    {
-        radius = r;
-        mass = m;
-        color = new Color(9.0f/255.0f, 76.0f/255.0f, 13.0f/255.0f);
-    }
-    
-    public float display_radius()
-    {
-        float rad = radius*view.currentZoom;
-        
-        //enforce minimum dot radius
-        if (rad < 5.0f)
-            rad = 5.0f;
-        
-        return rad;
-    }
-    
-    public void Draw()
-    {
-        if (parent.parent == null || parent.orbital_radius * view.currentZoom > 5f) //TODO: bit expensive to constantly convert
-        {
-            //only bother drawing if it is somewhat far from its parent body)
-            //TODO: draw circle looks crusty as shit, replace
-            view.DrawCircle(view.GetScreenCoordinate(parent.position), display_radius(), color);
-        }
-    }
-    
-    public bool ClickEvent(InputEventMouseButton mouse)
-    {
-        Vector2 own_position = view.GetScreenCoordinate(parent.position);
-        if ((mouse.Position - view.GetScreenCoordinate(parent.position)).Length() < display_radius())
-        {
-            view.camera_position = parent.position;
-            view.Update();
-            return true;
-        }
-        return false;
-    }
-    
-    public bool AltClickEvent(InputEventMouseButton mouse)
-    {
-        GD.Print(mouse);
-        return false;
-    }
-}
-
 public class Renderer : Godot.Node2D
 {
     public FixedV2D camera_position = new FixedV2D();
     
-    private FixedV2D test_star = new FixedV2D(0, 0);
-    // Declare member variables here. Examples:
-    // private int a = 2;
-    // private string b = "text";
+    public Font font;
 
     OrbitObject sol;
     
@@ -90,6 +22,11 @@ public class Renderer : Godot.Node2D
     public override void _Ready()
     {
 //        Button butt = GetTree().CurrentScene.GetNode("MainContainer").FindNode<Button>("StartStop");
+
+        font = ((Control)GetTree().CurrentScene).GetFont("font");
+        
+        // set background color
+        VisualServer.SetDefaultClearColor(new Color(0,0,0));
         
         OrbitObject.view = this;
         Celestial.view = this;
@@ -137,18 +74,43 @@ public class Renderer : Godot.Node2D
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(float delta)
     {
+        Update();
+    }
+
+    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    public override void _PhysicsProcess(float delta)
+    {
         //realtime for now
         if (!paused)
         {
-            Universe.UpdateTime(delta);
+            Universe.UpdateTime(17); //change this manually if the intended framerate changes, that way each tick is consistent
             sol.UpdatePosition();
-            Update();
         }
     }
-
+    
+    public void WriteString(FixedV2D position, String str, byte r=255, byte g=255, byte b=255)
+    {
+        DrawString(font, new Vector2(200,200), "test string");
+    }
+    
+    Color interface_color = new Color(0f, 1f, 0f);
+    private Vector2 scale_from = new Vector2(20f, 30f);
+    private Vector2 scale_to   = new Vector2(120f, 30f);
+    private Vector2 scale_text = new Vector2(20f, 28f);
+    private String[] si_scale  = {"m", "", "k","M","G","T"};
     public override void _Draw()
     {
         sol.Draw();
+        
+        //draw scale marker
+        DrawLine(scale_from, scale_to, interface_color);
+        float dist = (100f/currentZoom);
+        int i;
+        for (i = 0; i < si_scale.Length && dist > 10000f; i++)
+        {
+            dist /= 1000f;
+        }
+        DrawString(font, scale_text, String.Format("{0:G4}{1}m", dist, si_scale[i]), interface_color);
     }
     
     public override void _UnhandledInput(InputEvent @event)
@@ -202,14 +164,12 @@ public class Renderer : Godot.Node2D
         if (Input.IsActionPressed("zoom_out"))
         {
             currentZoom*=0.8f;
-            GD.Print("zoom factor of " + ((1f/currentZoom)/1000000f) + "km per pixel");
             Update();
         }
         
         if (Input.IsActionPressed("zoom_in"))
         {
             currentZoom/=0.8f;
-            GD.Print("zoom factor of " + ((1f/currentZoom)/1000000f) + "km per pixel");
             Update();
         }
     }

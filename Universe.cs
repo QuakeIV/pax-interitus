@@ -8,9 +8,9 @@ public static class Universe
     //eventually, negative values should represent fractional warp
     public static long time_warp = 1;
     
-    public static void UpdateTime(float delta)
+    public static void UpdateTime(long delta)
     {
-        time += ((long)(delta*1000)) * time_warp;
+        time += delta * time_warp;
     }
 
 //  // Called every frame. 'delta' is the elapsed time since the previous frame.

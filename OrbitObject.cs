@@ -112,9 +112,9 @@ public class OrbitObject
                 draw_points[i] = view.GetScreenCoordinate(rel_racetrack[i] + parent.position);
             
             for (int i = 0; i < racetrack_points - 1; i++)
-                view.DrawLine(draw_points[i], draw_points[i + 1], orbit_color);
+                view.DrawLine(draw_points[i], draw_points[i + 1], orbit_color, antialiased:true);
             //fencepost
-            view.DrawLine(draw_points[racetrack_points-1], draw_points[0], orbit_color);
+            view.DrawLine(draw_points[racetrack_points-1], draw_points[0], orbit_color, antialiased:true);
         }
     }
     
