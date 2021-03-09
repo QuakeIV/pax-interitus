@@ -9,6 +9,7 @@ public class Celestial
     
     public ulong mass = 1; //in exagrams (10^18 grams) (quadrillions (10^15) of kgs), ideally later replaced with more parameters later
     public ulong radius; //in mm, radius of the object itself
+    //TODO: furnish pre-calculated double/float radius
     public Color color;
     
     public Celestial(ulong r, ulong m, Color c)
@@ -16,6 +17,13 @@ public class Celestial
         radius = r;
         mass = m;
         color = c;
+    }
+    
+    public Celestial(ulong rad, ulong m, byte r, byte g, byte b)
+    {
+        radius = rad;
+        mass = m;
+        color = new Color(r/255.0f, g/255.0f, b/255.0f);
     }
     
     public Celestial(ulong r, ulong m)

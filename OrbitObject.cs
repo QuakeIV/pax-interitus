@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using n = System.Numerics;
 
 //represents an orbital trajectory and corresponding mass
-public class OrbitObject
+public class OrbitObject : Transform
 {
-    public FixedV2D position = new FixedV2D();
-    
     public static Renderer view;
     
+    //TODO: furnish float/double radius pre-calculated
     public ulong orbital_radius     = 0; //in mm, ideally later replaced with more parameters later
     public long  orbital_period     = 0; //in milliseconds
     public long  orbit_clock_offset = 0; //initial position, in milliseconds
@@ -150,14 +149,15 @@ public class OrbitObject
             DrawPosition();
     }
     
-    public void UpdatePosition()
+    public override void UpdatePosition()
     {
         if (parent != null)
         {
             long orbit_clock = (Universe.time + orbit_clock_offset) % orbital_period;
             int index  = (int)(orbit_clock/racetrack_delta_time);
             int next   = (index + 1) % racetrack_points; //wraps back around to 0 if we are about to overflow
-            FixedV2D d = rel_racetrack[next] - rel_racetrack[index];
+            FixedV2D d = rel_racetrack[next]
+                         - rel_racetrack[index];
             
             d.x = muldiv(d.x, orbit_clock%racetrack_delta_time, racetrack_delta_time);
             d.y = muldiv(d.y, orbit_clock%racetrack_delta_time, racetrack_delta_time);

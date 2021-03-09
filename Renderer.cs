@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Renderer : Godot.Node2D
 {
@@ -9,10 +10,13 @@ public class Renderer : Godot.Node2D
     public Font font;
 
     OrbitObject sol;
+    List<Fleet> fleets = new List<Fleet>();
     
     bool paused = false;
     
+    //TODO: bracket zooming
     public float currentZoom = 0.000000000001f; //1.0f;
+    
     // member variables here
     private Vector2 mouse1;
     private Vector2 click1;
@@ -28,19 +32,20 @@ public class Renderer : Godot.Node2D
         // set background color
         VisualServer.SetDefaultClearColor(new Color(0,0,0));
         
-        OrbitObject.view = this;
-        Celestial.view = this;
+        OrbitObject.view  = this;
+        Celestial.view    = this;
+        Fleet.view        = this;
         
         //sun color picked by flocco
-        Celestial cel = new Celestial(695700000000, 1988500000000000U, new Color(226f/255f, 223f/255f, 24f/255f));
+        Celestial cel = new Celestial(695700000000, 1988500000000000U, 226, 223, 24);
         sol = new OrbitObject(cel);
         
         //mercury
-        cel = new Celestial(2439700000, 330110000U, new Color(192f/255f, 193f/255f, 180f/255f));
+        cel = new Celestial(2439700000, 330110000U, 192, 193, 180);
         OrbitObject mercury = sol.AddChild(57909050000000, cel);
         
         //venus
-        cel = new Celestial(6051800000, 4867500000U, new Color(239f/255f, 119f/255f, 14f/255f));
+        cel = new Celestial(6051800000, 4867500000U, 239, 119, 14);
         OrbitObject venus = sol.AddChild(108208000000000, cel);
         
         //earth
@@ -58,6 +63,16 @@ public class Renderer : Godot.Node2D
         mars.AddChild(9376000000, cel);
         cel = new Celestial(6200000, 1U, new Color(192f/255f, 193f/255f, 180f/255f));
         mars.AddChild(23463200000, cel);
+        
+        
+        
+        // fleet testing
+        Fleet f = new Fleet("ree", new FixedV2D(1000000000000,1000000000000));
+        fleets.Add(f);
+        f = new Fleet("scree", new FixedV2D(-1000000000000,-1000000000000));
+        fleets.Add(f);
+        f = new Fleet("shrimp");
+        fleets.Add(f);
     }
 
     public Vector2 GetScreenCoordinate(FixedV2D a)
@@ -67,8 +82,8 @@ public class Renderer : Godot.Node2D
         screen.x = screen.x / 2.0f;
         screen.y = screen.y / 2.0f;
         
-        Vector2 zoom_pos = new Vector2(v.x * currentZoom, v.y * currentZoom);
-        return zoom_pos + screen;
+        Vector2 zoom_pos = new Vector2((float)Math.Round((v.x * currentZoom) + screen.x), (float)Math.Round((v.y * currentZoom) + screen.y));
+        return zoom_pos;
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -88,9 +103,49 @@ public class Renderer : Godot.Node2D
         }
     }
     
-    public void WriteString(FixedV2D position, String str, byte r=255, byte g=255, byte b=255)
+    private List<Tuple<Vector2,String,Color>> strings = new List<Tuple<Vector2,String,Color>>();
+    public void AddString(FixedV2D position, String str, byte r=255, byte g=255, byte b=255)
     {
-        DrawString(font, new Vector2(200,200), "test string");
+        AddString(position, str, new Color(r/255f, g/255f, b/255f));
+    }
+    public void AddString(FixedV2D position, String str, Color color)
+    {
+        
+        Vector2 pos = GetScreenCoordinate(position);
+        
+        Tuple<Vector2,String,Color> tup = new Tuple<Vector2,String,Color>(pos, str, color);
+        strings.Add(tup);
+    }
+    
+    public void DrawStrings()
+    {
+        //sort by y coordinate to clean up how it displays
+        strings = strings.OrderBy(o => o.Item1.y).ToList();
+        List<Tuple<Vector2,String,Color>> remainder = new List<Tuple<Vector2,String,Color>>();
+        while (strings.Count > 0)
+        {
+            Tuple<Vector2,String,Color> tup = strings[0];
+            strings.RemoveAt(0);
+            //correct position to not encroach on associated dot (TODO: this would vary depending on application, hardcode will frequently fail)
+            Vector2 pos = tup.Item1 + new Vector2(5,-5);
+            DrawString(font, pos, tup.Item2, tup.Item3);
+            pos.y += (font.GetHeight() + 2);
+            while (strings.Count > 0)
+            {
+                Tuple<Vector2,String,Color> next = strings[0];
+                strings.RemoveAt(0);
+                if ((next.Item1 - tup.Item1).Length() < 6.0f)
+                {
+                    DrawString(font, pos, next.Item2, next.Item3);
+                    pos.y += (font.GetHeight() + 2);
+                }
+                else
+                    remainder.Add(next);
+            }
+            List<Tuple<Vector2,String,Color>> temp = strings;
+            strings = remainder;
+            remainder = temp;
+        }
     }
     
     Color interface_color = new Color(0f, 1f, 0f);
@@ -101,6 +156,11 @@ public class Renderer : Godot.Node2D
     public override void _Draw()
     {
         sol.Draw();
+        foreach (Fleet f in fleets)
+        {
+            f.Draw();
+        }
+        DrawStrings();
         
         //draw scale marker
         DrawLine(scale_from, scale_to, interface_color);
