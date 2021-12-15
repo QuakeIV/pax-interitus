@@ -12,6 +12,9 @@ public class Celestial
     //TODO: furnish pre-calculated double/float radius
     public Color color;
     
+    // 
+    private DateTime last_click;
+    
     public Celestial(ulong r, ulong m, Color c)
     {
         radius = r;
@@ -75,6 +78,10 @@ public class Celestial
         Vector2 own_position = view.GetScreenCoordinate(parent.position);
         if ((mouse.Position - view.GetScreenCoordinate(parent.position)).Length() < (display_radius() + 1f)) //epsilon of 1
         {
+            double deltaT = (System.DateTime.UtcNow - last_click).TotalSeconds;
+            GD.Print(deltaT);
+            last_click = System.DateTime.UtcNow;
+            
             view.camera_position = parent.position;
             view.Update();
             return true;

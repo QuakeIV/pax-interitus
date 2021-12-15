@@ -25,8 +25,6 @@ public class Renderer : Godot.Node2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-//        Button butt = GetTree().CurrentScene.GetNode("MainContainer").FindNode<Button>("StartStop");
-
         font = ((Control)GetTree().CurrentScene).GetFont("font");
         
         // set background color
@@ -98,8 +96,8 @@ public class Renderer : Godot.Node2D
         //realtime for now
         if (!paused)
         {
-            Universe.UpdateTime(17); //change this manually if the intended framerate changes, that way each tick is consistent
-            sol.UpdatePosition();
+            Universe.UpdateTime(delta);
+            sol.UpdatePosition(); //TODO: this is just a lazy way to update the solar system
         }
     }
     
@@ -110,7 +108,6 @@ public class Renderer : Godot.Node2D
     }
     public void AddString(FixedV2D position, String str, Color color)
     {
-        
         Vector2 pos = GetScreenCoordinate(position);
         
         Tuple<Vector2,String,Color> tup = new Tuple<Vector2,String,Color>(pos, str, color);
@@ -166,7 +163,7 @@ public class Renderer : Godot.Node2D
         DrawLine(scale_from, scale_to, interface_color);
         float dist = (100f/currentZoom);
         int i;
-        for (i = 0; i < si_scale.Length && dist > 10000f; i++)
+        for (i = 0; i < (si_scale.Length - 1) && dist > 10000f; i++)
         {
             dist /= 1000f;
         }
@@ -233,7 +230,7 @@ public class Renderer : Godot.Node2D
             Update();
         }
     }
-       
+
     private void _on_StartStop_StartStopPress(StartStop button)
     {
         paused = button.stop;

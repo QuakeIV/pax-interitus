@@ -1,9 +1,11 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://widgets/StartStop.cs" type="Script" id=1]
 [ext_resource path="res://Renderer.cs" type="Script" id=2]
 [ext_resource path="res://new_theme.tres" type="Theme" id=3]
 [ext_resource path="res://widgets/DisplayWarp.cs" type="Script" id=4]
+[ext_resource path="res://testbutton.cs" type="Script" id=5]
+[ext_resource path="res://testwindow.cs" type="Script" id=6]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.172549, 0.337255, 0.568627, 1 )
@@ -170,13 +172,14 @@ margin_right = 150.0
 margin_bottom = 214.0
 rect_min_size = Vector2( 0, 6 )
 
-[node name="Button" type="Button" parent="MainContainer/Panel/MarginContainer/InterfaceContainer"]
+[node name="TestButton" type="Button" parent="MainContainer/Panel/MarginContainer/InterfaceContainer"]
 margin_top = 218.0
 margin_right = 150.0
 margin_bottom = 248.0
 rect_min_size = Vector2( 100, 30 )
 size_flags_horizontal = 9
 size_flags_vertical = 8
+script = ExtResource( 5 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -203,6 +206,23 @@ render_target_update_mode = 3
 
 [node name="Renderer" type="Node2D" parent="MainContainer/UniverseContainer/Viewport"]
 script = ExtResource( 2 )
+
+[node name="PlanetWindow" type="WindowDialog" parent="."]
+visible = true
+margin_right = 163.0
+margin_bottom = 90.0
+popup_exclusive = true
+window_title = "heck"
+resizable = true
+script = ExtResource( 6 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="PlanetWindow"]
+margin_right = 8.0
+margin_bottom = 22.0
+text = "heaven help us"
 [connection signal="StartStopPress" from="MainContainer/Panel/MarginContainer/InterfaceContainer/StartStop" to="MainContainer/UniverseContainer/Viewport/Renderer" method="_on_StartStop_StartStopPress"]
 [connection signal="pressed" from="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer/ReduceWarp" to="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer/DisplayWarp" method="_on_ReduceWarp_pressed"]
 [connection signal="pressed" from="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer/IncreaseWarp2" to="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer/DisplayWarp" method="_on_IncreaseWarp2_pressed"]
@@ -210,3 +230,4 @@ script = ExtResource( 2 )
 [connection signal="pressed" from="MainContainer/Panel/MarginContainer/InterfaceContainer/PresetTime/warp1k" to="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer/DisplayWarp" method="_on_warp1k_pressed"]
 [connection signal="pressed" from="MainContainer/Panel/MarginContainer/InterfaceContainer/PresetTime/warp1Mx" to="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer/DisplayWarp" method="_on_warp1Mx_pressed"]
 [connection signal="pressed" from="MainContainer/Panel/MarginContainer/InterfaceContainer/PresetTime/warpmax" to="MainContainer/Panel/MarginContainer/InterfaceContainer/TimeContainer/DisplayWarp" method="_on_warpmax_pressed"]
+[connection signal="pressed" from="MainContainer/Panel/MarginContainer/InterfaceContainer/TestButton" to="PlanetWindow" method="_on_TestButton_pressed"]
