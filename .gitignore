@@ -1,9 +1,5 @@
-
-.mono
-.import
-
-*.x86_64
-*.csproj.old
-*.pck
-*.deb
-mono_crash.*
+Makefile
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+aurora_freespace
