@@ -1,38 +1,57 @@
-# Set the name and the supported language of the project
-project(aurora-freespace C)
-# Set the minimum version of cmake required to build this project
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 
-# Use the package PkgConfig to detect GTK+ headers/library files
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+project(freespace-aurora VERSION 0.1 LANGUAGES CXX)
 
-#opengl
-set(OpenGL_GL_PREFERENCE "GLVND") #express preference for non-legacy opengl
-find_package(OpenGL REQUIRED)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Setup CMake to use GTK+, tell the compiler where to look for headers
-# and to the linker where to look for libraries
-include_directories(${GTK3_INCLUDE_DIRS})
-link_directories(${GTK3_LIBRARY_DIRS})
-# Add other flags to the compiler
-add_definitions(${GTK3_CFLAGS_OTHER})
-# Add an executable compiled from hello.c
-add_executable(aurora_freespace main.c)
-# Link the target to the GTK+ libraries
-target_link_libraries(aurora_freespace
-${GTK3_LIBRARIES}
-GL
-GLU
-glut
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+
+set(PROJECT_SOURCES
+        main.cpp
+        mainwindow.cpp
+        mainwindow.h
+        mainwindow.ui
 )
 
-add_executable(FUCK g.c)
-target_link_libraries(FUCK
-${GTK3_LIBRARIES}
-GL
-GLU
-glut
-m
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+    qt_add_executable(freespace-aurora
+        MANUAL_FINALIZATION
+        ${PROJECT_SOURCES}
+    )
+# Define target properties for Android with Qt 6 as:
+#    set_property(TARGET freespace-aurora APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
+# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
+else()
+    if(ANDROID)
+        add_library(freespace-aurora SHARED
+            ${PROJECT_SOURCES}
+        )
+# Define properties for Android with Qt 5 after find_package() calls as:
+#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
+    else()
+        add_executable(freespace-aurora
+            ${PROJECT_SOURCES}
+        )
+    endif()
+endif()
+
+target_link_libraries(freespace-aurora PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+
+set_target_properties(freespace-aurora PROPERTIES
+    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
+    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
+    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
 )
 
+if(QT_VERSION_MAJOR EQUAL 6)
+    qt_finalize_executable(freespace-aurora)
+endif()
