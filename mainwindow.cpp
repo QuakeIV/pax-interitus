@@ -19,3 +19,9 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
+void MainWindow::on_systemlist_doubleClicked(const QModelIndex &index)
+{
+    printf("%d\n", index.row());
+}
+

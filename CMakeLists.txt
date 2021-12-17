@@ -11,41 +11,21 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+find_package(QT NAMES Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets OpenGLWidgets REQUIRED)
 
 set(PROJECT_SOURCES
         main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
+        mainwindow.cpp mainwindow.h mainwindow.ui
         systemrenderer.h systemrenderer.cpp
 )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(freespace-aurora
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-    )
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET freespace-aurora APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
-else()
-    if(ANDROID)
-        add_library(freespace-aurora SHARED
-            ${PROJECT_SOURCES}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
-        add_executable(freespace-aurora
-            ${PROJECT_SOURCES}
-        )
-    endif()
-endif()
+qt_add_executable(freespace-aurora
+    MANUAL_FINALIZATION
+    ${PROJECT_SOURCES}
+)
 
-target_link_libraries(freespace-aurora PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(freespace-aurora PRIVATE Qt6::Widgets Qt6::OpenGLWidgets)
 
 set_target_properties(freespace-aurora PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
@@ -53,6 +33,4 @@ set_target_properties(freespace-aurora PROPERTIES
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
 )
 
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(freespace-aurora)
-endif()
+qt_finalize_executable(freespace-aurora)
