@@ -6,6 +6,12 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    SystemRenderer *openGL = this->findChild<SystemRenderer*>("systemview");
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, openGL, &SystemRenderer::animate);
+    timer->start(50);
 }
 
 MainWindow::~MainWindow()
