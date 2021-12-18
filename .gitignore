@@ -2,6 +2,7 @@ freespace-aurora_autogen/
 cmake_install.cmake
 CMakeCache.txt
 CMakeFiles/
+config.tests/
 Makefile
 freespace-aurora
 *.autosave

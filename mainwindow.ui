@@ -103,7 +103,7 @@
            </size>
           </property>
           <property name="styleSheet">
-           <string notr="true">background-color: rgb(167, 194, 232);</string>
+           <string notr="true">alternate-background-color: rgb(114, 159, 207);</string>
           </property>
           <property name="dragEnabled">
            <bool>false</bool>
