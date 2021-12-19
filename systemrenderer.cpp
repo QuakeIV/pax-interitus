@@ -17,6 +17,9 @@ SystemRenderer::SystemRenderer(QWidget *parent) :
 
 void SystemRenderer::paintEvent(QPaintEvent *event)
 {
+    // calculate middle point so rendering is centered
+    QPoint center = QPoint(frameGeometry().width(), frameGeometry().height()) / 2;
+
     painter.begin(this);
     painter.setPen(test);
     QPoint p1 = QPoint(0,0);
@@ -31,7 +34,7 @@ void SystemRenderer::paintEvent(QPaintEvent *event)
     glClear(GL_COLOR_BUFFER_BIT);
     painter.endNativePainting();
 
-    painter.drawLine(p1 + current_position, p2 + current_position);
+    painter.drawLine(p1 + current_position + center, p2 + current_position + center);
     painter.end();
 }
 
