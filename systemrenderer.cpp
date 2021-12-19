@@ -1,4 +1,5 @@
 #include "systemrenderer.h"
+#include "fixedv2d.h"
 #include <QApplication>
 
 SystemRenderer::SystemRenderer(QWidget *parent) :
@@ -52,6 +53,11 @@ void SystemRenderer::mouseReleaseEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton)
     {
         mouse_pressed = false;
+
+        printf("%d\n", (event->pos() - lastSingleClick->pos()).manhattanLength());
+        if ((event->pos() - lastSingleClick->pos()).manhattanLength() > 15)
+            printf("ree\n");
+
         if (clickTimer.isActive())
         {
             lastSingleClick = event;
@@ -70,6 +76,11 @@ void SystemRenderer::mouseDoubleClickEvent(QMouseEvent *event)
         clickTimer.stop();
         printf("doubleclick\n");
     }
+}
+
+void SystemRenderer::mouseMoveEvent(QMouseEvent *event)
+{
+    printf("%d\n", event->pos().x());
 }
 
 void SystemRenderer::singleClickHelper(void)

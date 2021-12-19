@@ -23,10 +23,46 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(44, 86, 145);</string>
+   <string notr="true">QWidget { 
+  background-color: rgb(44, 86, 145);
+  color: white;
+}
+QListView {
+  background: rgb(38, 44, 59);
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 0px;
+  border-color: rgb(26,29,40);
+}
+QPushButton {
+  background-color: rgb(46, 53, 71);
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 0px;
+  border-color: rgb(46, 53, 71);
+  alternate-background-color: blue;
+}
+QPushButton:pressed {
+  background-color: rgb(26, 30, 38);
+}</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item>
      <widget class="QWidget" name="sidebar" native="true">
       <property name="sizePolicy">
@@ -51,17 +87,20 @@
        <bool>false</bool>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="spacing">
+        <number>6</number>
+       </property>
        <property name="leftMargin">
-        <number>0</number>
+        <number>5</number>
        </property>
        <property name="topMargin">
-        <number>0</number>
+        <number>5</number>
        </property>
        <property name="rightMargin">
-        <number>0</number>
+        <number>5</number>
        </property>
        <property name="bottomMargin">
-        <number>0</number>
+        <number>5</number>
        </property>
        <item>
         <widget class="QSplitter" name="splitter">
@@ -71,8 +110,14 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="lineWidth">
+          <number>1</number>
+         </property>
          <property name="orientation">
           <enum>Qt::Vertical</enum>
+         </property>
+         <property name="handleWidth">
+          <number>10</number>
          </property>
          <property name="childrenCollapsible">
           <bool>false</bool>
@@ -103,7 +148,7 @@
            </size>
           </property>
           <property name="styleSheet">
-           <string notr="true">alternate-background-color: rgb(114, 159, 207);</string>
+           <string notr="true"/>
           </property>
           <property name="dragEnabled">
            <bool>false</bool>
@@ -119,7 +164,7 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>40</height>
+            <height>30</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -129,7 +174,7 @@
            </size>
           </property>
           <property name="text">
-           <string>PushButton</string>
+           <string>PAUSE</string>
           </property>
          </widget>
          <widget class="QWidget" name="pad" native="true">

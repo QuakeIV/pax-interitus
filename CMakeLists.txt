@@ -19,6 +19,7 @@ set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp mainwindow.h mainwindow.ui
         systemrenderer.h systemrenderer.cpp
+        fixedv2d.h
 )
 
 qt_add_executable(freespace-aurora
