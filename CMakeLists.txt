@@ -18,7 +18,7 @@ find_package(Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp mainwindow.h mainwindow.ui
-        systemrenderer.h systemrenderer.cpp
+        systemrenderer.h systemrenderer.cpp systemrenderermousebackend.cpp
         fixedv2d.h
 )
 

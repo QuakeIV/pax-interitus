@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QPainter>
 #include <QMouseEvent>
+#include <QWheelEvent>
 
 class SystemRenderer : public QOpenGLWidget
 {
@@ -19,23 +20,36 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
-    void mouseDoubleClickEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override; //mouse backend crap
+    void mouseReleaseEvent(QMouseEvent *event) override; //mouse backend crap
+    void mouseDoubleClickEvent(QMouseEvent *event) override; //mouse backend crap
+    void mouseMoveEvent(QMouseEvent *event) override; //mouse backend crap
+    void wheelEvent(QWheelEvent* event) override; //mouse backend crap
 
 private slots:
-    void singleClickHelper(void);
+    void singleClickHelper(void); //mouse backend crap
 
 private:
+    // mouse activity callbacks (to flatten out the interface to not be ugly)
+    void singleClick(QPoint location);
+    void rightClick(QPoint location);
+    void doubleClick(QPoint location);
+    void clickDrag(QPoint delta);
+    void scrollUp(void);
+    void scrollDown(void);
+
     bool mouse_pressed;
     int elapsed;
     QTimer clickTimer;
-    QMouseEvent *lastSingleClick;
 
-    // current positions in pixel reference frame (to be translated to universe coordinates for purposes of deciding how to render said universe)
+    // for handling click drag
     QPoint current_position;
-    QPoint previous_position;
+    QPoint mousedrag_position; // mouse backend crap
+    QPoint singleclick_position;
+
+    // render
+    QPainter painter;
+    QPen test;
 };
 
 #endif // SYSTEMRENDERER_H
