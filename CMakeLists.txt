@@ -19,6 +19,11 @@ set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp mainwindow.h mainwindow.ui
         systemrenderer.h systemrenderer.cpp systemrenderermousebackend.cpp
+        universetype.h universetype.cpp
+        solarsystemtype.h solarsystemtype.cpp
+        celestialtype.h celestialtype.cpp
+        transform.h transform.cpp
+        orbittype.h
         fixedv2d.h
 )
 
