@@ -7,6 +7,8 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include "fixedv2d.h"
+#include "celestialtype.h"
 
 class SystemRenderer : public QOpenGLWidget
 {
@@ -38,18 +40,26 @@ private:
     void scrollUp(void);
     void scrollDown(void);
 
+    // renderer functions
+    void render_planet_recurse(CelestialType *cel);
+    QPointF position_to_screen_coordinates(FixedV2D pos);
+
     bool mouse_pressed;
     int elapsed;
     QTimer clickTimer;
 
     // for handling click drag
-    QPoint current_position;
+    FixedV2D position;
+    //TODO: bracket zooming
+    long currentZoom = 40; //zoom factor (exponent of 2)
     QPoint mousedrag_position; // mouse backend crap
     QPoint singleclick_position;
+    QPoint center; // center point of screen in pixels
 
     // render
     QPainter painter;
-    QPen test;
+    //QPen planet; TODO: not necessarily any value in having this one?
+    QPen orbit;
 };
 
 #endif // SYSTEMRENDERER_H

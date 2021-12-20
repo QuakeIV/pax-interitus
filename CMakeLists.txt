@@ -19,11 +19,11 @@ set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp mainwindow.h mainwindow.ui
         systemrenderer.h systemrenderer.cpp systemrenderermousebackend.cpp
-        universetype.h universetype.cpp
+        universe.h universe.cpp
         solarsystemtype.h solarsystemtype.cpp
         celestialtype.h celestialtype.cpp
         transform.h transform.cpp
-        orbittype.h
+        orbittype.h orbittype.cpp
         fixedv2d.h
 )
 
@@ -32,7 +32,7 @@ qt_add_executable(freespace-aurora
     ${PROJECT_SOURCES}
 )
 
-target_link_libraries(freespace-aurora PRIVATE Qt6::Widgets Qt6::OpenGLWidgets)
+target_link_libraries(freespace-aurora PRIVATE Qt6::Widgets Qt6::OpenGLWidgets libgmp.a)
 
 set_target_properties(freespace-aurora PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

@@ -7,6 +7,10 @@ class Transform
 {
 public:
     Transform();
+    ~Transform();
+
+    virtual void UpdatePosition(void);
+
     FixedV2D position;
 };
 
