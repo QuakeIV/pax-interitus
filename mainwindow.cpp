@@ -12,8 +12,6 @@ MainWindow::MainWindow(QWidget *parent)
     pause_button = this->findChild<QPushButton*>("pausebutton");
     display_warp = this->findChild<QPushButton*>("displaywarp");
 
-    universe_init();
-
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, openGL, &SystemRenderer::animate);
     timer->start(50);

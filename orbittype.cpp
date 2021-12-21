@@ -13,6 +13,7 @@ extern QRandomGenerator qrand;
 OrbitType::OrbitType(CelestialType *p, unsigned long r)
 {
     parent = p;
+    orbital_radius = r;
     //doing sine/cosine math in double land, and then converting back to the fixed reference frame
     //TODO: figure out how to do this right with integers (maybe just use bigint or something)
     double radius_d = r; //radius in MM

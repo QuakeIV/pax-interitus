@@ -49,12 +49,15 @@ private:
     QTimer clickTimer;
 
     // for handling click drag
-    FixedV2D position;
+    FixedV2D offset; //this offset is relative to the 'focus' point
     //TODO: bracket zooming
     long currentZoom = 40; //zoom factor (exponent of 2)
     QPoint mousedrag_position; // mouse backend crap
     QPoint singleclick_position;
     QPoint center; // center point of screen in pixels
+
+    // you can focus on transforms and follow them
+    Transform *focus;
 
     // render
     QPainter painter;

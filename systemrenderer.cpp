@@ -15,6 +15,9 @@ SystemRenderer::SystemRenderer(QWidget *parent) :
     setFormat(format);
     //test = QPen(Qt::white, 12, Qt::DashDotLine, Qt::RoundCap);
 
+    // TODO: this is temporary, this is not long-term the suitable place to set initial focus i think
+    focus = &sol->trajectory;
+
     orbit = QPen(Qt::green, 1, Qt::SolidLine, Qt::SquareCap);
 }
 
@@ -30,9 +33,6 @@ void SystemRenderer::paintEvent(QPaintEvent *event)
     painter.beginNativePainting();
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_LINE_SMOOTH);
-
-
-
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
     painter.endNativePainting();
@@ -44,7 +44,7 @@ void SystemRenderer::paintEvent(QPaintEvent *event)
 
 QPointF SystemRenderer::position_to_screen_coordinates(FixedV2D pos)
 {
-    FixedV2D a = pos - position;
+    FixedV2D a = pos - (offset + focus->position);
 
     // TODO: this is capturing remainders so that the anti aliased lines drawn look much nicer, look into optimizing (mainly the float division sucks)
     long mask = (1l << currentZoom) - 1l;
@@ -63,16 +63,17 @@ QPointF SystemRenderer::position_to_screen_coordinates(FixedV2D pos)
 void SystemRenderer::render_planet_recurse(CelestialType *cel)
 {
     // render orbits first (if it exists)
-    // this will ensure that no nonsense transpires
-    if (cel->trajectory.parent)
+    // only render orbit if it exists (if parent is set) and if it would be more than 10 pixels wide (otherwise dont bother drawing it its too small)
+    if (cel->trajectory.parent && (cel->trajectory.orbital_radius >> currentZoom) >= 10)
     {
         painter.setPen(orbit);
         long pts = cel->trajectory.racetrack_points;
-        QPointF start = position_to_screen_coordinates(cel->trajectory.rel_racetrack[pts-1]);
+        FixedV2D parent_pos = cel->trajectory.parent->trajectory.position;
+        QPointF start = position_to_screen_coordinates(cel->trajectory.rel_racetrack[pts-1] + parent_pos);
 
         for (int i = 0; i < pts; i++)
         {
-            QPointF next = position_to_screen_coordinates(cel->trajectory.rel_racetrack[i]);
+            QPointF next = position_to_screen_coordinates(cel->trajectory.rel_racetrack[i] + parent_pos);
             painter.drawLine(start, next);
             start = next;
         }
@@ -81,14 +82,19 @@ void SystemRenderer::render_planet_recurse(CelestialType *cel)
     foreach(CelestialType *child, cel->children)
         render_planet_recurse(child);
 
-    // render planet body
-    float rad = cel->radius >> currentZoom;
-    if (rad < 5.0f)
-        rad = 5.0f;
-    painter.setPen(cel->color);
-    painter.setBrush(cel->color);
-    QPointF pos = position_to_screen_coordinates(cel->trajectory.position);
-    painter.drawEllipse(pos, rad, rad);
+    // render planet body (but only if more center point is more than 5 pixels from parent)
+    // if hypothetically both are still minimum size, this would amount to half-overlapping circles
+    // if there is no parent body, then draw it regardless (sun case)
+    if ((cel->trajectory.orbital_radius >> currentZoom) >= 5 || !cel->trajectory.parent)
+    {
+        float rad = cel->radius >> currentZoom;
+        if (rad < 5.0f)
+            rad = 5.0f;
+        painter.setPen(cel->color);
+        painter.setBrush(cel->color);
+        QPointF pos = position_to_screen_coordinates(cel->trajectory.position);
+        painter.drawEllipse(pos, rad, rad);
+    }
 }
 
 void SystemRenderer::animate()
@@ -122,7 +128,7 @@ void SystemRenderer::clickDrag(QPoint delta)
     FixedV2D d;
     d.x = ((long)delta.x()) << currentZoom;
     d.y = ((long)delta.y()) << currentZoom;
-    position -= d;
+    offset -= d;
 }
 
 void SystemRenderer::scrollUp(void)

@@ -14,6 +14,7 @@ class OrbitType : public Transform
 public:
     long  orbital_period         = 0; //in milliseconds
     long  orbit_clock_offset     = 0; //initial position, in milliseconds
+    long  orbital_radius         = 0; //radius in mm (this is currently only used for trajectory render culling)
     CelestialType *parent        = NULL; //for now assume you can only really orbit a celestial TODO: improve?
 
     OrbitType(CelestialType *p, unsigned long r);
