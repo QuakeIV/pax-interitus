@@ -60,8 +60,11 @@ void SystemRenderer::mouseDoubleClickEvent(QMouseEvent *event)
 
 void SystemRenderer::mouseMoveEvent(QMouseEvent *event)
 {
-    clickDrag(event->pos() - mousedrag_position);
-    mousedrag_position = event->pos();
+    if (event->buttons() == Qt::LeftButton)
+    {
+        clickDrag(event->pos() - mousedrag_position);
+        mousedrag_position = event->pos();
+    }
 }
 
 void SystemRenderer::wheelEvent(QWheelEvent* event)
