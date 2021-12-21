@@ -18,7 +18,7 @@ SystemRenderer::SystemRenderer(QWidget *parent) :
     // TODO: this is temporary, this is not long-term the suitable place to set initial focus i think
     focus = &sol->trajectory;
 
-    orbit = QPen(Qt::green, 1, Qt::SolidLine, Qt::SquareCap);
+    orbit = QPen(Qt::green);//, 1, Qt::SolidLine, Qt::SquareCap);
 }
 
 void SystemRenderer::paintEvent(QPaintEvent *event)
@@ -36,6 +36,8 @@ void SystemRenderer::paintEvent(QPaintEvent *event)
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
     painter.endNativePainting();
+
+    //TODO: would be nice to draw the little yardstick that the godot thing had
 
     render_planet_recurse(sol);
 
@@ -84,13 +86,13 @@ void SystemRenderer::render_planet_recurse(CelestialType *cel)
 
     // render planet body (but only if more center point is more than 5 pixels from parent)
     // if hypothetically both are still minimum size, this would amount to half-overlapping circles
-    // if there is no parent body, then draw it regardless (sun case)
+    // if there is no parent body, then draw it then as well (sun case)
     if ((cel->trajectory.orbital_radius >> currentZoom) >= 5 || !cel->trajectory.parent)
     {
         float rad = cel->radius >> currentZoom;
         if (rad < 5.0f)
             rad = 5.0f;
-        painter.setPen(cel->color);
+        painter.setPen(QColor(0,0,0,0));
         painter.setBrush(cel->color);
         QPointF pos = position_to_screen_coordinates(cel->trajectory.position);
         painter.drawEllipse(pos, rad, rad);
@@ -110,7 +112,23 @@ void SystemRenderer::animate()
 
 void SystemRenderer::singleClick(QPoint location)
 {
-    printf("singleclick\n");
+    //TODO: optimally this would grab the current focused solar system rather than just going to the 'sol' variable, this is a placeholder design
+    CelestialType *cel = planet_click_recurse(sol, QPointF(location));
+    if (cel)
+    {
+        focus = &cel->trajectory;
+        offset.x = 0;
+        offset.y = 0;
+        return;
+    }
+
+    //TODO: search for fleets and other focusable objects (missiles perhaps i guess?)
+
+    // if the click misses, focus onto star and incorporate position of last focused object into offset
+    offset += focus->position;
+    focus = &sol->trajectory;
+
+    printf("shitdick\n");
 }
 
 void SystemRenderer::rightClick(QPoint location)
@@ -141,4 +159,33 @@ void SystemRenderer::scrollDown(void)
 {
     if (currentZoom < 63)
         currentZoom++;
+}
+
+// return true if a click landed on a planet (this can be used for any type of click)
+CelestialType * SystemRenderer::planet_click_recurse(CelestialType *cel, QPointF p)
+{
+    //TODO: it would be nice to calculate display radii and coordinates at render time and then re-use them here, rather than re-calculating
+
+    QPointF l = position_to_screen_coordinates(cel->trajectory.position);
+
+    float x = l.x() - p.x();
+    float y = l.y() - p.y();
+    float d = sqrt(x*x + y*y);
+    printf("%f\n", d);
+    if (d < 5.0 || d < (cel->radius >> currentZoom))
+        return cel;
+
+    foreach (CelestialType *child, cel->children)
+    {
+        // only allow clicks on planets that are actually rendering
+        // (this is to match the condition in render_planet_recurse that culls planet rendering)
+        if ((child->trajectory.orbital_radius >> currentZoom) >= 5)
+        {
+            //recurse into children
+            CelestialType *f = planet_click_recurse(child, p);
+            if (f)
+                return f;
+        }
+    }
+    return NULL;
 }

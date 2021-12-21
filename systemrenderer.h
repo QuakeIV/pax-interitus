@@ -44,6 +44,9 @@ private:
     void render_planet_recurse(CelestialType *cel);
     QPointF position_to_screen_coordinates(FixedV2D pos);
 
+    // recursively search planets to see if a click landed on them, return found planet if any, otherwise return null
+    CelestialType *planet_click_recurse(CelestialType *cel, QPointF p);
+
     bool mouse_pressed;
     int elapsed;
     QTimer clickTimer;

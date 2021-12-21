@@ -4,7 +4,6 @@
 
 Transform::Transform()
 {
-    printf("NEW TRANSFORM REE\n");
     transforms.append(this);
 }
 
