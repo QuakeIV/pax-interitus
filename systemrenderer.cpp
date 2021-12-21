@@ -20,12 +20,8 @@ SystemRenderer::SystemRenderer(QWidget *parent) :
 
 void SystemRenderer::paintEvent(QPaintEvent *event)
 {
-    static CelestialType sol = CelestialType(695700000000, 1988500000000000);
-    sol.color = QColor(226, 223, 24);
-
-    static CelestialType mercury = CelestialType(2439700000, 330110000, 57909050000000, &sol);
-
     // calculate middle point so rendering is centered
+    // TODO: only do this on resize? may wind up not working all that well unclear
     center = QPoint(frameGeometry().width(), frameGeometry().height()) / 2;
 
     painter.begin(this);
@@ -41,7 +37,8 @@ void SystemRenderer::paintEvent(QPaintEvent *event)
     glClear(GL_COLOR_BUFFER_BIT);
     painter.endNativePainting();
 
-    render_planet_recurse(&sol);
+    render_planet_recurse(sol);
+
     painter.end();
 }
 
@@ -65,7 +62,8 @@ QPointF SystemRenderer::position_to_screen_coordinates(FixedV2D pos)
 
 void SystemRenderer::render_planet_recurse(CelestialType *cel)
 {
-    //render orbits first (if it exists)
+    // render orbits first (if it exists)
+    // this will ensure that no nonsense transpires
     if (cel->trajectory.parent)
     {
         painter.setPen(orbit);
