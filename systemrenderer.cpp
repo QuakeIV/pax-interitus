@@ -127,8 +127,6 @@ void SystemRenderer::singleClick(QPoint location)
     // if the click misses, focus onto star and incorporate position of last focused object into offset
     offset += focus->position;
     focus = &sol->trajectory;
-
-    printf("shitdick\n");
 }
 
 void SystemRenderer::rightClick(QPoint location)
@@ -171,8 +169,9 @@ CelestialType * SystemRenderer::planet_click_recurse(CelestialType *cel, QPointF
     float x = l.x() - p.x();
     float y = l.y() - p.y();
     float d = sqrt(x*x + y*y);
-    printf("%f\n", d);
-    if (d < 5.0 || d < (cel->radius >> currentZoom))
+    // be a bit generous with click detection for the min-size planets (so 6.0 radius instead of 5.0)
+    // TODO: maybe at some point planet display radius will be configurable, definitely call a function for this one
+    if (d < 6.0 || d < (cel->radius >> currentZoom))
         return cel;
 
     foreach (CelestialType *child, cel->children)

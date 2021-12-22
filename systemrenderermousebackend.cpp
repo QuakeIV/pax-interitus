@@ -26,7 +26,14 @@ void SystemRenderer::mousePressEvent(QMouseEvent *event)
     }
 
     if (event->buttons() == Qt::RightButton)
-        rightClick(event->pos());
+    {
+        // manually fixing click position detection
+        // TODO: this is either mouse click detection or rendering that is screwing up, either way this is not a good fix
+        QPoint rightclick_position = event->pos();
+        rightclick_position.rx() -= 2;
+        rightclick_position.ry() -= 2;
+        rightClick(rightclick_position);
+    }
 }
 
 void SystemRenderer::mouseReleaseEvent(QMouseEvent *event)
@@ -54,6 +61,10 @@ void SystemRenderer::mouseDoubleClickEvent(QMouseEvent *event)
     {
         clickTimer.disconnect(); //disconnect singleclick helper since there was a doubleclick
         clickTimer.stop();
+        // manually fixing click position detection
+        // TODO: this is either mouse click detection or rendering that is screwing up, either way this is not a good fix
+        singleclick_position.rx() -= 2;
+        singleclick_position.ry() -= 2;
         doubleClick(singleclick_position); //TODO: grabbing mousedown position, but this is in effect for the second click. improve?
     }
 }
@@ -89,6 +100,11 @@ void SystemRenderer::wheelEvent(QWheelEvent* event)
 
 void SystemRenderer::singleClickHelper(void)
 {
+    // manually fixing click position detection
+    // TODO: this is either mouse click detection or rendering that is screwing up, either way this is not a good fix
+    singleclick_position.rx() -= 2;
+    singleclick_position.ry() -= 2;
+
     singleClick(singleclick_position); //aha fire single click
     clickTimer.disconnect(); //disconnect singleclick helper since there was a doubleclick
 }
