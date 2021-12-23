@@ -12,6 +12,10 @@ extern QApplication *qapp;
 
 void SystemRenderer::mousePressEvent(QMouseEvent *event)
 {
+    // manually fixing click position detection
+    // TODO: this is either mouse click detection or rendering that is screwing up, either way this is not a good fix
+    event->pos().rx() -= 2;
+    event->pos().ry() -= 2;
     if (event->buttons() == Qt::LeftButton)
     {
         singleclick_position = mousedrag_position = event->pos(); //grab position for clickdrag stuff and also determining if singleclick should fire (singleclick looks at distance travelled)
@@ -27,23 +31,18 @@ void SystemRenderer::mousePressEvent(QMouseEvent *event)
 
     if (event->buttons() == Qt::RightButton)
     {
-        // manually fixing click position detection
-        // TODO: this is either mouse click detection or rendering that is screwing up, either way this is not a good fix
-        QPoint rightclick_position = event->pos();
-        rightclick_position.rx() -= 2;
-        rightclick_position.ry() -= 2;
-        rightClick(rightclick_position);
+        rightClick(event->pos());
     }
 }
 
 void SystemRenderer::mouseReleaseEvent(QMouseEvent *event)
 {
+    if (event->button() == Qt::LeftButton)
+        mouse_pressed = false;
     // we grab mouse drag position when we depress lmb, so let it then inhibit clicks if the delta from starting position is too great
     // manhattan distance is weird but actually works okay for this because it kindof represents the number of times the mouse has moved away a pixel
     if (event->button() == Qt::LeftButton && (singleclick_position - event->pos()).manhattanLength() < 20)
     {
-        mouse_pressed = false;
-
         if (clickTimer.isActive())
         {
             // if timer has not elapsed, we are still in single click territory, so connect up the single click handler
@@ -61,19 +60,23 @@ void SystemRenderer::mouseDoubleClickEvent(QMouseEvent *event)
     {
         clickTimer.disconnect(); //disconnect singleclick helper since there was a doubleclick
         clickTimer.stop();
-        // manually fixing click position detection
-        // TODO: this is either mouse click detection or rendering that is screwing up, either way this is not a good fix
-        singleclick_position.rx() -= 2;
-        singleclick_position.ry() -= 2;
         doubleClick(singleclick_position); //TODO: grabbing mousedown position, but this is in effect for the second click. improve?
     }
 }
 
 void SystemRenderer::mouseMoveEvent(QMouseEvent *event)
 {
+    // manually fixing click position detection
+    // TODO: this is either mouse click detection or rendering that is screwing up, either way this is not a good fix
+    event->pos().rx() -= 2;
+    event->pos().ry() -= 2;
     if (event->buttons() == Qt::LeftButton)
     {
-        clickDrag(event->pos() - mousedrag_position);
+        // for now just dont drag if someone is using the yardstick (ctrl-click and mouse move)
+        // TODO: probably to be expanded
+        //TODO: this isnt just a bitfield as advertised, the values are some jank ass shit
+        if (qapp->keyboardModifiers() != Qt::ControlModifier) //== Qt::NoModifier)
+            clickDrag(event->pos() - mousedrag_position);
         mousedrag_position = event->pos();
     }
 }
@@ -100,11 +103,6 @@ void SystemRenderer::wheelEvent(QWheelEvent* event)
 
 void SystemRenderer::singleClickHelper(void)
 {
-    // manually fixing click position detection
-    // TODO: this is either mouse click detection or rendering that is screwing up, either way this is not a good fix
-    singleclick_position.rx() -= 2;
-    singleclick_position.ry() -= 2;
-
     singleClick(singleclick_position); //aha fire single click
     clickTimer.disconnect(); //disconnect singleclick helper since there was a doubleclick
 }

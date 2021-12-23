@@ -1,6 +1,9 @@
 #include "systemrenderer.h"
 #include "fixedv2d.h"
 #include "universe.h"
+#include <QApplication>
+
+extern QApplication *qapp;
 
 SystemRenderer::SystemRenderer(QWidget *parent) :
     QOpenGLWidget(parent)
@@ -37,11 +40,56 @@ void SystemRenderer::paintEvent(QPaintEvent *event)
     glClear(GL_COLOR_BUFFER_BIT);
     painter.endNativePainting();
 
-    //TODO: would be nice to draw the little yardstick that the godot thing had
-
     render_planet_recurse(sol);
 
+    render_scale();
+
+    render_yardstick();
+
     painter.end();
+}
+
+void SystemRenderer::render_yardstick(void)
+{
+    if (!mouse_pressed)
+        return;
+
+    if (qapp->keyboardModifiers() != Qt::ControlModifier)
+        return;
+
+    // TODO: just making all of this white for now but not necessarily forever (maybe a milder gray so its not as harsh)
+    painter.setPen(Qt::white);
+
+    // draw the line
+    painter.drawLine(singleclick_position, mousedrag_position);
+
+    QPointF d = mousedrag_position - singleclick_position;
+    double dist = (double)sqrt(d.x()*d.x() + d.y()*d.y()) * (double)(1l<<currentZoom);
+
+    //draw distance
+    static const QString si_scale[] = {"m", "", "k","M","G","T"};
+    int i;
+    for (i = 0; i < (sizeof(si_scale)/sizeof(si_scale[0]) - 1) && dist > 10000.0; i++)
+        dist /= 1000;
+
+    painter.drawText(mousedrag_position + QPointF(0,-2), QString("%1%2m").arg(QString::number(dist, 'f', 1), si_scale[i]));
+}
+
+void SystemRenderer::render_scale()
+{
+    //draw scale marker
+    static const QPointF scale_from = QPointF(20,30);
+    static const QPointF scale_text = QPointF(20,28);
+    static const QPointF scale_to   = QPointF(120,30);
+    static const QString si_scale[] = {"m", "", "k","M","G","T"};
+    double dist = (100l << currentZoom); //assuming 100px width for now, this needs to stay in sync with the above
+    int i;
+    for (i = 0; i < (sizeof(si_scale)/sizeof(si_scale[0]) - 1) && dist > 10000.0; i++)
+        dist /= 1000;
+
+    painter.setPen(orbit);
+    painter.drawLine(scale_from, scale_to);
+    painter.drawText(scale_text, QString("%1%2m").arg(QString::number(dist, 'f', 1), si_scale[i]));
 }
 
 QPointF SystemRenderer::position_to_screen_coordinates(FixedV2D pos)
