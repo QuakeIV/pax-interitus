@@ -72,7 +72,7 @@ void SystemRenderer::render_fleets(void)
         // TODO: probably useful for at least guarding rendering of some stuff
 //        if (fleet->trajectory.orbital_radius >> currentZoom < 10)
 //            continue;
-        //TODO: draw trail line
+        //TODO: draw trail line?
 
         FleetType *fleet = list.takeLast();
         QPointF pos = position_to_screen_coordinates(fleet->trajectory.position);
