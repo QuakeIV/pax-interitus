@@ -1,4 +1,5 @@
 #include "celestialtype.h"
+#include "solarsystemtype.h"
 
 // for stars
 CelestialType::CelestialType(unsigned long r, unsigned long m)
@@ -12,6 +13,7 @@ CelestialType::CelestialType(unsigned long r, unsigned long m)
 
 CelestialType::CelestialType(unsigned long r, unsigned long m, unsigned long distance, CelestialType *parent)
 {
+    system = parent->system;
     radius = r;
     mass = m;
 

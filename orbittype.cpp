@@ -36,7 +36,7 @@ OrbitType::OrbitType(CelestialType *p, unsigned long r)
         //worst case roundoff error here is I think racetrack_points - 1 milliseconds (this is the true reference for orbital period in terms of calculating position)
         racetrack_delta_time = orbital_period/racetrack_points;
         //start the planet at a random spot in its orbit
-        orbit_clock_offset = (long)(qrand.bounded(period_d));
+        orbit_clock_offset = (long)(qrand.bounded(period_d)); //TODO: make this not random by default?
     }
 }
 

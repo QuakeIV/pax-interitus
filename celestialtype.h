@@ -6,6 +6,8 @@
 #include <QList>
 #include <QPainter>
 
+class SolarSystemType;
+
 class CelestialType
 {
 public:
@@ -20,6 +22,8 @@ public:
     QColor color;
 
     QList<CelestialType*> children;
+
+    SolarSystemType *system; //what system is the celestial located in
 };
 
 #endif // CELESTIALTYPE_H

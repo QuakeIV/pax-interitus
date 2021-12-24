@@ -14,11 +14,12 @@ void SystemRenderer::mousePressEvent(QMouseEvent *event)
 {
     // manually fixing click position detection
     // TODO: this is either mouse click detection or rendering that is screwing up, either way this is not a good fix
-    event->pos().rx() -= 2;
-    event->pos().ry() -= 2;
+    QPoint eventpos = event->pos();
+    eventpos.rx() -= 2;
+    eventpos.ry() -= 2;
     if (event->buttons() == Qt::LeftButton)
     {
-        singleclick_position = mousedrag_position = event->pos(); //grab position for clickdrag stuff and also determining if singleclick should fire (singleclick looks at distance travelled)
+        singleclick_position = mousedrag_position = eventpos; //grab position for clickdrag stuff and also determining if singleclick should fire (singleclick looks at distance travelled)
         mouse_pressed = true;
         if (clickTimer.isActive())
         {
@@ -31,7 +32,7 @@ void SystemRenderer::mousePressEvent(QMouseEvent *event)
 
     if (event->buttons() == Qt::RightButton)
     {
-        rightClick(event->pos());
+        rightClick(eventpos);
     }
 }
 
@@ -68,16 +69,17 @@ void SystemRenderer::mouseMoveEvent(QMouseEvent *event)
 {
     // manually fixing click position detection
     // TODO: this is either mouse click detection or rendering that is screwing up, either way this is not a good fix
-    event->pos().rx() -= 2;
-    event->pos().ry() -= 2;
+    QPoint eventpos = event->pos();
+    eventpos.rx() -= 2;
+    eventpos.ry() -= 2;
     if (event->buttons() == Qt::LeftButton)
     {
         // for now just dont drag if someone is using the yardstick (ctrl-click and mouse move)
         // TODO: probably to be expanded
         //TODO: this isnt just a bitfield as advertised, the values are some jank ass shit
         if (qapp->keyboardModifiers() != Qt::ControlModifier) //== Qt::NoModifier)
-            clickDrag(event->pos() - mousedrag_position);
-        mousedrag_position = event->pos();
+            clickDrag(eventpos - mousedrag_position);
+        mousedrag_position = eventpos;
     }
 }
 

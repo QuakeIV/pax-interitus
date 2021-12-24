@@ -44,6 +44,7 @@ private:
     void render_scale(void); //TODO: is this needed in light of yardstick?
     void render_planet_recurse(CelestialType *cel);
     void render_yardstick(void);
+    void render_fleets(void);
     QPointF position_to_screen_coordinates(FixedV2D pos);
 
     // recursively search planets to see if a click landed on them, return found planet if any, otherwise return null

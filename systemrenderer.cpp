@@ -2,6 +2,7 @@
 #include "fixedv2d.h"
 #include "universe.h"
 #include <QApplication>
+#include "solarsystemtype.h"
 
 extern QApplication *qapp;
 
@@ -19,7 +20,7 @@ SystemRenderer::SystemRenderer(QWidget *parent) :
     //test = QPen(Qt::white, 12, Qt::DashDotLine, Qt::RoundCap);
 
     // TODO: this is temporary, this is not long-term the suitable place to set initial focus i think
-    focus = &sol->trajectory;
+    focus = &sol.root.trajectory;
 
     orbit = QPen(Qt::green);//, 1, Qt::SolidLine, Qt::SquareCap);
 }
@@ -40,13 +41,65 @@ void SystemRenderer::paintEvent(QPaintEvent *event)
     glClear(GL_COLOR_BUFFER_BIT);
     painter.endNativePainting();
 
-    render_planet_recurse(sol);
+    render_planet_recurse(&sol.root);
 
     render_scale();
 
     render_yardstick();
 
+    render_fleets();
+
     painter.end();
+}
+
+void SystemRenderer::render_fleets(void)
+{
+    // copy the list
+    QList<FleetType*> list = sol.fleets;
+
+    // this only exists to track how much vertical room the text needs, so add some padding here
+    static float font_size = painter.fontInfo().pixelSize() + 2;
+
+    printf("start\n");
+    painter.setPen(Qt::yellow);
+    while (list.length())
+    {
+        // TODO: probably useful for at least guarding rendering of some stuff
+//        if (fleet->trajectory.orbital_radius >> currentZoom < 10)
+//            continue;
+        //TODO: draw trail line
+
+        FleetType *fleet = list.takeLast();
+        printf("not co fleet %s\n", fleet->name.toStdString().c_str());
+        QPointF pos = position_to_screen_coordinates(fleet->trajectory.position);
+        QPointF offset = QPointF(5,-5); //offset for text display
+        //TODO: de-hardcode radius
+        painter.drawEllipse(pos, 5.0, 5.0);
+
+        // name
+        painter.drawText(pos + offset, fleet->name);
+
+        // find colocated fleets
+        long i = list.length() - 1;
+        while (i >= 0)
+        {
+            // TODO: would be nice to pre-calculate fleet screen coordinates for the frame
+            QPointF d = position_to_screen_coordinates(list[i]->trajectory.position) - pos;
+
+            // TODO: dont hard code horizontal space?
+            if ((abs(d.y()) < font_size) && (abs(d.x()) < 50.0))
+            {
+                FleetType *co_fleet = list.takeAt(i);
+                printf("cofleet %s\n", co_fleet->name.toStdString().c_str());
+
+                offset.ry() -= font_size;
+
+                painter.drawText(pos + offset, co_fleet->name);
+            }
+
+            i--;
+        }
+    }
 }
 
 void SystemRenderer::render_yardstick(void)
@@ -161,7 +214,7 @@ void SystemRenderer::animate()
 void SystemRenderer::singleClick(QPoint location)
 {
     //TODO: optimally this would grab the current focused solar system rather than just going to the 'sol' variable, this is a placeholder design
-    CelestialType *cel = planet_click_recurse(sol, QPointF(location));
+    CelestialType *cel = planet_click_recurse(&sol.root, QPointF(location));
     if (cel)
     {
         focus = &cel->trajectory;
@@ -174,7 +227,7 @@ void SystemRenderer::singleClick(QPoint location)
 
     // if the click misses, focus onto star and incorporate position of last focused object into offset
     offset += focus->position;
-    focus = &sol->trajectory;
+    focus = &sol.root.trajectory;
 }
 
 void SystemRenderer::rightClick(QPoint location)

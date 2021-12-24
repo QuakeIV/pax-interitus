@@ -24,13 +24,19 @@ set(PROJECT_SOURCES
         celestialtype.h celestialtype.cpp
         transform.h transform.cpp
         orbittype.h orbittype.cpp
+        fleettype.h fleettype.cpp
         fixedv2d.h
 )
+
 
 qt_add_executable(freespace-aurora
     MANUAL_FINALIZATION
     ${PROJECT_SOURCES}
 )
+
+qt_add_resources(freespace-aurora "images"
+    PREFIX "/images"
+    FILES icon.png)
 
 target_link_libraries(freespace-aurora PRIVATE Qt6::Widgets Qt6::OpenGLWidgets libgmp.a)
 

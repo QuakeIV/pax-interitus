@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, openGL, &SystemRenderer::animate);
+    // TODO: fiddle with frame rate
     timer->start(50);
 }
 
