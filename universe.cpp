@@ -59,6 +59,31 @@ void universe_init(void)
 
     static CelestialType saturn = CelestialType(58232000000, 568340000000, 1433530000000000, &sol.root);
     saturn.color = QColor(198,160,110);
+    static CelestialType titan      = CelestialType(2574730000, 134520000, 1221930000000, &saturn);
+    static CelestialType rhea       = CelestialType(763800000,  2306518,   527108000000, &saturn);
+    static CelestialType iapetus    = CelestialType(734300000,  1805635,   3560820000000, &saturn);
+    static CelestialType dione      = CelestialType(561400000,  1095452,   377396000000, &saturn);
+    static CelestialType tethys     = CelestialType(531100000,  617449,    294619000000, &saturn);
+    static CelestialType enceladus  = CelestialType(252100000,  108022,    237950000000, &saturn);
+    static CelestialType mimas      = CelestialType(198200000,  37493,     185404000000, &saturn);
+    static CelestialType phoebe     = CelestialType(106500000,  8292,      12905900000000, &saturn);
+    static CelestialType hyperion   = CelestialType(135000000,  5619,      1481010000000, &saturn);
+    static CelestialType janus      = CelestialType(89500000,   1898,      151472000000, &saturn);
+    static CelestialType epimetheus = CelestialType(58100000,   527,       151422000000, &saturn);
+    static CelestialType prometheus = CelestialType(43100000,   160,       139380000000, &saturn);
+    static CelestialType pandora    = CelestialType(40700000,   137,       141720000000, &saturn);
+    static CelestialType siamaq     = CelestialType(19650000,   44,        17937000000000, &saturn);
+    static CelestialType helene     = CelestialType(17600000,   25,        377396000000, &saturn);
+    static CelestialType albiorix   = CelestialType(14300000,   22,        16222700000000, &saturn);
+    static CelestialType telesto    = CelestialType(12400000,   9,         294619000000, &saturn);
+    static CelestialType paaliaq    = CelestialType(12500000,   7,         15012800000000, &saturn);
+    static CelestialType atlas      = CelestialType(15100000,   7,         137670000000, &saturn);
+    static CelestialType calypso    = CelestialType(10700000,   6,         294619000000, &saturn);
+    static CelestialType pan        = CelestialType(14100000,   5,         133584000000, &saturn);
+    static CelestialType ymir       = CelestialType(9500000,    4,         22841900000000, &saturn);
+    static CelestialType kivluq     = CelestialType(8500000,    3,         11307500000000, &saturn);
+    static CelestialType tarvos     = CelestialType(7500000,    2,         18243800000000, &saturn);
+    static CelestialType ijiraq     = CelestialType(8500000,    1,         11348500000000, &saturn);
 
     static CelestialType uranus = CelestialType(25559000000, 86810000000, 2870972000000000, &sol.root);
     uranus.color = QColor(141,161,170);
