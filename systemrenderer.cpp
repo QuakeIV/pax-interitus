@@ -52,15 +52,20 @@ void SystemRenderer::paintEvent(QPaintEvent *event)
     painter.end();
 }
 
+// TODO: render circles first or something this has an unpleasant degree of repetition
 void SystemRenderer::render_fleets(void)
 {
     // copy the list
     QList<FleetType*> list = sol.fleets;
 
+    // sort by y axis to promote displaying text in the right order
+    // this did not help readability at all and seemed to impact it negatively but may as well leave this here since i came back to it twice
+//    std::sort(list.begin(), list.end(),
+//         [](FleetType *a, FleetType *b) { return a->trajectory.position.y < b->trajectory.position.y; });
+
     // this only exists to track how much vertical room the text needs, so add some padding here
     static float font_size = painter.fontInfo().pixelSize() + 2;
 
-    printf("start\n");
     painter.setPen(Qt::yellow);
     while (list.length())
     {
@@ -70,7 +75,6 @@ void SystemRenderer::render_fleets(void)
         //TODO: draw trail line
 
         FleetType *fleet = list.takeLast();
-        printf("not co fleet %s\n", fleet->name.toStdString().c_str());
         QPointF pos = position_to_screen_coordinates(fleet->trajectory.position);
         QPointF offset = QPointF(5,-5); //offset for text display
         //TODO: de-hardcode radius
@@ -84,17 +88,21 @@ void SystemRenderer::render_fleets(void)
         while (i >= 0)
         {
             // TODO: would be nice to pre-calculate fleet screen coordinates for the frame
-            QPointF d = position_to_screen_coordinates(list[i]->trajectory.position) - pos;
+            QPointF copos = position_to_screen_coordinates(list[i]->trajectory.position);
+            QPointF d = copos - pos;
 
             // TODO: dont hard code horizontal space?
             if ((abs(d.y()) < font_size) && (abs(d.x()) < 50.0))
             {
                 FleetType *co_fleet = list.takeAt(i);
-                printf("cofleet %s\n", co_fleet->name.toStdString().c_str());
 
                 offset.ry() -= font_size;
 
                 painter.drawText(pos + offset, co_fleet->name);
+
+                // draw circle
+                //TODO: de-hardcode radius
+                painter.drawEllipse(copos, 5.0, 5.0);
             }
 
             i--;
@@ -223,7 +231,16 @@ void SystemRenderer::singleClick(QPoint location)
         return;
     }
 
-    //TODO: search for fleets and other focusable objects (missiles perhaps i guess?)
+    FleetType *fleet = fleet_click(location);
+    if (fleet)
+    {
+        focus = &fleet->trajectory;
+        offset.x = 0;
+        offset.y = 0;
+        return;
+    }
+
+    //TODO: search for other focusable objects (missiles perhaps i guess?)
 
     // if the click misses, focus onto star and incorporate position of last focused object into offset
     offset += focus->position;
@@ -258,6 +275,24 @@ void SystemRenderer::scrollDown(void)
 {
     if (currentZoom < 63)
         currentZoom++;
+}
+
+FleetType * SystemRenderer::fleet_click(QPointF p)
+{
+    // TODO: track 'current solar system', check that things fleets instead
+    foreach (FleetType *fleet, sol.fleets)
+    {
+        //TODO: would be nice to pre-compute fleet screen position every frame
+        QPointF l = position_to_screen_coordinates(fleet->trajectory.position);
+
+        float x = l.x() - p.x();
+        float y = l.y() - p.y();
+        float d = sqrt(x*x + y*y);
+        // TODO: maybe at some point fleet display radius will be configurable, definitely call a function for this one
+        if (d < 6.0)
+            return fleet;
+    }
+    return NULL;
 }
 
 // return true if a click landed on a planet (this can be used for any type of click)

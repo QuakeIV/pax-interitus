@@ -10,6 +10,8 @@
 #include "fixedv2d.h"
 #include "celestialtype.h"
 
+class FleetType;
+
 class SystemRenderer : public QOpenGLWidget
 {
     Q_OBJECT
@@ -49,6 +51,9 @@ private:
 
     // recursively search planets to see if a click landed on them, return found planet if any, otherwise return null
     CelestialType *planet_click_recurse(CelestialType *cel, QPointF p);
+    // recursively search fleets to see if a click landed on them
+    // (runs after planet click, that way if you click a big pile of crap you get the planet preferentially)
+    FleetType *fleet_click(QPointF p);
 
     bool mouse_pressed;
     int elapsed;
