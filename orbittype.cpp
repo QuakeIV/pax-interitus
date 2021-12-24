@@ -23,6 +23,7 @@ OrbitType::OrbitType(CelestialType *p, unsigned long r)
     {
         for (int i = 0; i < racetrack_points; i++)
         {
+            // TODO: stick with clockwise or flip?
             double angle = (2.0*PI*i)/racetrack_points;
             rel_racetrack[i].x = radius_d*cos(angle);
             rel_racetrack[i].y = radius_d*sin(angle);

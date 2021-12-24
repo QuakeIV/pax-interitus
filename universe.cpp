@@ -90,6 +90,21 @@ void universe_init(void)
 
     static CelestialType neptune = CelestialType(24622000000, 102413000000, 4500000000000000, &sol.root);
     neptune.color = QColor(98,122,169);
+    // TODO: retrograde orbits
+    static CelestialType triton    = CelestialType(1352600000, 21390000, 354759000000, &neptune); //also mass order
+    static CelestialType proteus   = CelestialType(210000000,  44000,    117646000000, &neptune);
+    static CelestialType nereid    = CelestialType(178500000,  27000,    5513800000000, &neptune);
+    static CelestialType larissa   = CelestialType(97000000,   4200,     73548000000, &neptune);
+    static CelestialType despina   = CelestialType(78000000,   2200,     52526000000, &neptune);
+    static CelestialType galatea   = CelestialType(87400000,   2120,     61953000000, &neptune);
+    static CelestialType thalassa  = CelestialType(40700000,   350,      50074000000, &neptune);
+    static CelestialType naiad     = CelestialType(30200000,   190,      48224000000, &neptune);
+    static CelestialType halimede  = CelestialType(31000000,   160,      16681000000000, &neptune);
+    static CelestialType neso      = CelestialType(30000000,   150,      50258000000000, &neptune);
+    static CelestialType sao       = CelestialType(22000000,   60,       22619000000000, &neptune);
+    static CelestialType laomedeia = CelestialType(21000000,   50,       22613000000000, &neptune);
+    static CelestialType psamthe   = CelestialType(20000000,   40,       46705000000000, &neptune);
+    static CelestialType hippocamp = CelestialType(17400000,   30,       105283000000, &neptune);
 
     //TODO: pluto is actually significantly barycentric with charon
     static CelestialType pluto = CelestialType(1188300000, 13030000, 5906380000000000, &sol.root);
