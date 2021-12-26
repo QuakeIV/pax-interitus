@@ -87,6 +87,33 @@ void universe_init(void)
 
     static CelestialType uranus = CelestialType(25559000000, 86810000000, 2870972000000000, &sol.root);
     uranus.color = QColor(141,161,170);
+    static CelestialType titania   = CelestialType(788400000, 3400000, 435910000000, &uranus);
+    static CelestialType oberon    = CelestialType(776400000, 3070000, 583520000000, &uranus);
+    static CelestialType umbriel   = CelestialType(584700000, 1275000, 266300000000, &uranus);
+    static CelestialType ariel     = CelestialType(578900000, 1251000, 191020000000, &uranus);
+    static CelestialType miranda   = CelestialType(235800000, 64000,   129390000000, &uranus);
+    static CelestialType puck      = CelestialType(81000000,  2900,    86010000000, &uranus);
+    static CelestialType sycorax   = CelestialType(78500000,  2300,    12179400000000, &uranus);
+    static CelestialType portia    = CelestialType(67500000,  1700,    69090000000, &uranus);
+    static CelestialType juliet    = CelestialType(47000000,  560,     64350000000, &uranus);
+    static CelestialType belinda   = CelestialType(45000000,  490,     75260000000, &uranus);
+    static CelestialType cressida  = CelestialType(40000000,  340,     61780000000, &uranus);
+    static CelestialType rosalind  = CelestialType(36000000,  250,     69940000000, &uranus);
+    static CelestialType caliban   = CelestialType(21000000,  250,     7231100000000, &uranus);
+    static CelestialType desdemona = CelestialType(32000000,  180,     62680000000, &uranus);
+    static CelestialType bianca    = CelestialType(25500000,  92,      59170000000, &uranus);
+    static CelestialType prospero  = CelestialType(25000000,  85,      16276800000000, &uranus);
+    static CelestialType setebos   = CelestialType(24000000,  75,      17420400000000, &uranus);
+    static CelestialType ophelia   = CelestialType(21500000,  53,      53790000000, &uranus);
+    static CelestialType cordelia  = CelestialType(20000000,  44,      49770000000, &uranus);
+    static CelestialType stephano  = CelestialType(16000000,  22,      8007400000000, &uranus);
+    static CelestialType perdita   = CelestialType(15000000,  18,      76400000000, &uranus);
+    static CelestialType mab       = CelestialType(12500000,  10,      97700000000, &uranus);
+    static CelestialType francisco = CelestialType(11000000,  7,       4282900000000, &uranus);
+    static CelestialType margaret  = CelestialType(10000000,  5,       14146700000000, &uranus);
+    static CelestialType ferdinand = CelestialType(10000000,  5,       20430000000000, &uranus);
+    static CelestialType trinculo  = CelestialType(9000000,   4,       8505200000000, &uranus);
+    static CelestialType cupid     = CelestialType(9000000,   4,       74800000000, &uranus);
 
     static CelestialType neptune = CelestialType(24622000000, 102413000000, 4500000000000000, &sol.root);
     neptune.color = QColor(98,122,169);

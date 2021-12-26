@@ -22,7 +22,7 @@ public:
 
     void UpdatePosition(void) override;
 
-    static const int racetrack_points = 64; //64 seems to be a good number of points for now
+    static const int racetrack_points = 128; //128 seems to be a good number of points for now
     FixedV2D rel_racetrack[racetrack_points];
 
 private:

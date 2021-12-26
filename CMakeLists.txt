@@ -11,7 +11,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_PREFIX_PATH "/home/matthew/Qt/6.2.2/gcc_64") 
+set(CMAKE_PREFIX_PATH "/home/matthew/Qt/6.2.2/gcc_64;/Users/MatthewGlitsch/Qt/6.2.2/macos") 
 find_package(QT NAMES Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
 find_package(Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
 
@@ -38,7 +38,7 @@ qt_add_resources(freespace-aurora "images"
     PREFIX "/images"
     FILES icon.png)
 
-target_link_libraries(freespace-aurora PRIVATE Qt6::Widgets Qt6::OpenGLWidgets libgmp.a)
+target_link_libraries(freespace-aurora PRIVATE Qt6::Widgets Qt6::OpenGLWidgets)
 
 set_target_properties(freespace-aurora PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
