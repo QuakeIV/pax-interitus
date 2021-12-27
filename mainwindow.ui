@@ -55,6 +55,9 @@ QPushButton:checked {
   border-style: solid;
   border-radius: 0px;
   border-color: rgb(105, 156, 232);
+}
+QMenu::item:selected {
+  background-color: rgb(105, 156, 232);
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -427,7 +430,7 @@ QPushButton:checked {
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

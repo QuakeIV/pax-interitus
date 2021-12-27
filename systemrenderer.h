@@ -9,6 +9,7 @@
 #include <QWheelEvent>
 #include "fixedv2d.h"
 #include "celestialtype.h"
+#include <QMenu>
 
 class FleetType;
 

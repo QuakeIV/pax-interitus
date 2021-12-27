@@ -5,4 +5,5 @@ SolarSystemType::SolarSystemType(unsigned long r, unsigned long m):
   fleets()
 {
     root.system = this;
+    celestials.append(&root);
 }

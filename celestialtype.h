@@ -14,6 +14,8 @@ public:
     CelestialType(unsigned long r, unsigned long m); //for stars
     CelestialType(unsigned long r, unsigned long m, unsigned long distance, CelestialType *parent);
 
+    QString name;
+
     OrbitType trajectory;
 
     unsigned long mass; //in exagrams (10^18 grams) (quadrillions (10^15) of kgs), ideally later replaced with more parameters later

@@ -3,11 +3,12 @@
 #include "universe.h"
 #include <QApplication>
 #include "solarsystemtype.h"
+#include <QMenu>
 
 extern QApplication *qapp;
 
 SystemRenderer::SystemRenderer(QWidget *parent) :
-    QOpenGLWidget(parent)
+  QOpenGLWidget(parent)
 {
     elapsed = 0;
     clickTimer.setSingleShot(true);
@@ -249,7 +250,74 @@ void SystemRenderer::singleClick(QPoint location)
 
 void SystemRenderer::rightClick(QPoint location)
 {
-    printf("rightclick\n");
+    // TODO: track current selected solar system
+    QList<CelestialType*> cels;
+    foreach (CelestialType* c, sol.celestials)
+    {
+        //TODO: it would be nice to calculate display radii and coordinates at render time and then re-use them here, rather than re-calculating
+        //TODO: this should be functionalized as its identical to other code
+        //TODO: all this rendering crap should probably migrate into a new layer of objects to keep the backend properly divorced from the rendering
+        // maybe this frontend layer actually keeps references to the celestials that arent even aware of its existence
+        QPointF l = position_to_screen_coordinates(c->trajectory.position);
+
+        float x = l.x() - location.x();
+        float y = l.y() - location.y();
+        float d = sqrt(x*x + y*y);
+        // be a bit generous with click detection for the min-size planets (so 6.0 radius instead of 5.0)
+        // TODO: maybe at some point planet display radius will be configurable, definitely call a function for this one
+        // TODO: configurable click radius margins?
+        if (d < 10 || d < (c->radius >> currentZoom)) // right click margins are more generous
+            cels.append(c);
+    }
+
+    // TODO: track current selected solar system
+    QList<FleetType*> fleets;
+    foreach (FleetType *f, sol.fleets)
+    {
+        //TODO: would be nice to pre-compute fleet screen position every frame
+        QPointF l = position_to_screen_coordinates(f->trajectory.position);
+
+        float x = l.x() - location.x();
+        float y = l.y() - location.y();
+        float d = sqrt(x*x + y*y);
+        // TODO: maybe at some point fleet display radius will be configurable, definitely call a function for this one
+        // TODO: configurable click radius margins?
+        if (d < 10.0)  // right click margins are more generous
+            fleets.append(f);
+    }
+
+    // TODO: verify if this actually gets garbage collected, the reference counting is dubious since we set 'parent'
+    // TODO: maybe just find a better way to inherit parent style and then dont set parent
+    QMenu *m = new QMenu("derp", this);
+    m->setAttribute(Qt::WA_DeleteOnClose); //this was tested with the below code to garbage collect the menu
+//    connect(m, &QMenu::destroyed,
+//            this, [m]() { qDebug() << "deleted" << (qintptr)m; });
+
+    foreach(CelestialType *c, cels)
+    {
+        QMenu *submenu = m->addMenu(c->name);
+        submenu->addAction("Focus", [this, c]()
+        {
+            this->offset.x = 0;
+            this->offset.y = 0;
+            this->focus = &c->trajectory;
+        });
+    }
+
+    if (cels.length() && fleets.length())
+        m->addSeparator();
+
+    foreach(FleetType *f, fleets)
+    {
+        QMenu *submenu = m->addMenu(f->name);
+        submenu->addAction("Focus", [this, f]()
+        {
+            this->offset.x = 0;
+            this->offset.y = 0;
+            this->focus = &f->trajectory;
+        });
+    }
+    m->popup(mapToGlobal(location));
 }
 
 void SystemRenderer::doubleClick(QPoint location)
@@ -299,7 +367,6 @@ FleetType * SystemRenderer::fleet_click(QPointF p)
 CelestialType * SystemRenderer::planet_click_recurse(CelestialType *cel, QPointF p)
 {
     //TODO: it would be nice to calculate display radii and coordinates at render time and then re-use them here, rather than re-calculating
-
     QPointF l = position_to_screen_coordinates(cel->trajectory.position);
 
     float x = l.x() - p.x();

@@ -20,42 +20,67 @@ void universe_init(void)
 {
     // for now hard code the solar system because to heck with it i tell you
     sol.root.color = QColor(226, 223, 24); // nice sun color
+    sol.root.name = "Sol";
 
     static CelestialType mercury = CelestialType(2439700000, 330110000, 57909050000000, &sol.root);
+    mercury.name = "Mercury";
 
     static CelestialType venus = CelestialType(6051800000, 4867500000U, 108208000000000, &sol.root);
+    venus.name = "Venus";
     venus.color = QColor(239, 119, 14);
 
     static CelestialType earth = CelestialType(6378100000, 5972200000U, 149598023000000, &sol.root);
     earth.color = QColor(19, 33, 219);
+    earth.name = "Earth";
     //moon
     static CelestialType moon = CelestialType(1737400000, 73420000U, 384399000000, &earth);
+    moon.name = "Luna";
 
     //mars
     static CelestialType mars = CelestialType(3389500000, 641710000U, 227939200000000, &sol.root);
+    mars.name = "Mars";
     mars.color = QColor(242, 76, 26);
     //phobos/deimos
     static CelestialType phobos = CelestialType(11266700, 11U, 9376000000, &mars);
+    phobos.name = "Phobos";
     static CelestialType deimos = CelestialType(6200000, 1U, 23463200000, &mars);
+    deimos.name = "Deimos";
 
     static CelestialType jupiter = CelestialType(69911000000, 1898200000000, 778570000000000, &sol.root);
+    jupiter.name = "Jupiter";
     jupiter.color = QColor(249, 194, 164);
     static CelestialType ganymede = CelestialType(2634100000, 148190000, 1070412000000, &jupiter); //also sorted by mass
+    ganymede.name = "Ganymede";
     static CelestialType callisto = CelestialType(2410300000, 107590000, 1882709000000, &jupiter);
+    callisto.name = "Callisto";
     static CelestialType io       = CelestialType(1821600000, 89319000,  421700000000, &jupiter);
+    io.name = "Io";
     static CelestialType europa   = CelestialType(1560800000, 47999000,  671034000000, &jupiter);
+    europa.name = "Europa";
     static CelestialType humalia  = CelestialType(139600000,  4200,      11497400000000, &jupiter);
+    humalia.name = "Humalia";
     static CelestialType amalthea = CelestialType(167000000,  2080,      181366000000, &jupiter);
+    amalthea.name = "Amalthea";
     static CelestialType elara    = CelestialType(79900000,   870,       11671600000000, &jupiter);
+    elara.name = "Elara";
     static CelestialType thebe    = CelestialType(98600000,   430,       222452000000, &jupiter);
+    thebe.name = "Thebe";
     static CelestialType pasiphae = CelestialType(57800000,   300,       23119300000000, &jupiter);
+    pasiphae.name = "Pasiphae";
     static CelestialType carme    = CelestialType(46700000,   130,       22579900000000, &jupiter);
+    carme.name = "Carme";
     static CelestialType sinope   = CelestialType(35000000,   75,        24864100000000, &jupiter);
+    sinope.name = "Sinope";
     static CelestialType lysithea = CelestialType(42200000,   63,        11628300000000, &jupiter);
+    lysithea.name = "Lysithea";
     static CelestialType metis    = CelestialType(43000000,   36,        128852000000, &jupiter);
+    metis.name = "Metis";
     static CelestialType ananke   = CelestialType(29100000,   30,        21042500000000, &jupiter);
+    ananke.name = "Ananke";
     static CelestialType leda     = CelestialType(21500000,   6,         11196000000000, &jupiter);
+    leda.name = "Leda";
     static CelestialType adrastea = CelestialType(16400000,   2,         129000000000, &jupiter);
+    adrastea.name = "Adrastea";
 
     static CelestialType saturn = CelestialType(58232000000, 568340000000, 1433530000000000, &sol.root);
     saturn.color = QColor(198,160,110);
