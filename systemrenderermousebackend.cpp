@@ -89,7 +89,7 @@ void SystemRenderer::wheelEvent(QWheelEvent* event)
     // TODO: maybe this is needless
     if (event->buttons() == 0)
     {
-        // angle delta in eights of degree, convert to degrees then divide by 15
+        // angle delta in eighths of degree, convert to degrees then divide by 15
         // TODO: most mice are supposed to work in 15 degree increments, so this should account for single scroll events, come back here if that is ever an issue
         int scroll = (event->angleDelta().y() >> 3)/15;
 

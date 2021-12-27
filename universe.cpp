@@ -83,6 +83,7 @@ void universe_init(void)
     adrastea.name = "Adrastea";
 
     static CelestialType saturn = CelestialType(58232000000, 568340000000, 1433530000000000, &sol.root);
+    saturn.name = "Saturn";
     saturn.color = QColor(198,160,110);
     static CelestialType titan      = CelestialType(2574730000, 134520000, 1221930000000, &saturn);
     static CelestialType rhea       = CelestialType(763800000,  2306518,   527108000000, &saturn);
@@ -111,6 +112,7 @@ void universe_init(void)
     static CelestialType ijiraq     = CelestialType(8500000,    1,         11348500000000, &saturn);
 
     static CelestialType uranus = CelestialType(25559000000, 86810000000, 2870972000000000, &sol.root);
+    uranus.name = "Uranus";
     uranus.color = QColor(141,161,170);
     static CelestialType titania   = CelestialType(788400000, 3400000, 435910000000, &uranus);
     static CelestialType oberon    = CelestialType(776400000, 3070000, 583520000000, &uranus);
@@ -141,6 +143,7 @@ void universe_init(void)
     static CelestialType cupid     = CelestialType(9000000,   4,       74800000000, &uranus);
 
     static CelestialType neptune = CelestialType(24622000000, 102413000000, 4500000000000000, &sol.root);
+    neptune.name = "Neptune";
     neptune.color = QColor(98,122,169);
     // TODO: retrograde orbits
     static CelestialType triton    = CelestialType(1352600000, 21390000, 354759000000, &neptune); //also mass order
@@ -160,6 +163,7 @@ void universe_init(void)
 
     //TODO: pluto is actually significantly barycentric with charon
     static CelestialType pluto = CelestialType(1188300000, 13030000, 5906380000000000, &sol.root);
+    pluto.name = "Pluto";
     static CelestialType charon = CelestialType(606000000, 1587000, 17536000000, &pluto); // pluto moons by mass (because eh)
     static CelestialType nix = CelestialType(45000000, 50, 48694000000, &pluto);
     static CelestialType hydra = CelestialType(45000000, 50, 64738000000, &pluto);

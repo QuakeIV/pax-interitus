@@ -4,6 +4,7 @@
 #include <QApplication>
 #include "solarsystemtype.h"
 #include <QMenu>
+#include "planetdialog.h"
 
 extern QApplication *qapp;
 
@@ -144,7 +145,7 @@ void SystemRenderer::render_scale()
     static const QPointF scale_text = QPointF(20,28);
     static const QPointF scale_to   = QPointF(120,30);
     static const QString si_scale[] = {"m", "", "k","M","G","T"};
-    double dist = (100l << currentZoom); //assuming 100px width for now, this needs to stay in sync with the above
+    double dist = (100ul << currentZoom); //assuming 100px width for now, this needs to stay in sync with the above
     int i;
     for (i = 0; i < (sizeof(si_scale)/sizeof(si_scale[0]) - 1) && dist > 10000.0; i++)
         dist /= 1000;
@@ -250,7 +251,7 @@ void SystemRenderer::singleClick(QPoint location)
 
 void SystemRenderer::rightClick(QPoint location)
 {
-    // TODO: track current selected solar system
+    // TODO: track current selected solar system instead of hardcoding sol
     QList<CelestialType*> cels;
     foreach (CelestialType* c, sol.celestials)
     {
@@ -270,11 +271,12 @@ void SystemRenderer::rightClick(QPoint location)
             cels.append(c);
     }
 
-    // TODO: track current selected solar system
+    // TODO: track current selected solar system instead of hardcoding sol
     QList<FleetType*> fleets;
     foreach (FleetType *f, sol.fleets)
     {
         //TODO: would be nice to pre-compute fleet screen position every frame
+        // can track screen corners in fixedv2d form and then calculate which things are displayed, and only update those coords? maybe needless complexity
         QPointF l = position_to_screen_coordinates(f->trajectory.position);
 
         float x = l.x() - location.x();
@@ -286,8 +288,7 @@ void SystemRenderer::rightClick(QPoint location)
             fleets.append(f);
     }
 
-    // TODO: verify if this actually gets garbage collected, the reference counting is dubious since we set 'parent'
-    // TODO: maybe just find a better way to inherit parent style and then dont set parent
+    // TODO: mess with scrolling to make it work better
     QMenu *m = new QMenu("derp", this);
     m->setAttribute(Qt::WA_DeleteOnClose); //this was tested with the below code to garbage collect the menu
 //    connect(m, &QMenu::destroyed,
@@ -302,6 +303,15 @@ void SystemRenderer::rightClick(QPoint location)
             this->offset.y = 0;
             this->focus = &c->trajectory;
         });
+
+//        submenu->addAction("Info",  [this, c]()
+//        {
+//            PlanetDialog *d = new PlanetDialog(this);
+//            d->setAttribute(Qt::WA_DeleteOnClose); //TODO: unsure if this does anything here
+//            d->exec();
+//            connect(d, &PlanetDialog::destroyed,
+//                    this, [d]() { qDebug() << "deleted" << (qintptr)d; });
+//        });
     }
 
     if (cels.length() && fleets.length())
@@ -341,7 +351,7 @@ void SystemRenderer::scrollUp(void)
 
 void SystemRenderer::scrollDown(void)
 {
-    if (currentZoom < 63)
+    if (currentZoom < 60) //63) //just peg at 60 for now rather than some more theoretical limit
         currentZoom++;
 }
 

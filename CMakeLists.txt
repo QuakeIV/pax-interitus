@@ -26,6 +26,7 @@ set(PROJECT_SOURCES
         orbittype.h orbittype.cpp
         fleettype.h fleettype.cpp
         fixedv2d.h
+        celestialwindow.h celestialwindow.cpp celestialwindow.ui
 )
 
 
