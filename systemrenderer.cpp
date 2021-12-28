@@ -4,7 +4,7 @@
 #include <QApplication>
 #include "solarsystemtype.h"
 #include <QMenu>
-#include "planetdialog.h"
+#include "celestialwindow.h"
 
 extern QApplication *qapp;
 
@@ -304,14 +304,19 @@ void SystemRenderer::rightClick(QPoint location)
             this->focus = &c->trajectory;
         });
 
-//        submenu->addAction("Info",  [this, c]()
-//        {
-//            PlanetDialog *d = new PlanetDialog(this);
-//            d->setAttribute(Qt::WA_DeleteOnClose); //TODO: unsure if this does anything here
+        submenu->addAction("Info",  [this, c]()
+        {
+            CelestialWindow *w = new CelestialWindow(this);
+            w->setAttribute(Qt::WA_DeleteOnClose); //TODO: unsure if this does anything here
+//            QPoint p = mapToGlobal(this->pos());
+//            w->setGeometry(p.x()+20,p.y()+20,w->width(), w->height());
+            //w->move(20,20);
+            w->move(qapp->activeWindow()->mapToGlobal(QPoint(40,20)));
+            w->show();
 //            d->exec();
 //            connect(d, &PlanetDialog::destroyed,
 //                    this, [d]() { qDebug() << "deleted" << (qintptr)d; });
-//        });
+        });
     }
 
     if (cels.length() && fleets.length())

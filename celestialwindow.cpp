@@ -2,7 +2,7 @@
 #include "ui_celestialwindow.h"
 
 CelestialWindow::CelestialWindow(QWidget *parent) :
-    QWidget(parent),
+    QMainWindow(parent),
     ui(new Ui::CelestialWindow)
 {
     ui->setupUi(this);

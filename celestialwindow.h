@@ -1,13 +1,13 @@
 #ifndef CELESTIALWINDOW_H
 #define CELESTIALWINDOW_H
 
-#include <QWidget>
+#include <QMainWindow>
 
 namespace Ui {
 class CelestialWindow;
 }
 
-class CelestialWindow : public QWidget
+class CelestialWindow : public QMainWindow
 {
     Q_OBJECT
 
