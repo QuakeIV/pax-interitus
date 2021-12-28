@@ -25,6 +25,9 @@ public:
 public slots:
     void refresh(void);
 
+private slots:
+    void on_copytextview_clicked();
+
 private:
     Ui::CelestialWindow *ui;
 };

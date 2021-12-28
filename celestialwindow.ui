@@ -14,17 +14,17 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="copytextview">
     <property name="geometry">
      <rect>
-      <x>200</x>
-      <y>200</y>
+      <x>210</x>
+      <y>440</y>
       <width>80</width>
       <height>24</height>
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>copy</string>
     </property>
    </widget>
    <widget class="QPlainTextEdit" name="textview">
