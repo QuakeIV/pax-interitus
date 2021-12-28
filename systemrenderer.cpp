@@ -306,16 +306,12 @@ void SystemRenderer::rightClick(QPoint location)
 
         submenu->addAction("Info",  [this, c]()
         {
-            CelestialWindow *w = new CelestialWindow(this);
-            w->setAttribute(Qt::WA_DeleteOnClose); //TODO: unsure if this does anything here
-//            QPoint p = mapToGlobal(this->pos());
-//            w->setGeometry(p.x()+20,p.y()+20,w->width(), w->height());
-            //w->move(20,20);
+            CelestialWindow *w = new CelestialWindow(c,this);
+            w->setAttribute(Qt::WA_DeleteOnClose);
             w->move(qapp->activeWindow()->mapToGlobal(QPoint(40,20)));
             w->show();
-//            d->exec();
-//            connect(d, &PlanetDialog::destroyed,
-//                    this, [d]() { qDebug() << "deleted" << (qintptr)d; });
+//            connect(w, &CelestialWindow::destroyed,
+//                    this, [w]() { qDebug() << "deleted" << (qintptr)w; });
         });
     }
 
