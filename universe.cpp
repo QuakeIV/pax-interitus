@@ -3,6 +3,7 @@
 #include "celestialtype.h"
 #include "fleettype.h"
 #include "solarsystemtype.h"
+#include "spacecraft.h"
 
 bool universe_paused = false;
 long universe_time_warp = 0; //this is a power applied to 2
@@ -173,6 +174,8 @@ void universe_init(void)
     static FleetType testfleet1 = FleetType(&earth, 400000000 + earth.radius);
     static FleetType testfleet2 = FleetType(&earth, 400000000 + earth.radius);
     static FleetType testfleet3 = FleetType(&earth, 400000000 + earth.radius);
+
+    static Spacecraft testcraft = Spacecraft();
 }
 
 // delta t in milliseconds

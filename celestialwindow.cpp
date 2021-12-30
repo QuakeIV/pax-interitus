@@ -18,6 +18,8 @@ CelestialWindow::CelestialWindow(CelestialType *c, QWidget *parent) :
     timer->start(50);
 
     text = this->findChild<QPlainTextEdit*>("textview");
+
+    setWindowTitle(celestial->name);
 }
 
 void CelestialWindow::refresh()

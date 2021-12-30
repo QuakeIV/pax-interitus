@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Freespace Aurora</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
