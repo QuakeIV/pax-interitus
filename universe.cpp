@@ -87,7 +87,9 @@ void universe_init(void)
     saturn.name = "Saturn";
     saturn.color = QColor(198,160,110);
     static CelestialType titan      = CelestialType(2574730000, 134520000, 1221930000000, &saturn);
+    titan.name = "Titan";
     static CelestialType rhea       = CelestialType(763800000,  2306518,   527108000000, &saturn);
+    rhea.name = "Rhea";
     static CelestialType iapetus    = CelestialType(734300000,  1805635,   3560820000000, &saturn);
     static CelestialType dione      = CelestialType(561400000,  1095452,   377396000000, &saturn);
     static CelestialType tethys     = CelestialType(531100000,  617449,    294619000000, &saturn);

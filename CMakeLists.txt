@@ -28,6 +28,7 @@ set(PROJECT_SOURCES
         fixedv2d.h
         celestialwindow.h celestialwindow.cpp celestialwindow.ui
         spacecraft.h spacecraft.cpp
+        utilities.cpp utilities.h
 )
 
 

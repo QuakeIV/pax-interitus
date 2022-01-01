@@ -5,6 +5,7 @@
 #include "solarsystemtype.h"
 #include <QMenu>
 #include "celestialwindow.h"
+#include "utilities.h"
 
 extern QApplication *qapp;
 
@@ -126,16 +127,10 @@ void SystemRenderer::render_yardstick(void)
     // draw the line
     painter.drawLine(singleclick_position, mousedrag_position);
 
+    //draw distance
     QPointF d = mousedrag_position - singleclick_position;
     double dist = (double)sqrt(d.x()*d.x() + d.y()*d.y()) * (double)(1l<<currentZoom);
-
-    //draw distance
-    static const QString si_scale[] = {"m", "", "k","M","G","T"};
-    int i;
-    for (i = 0; i < (sizeof(si_scale)/sizeof(si_scale[0]) - 1) && dist > 10000.0; i++)
-        dist /= 1000;
-
-    painter.drawText(mousedrag_position + QPointF(0,-2), QString("%1%2m").arg(QString::number(dist, 'f', 1), si_scale[i]));
+    painter.drawText(mousedrag_position + QPointF(0,-2), distance_to_str(dist));
 }
 
 void SystemRenderer::render_scale()
@@ -144,15 +139,11 @@ void SystemRenderer::render_scale()
     static const QPointF scale_from = QPointF(20,30);
     static const QPointF scale_text = QPointF(20,28);
     static const QPointF scale_to   = QPointF(120,30);
-    static const QString si_scale[] = {"m", "", "k","M","G","T"};
     double dist = (100ul << currentZoom); //assuming 100px width for now, this needs to stay in sync with the above
-    int i;
-    for (i = 0; i < (sizeof(si_scale)/sizeof(si_scale[0]) - 1) && dist > 10000.0; i++)
-        dist /= 1000;
 
     painter.setPen(orbit);
     painter.drawLine(scale_from, scale_to);
-    painter.drawText(scale_text, QString("%1%2m").arg(QString::number(dist, 'f', 1), si_scale[i]));
+    painter.drawText(scale_text, distance_to_str(dist));
 }
 
 QPointF SystemRenderer::position_to_screen_coordinates(FixedV2D pos)

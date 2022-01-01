@@ -3,6 +3,7 @@
 #include <QTimer>
 #include "celestialtype.h"
 #include <QClipboard>
+#include "utilities.h"
 
 CelestialWindow::CelestialWindow(CelestialType *c, QWidget *parent) :
     QMainWindow(parent),
@@ -29,8 +30,8 @@ void CelestialWindow::refresh()
     s += "x: " + QString::number(celestial->trajectory.position.x) + "\n";
     s += "y: " + QString::number(celestial->trajectory.position.y) + "\n";
     s += "mass: " + QString::number(celestial->mass) + "\n";
-    s += "radius: " + QString::number(celestial->radius) + "\n";
-    s += "orbital radius " + QString::number(celestial->trajectory.orbital_radius);
+    s += "radius: " + distance_to_str(celestial->radius) + "\n";
+    s += "orbital radius: " + distance_to_str(celestial->trajectory.orbital_radius);
     text->document()->setPlainText(s);
 }
 
