@@ -100,3 +100,12 @@ void MainWindow::update_warp_display()
     else if (universe_time_warp < 30)
         display_warp->setText(QString::number((1<<(universe_time_warp-20))) + "Mx");
 }
+
+
+void MainWindow::newsystemview()
+{
+    //TODO: maybe make these things track to viewed system name when they arent the parent window (or maybe even when they are?)
+    MainWindow *w = new MainWindow(this);
+    w->setWindowTitle("System View");
+    w->show();
+}

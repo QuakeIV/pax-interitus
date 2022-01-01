@@ -18,6 +18,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public slots:
+    void newsystemview(void);
+
 private slots:
     void on_systemlist_doubleClicked(const QModelIndex &index);
 

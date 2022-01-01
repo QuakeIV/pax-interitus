@@ -470,7 +470,19 @@ QTabBar::tab:!selected {
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuNew">
+    <property name="title">
+     <string>New</string>
+    </property>
+    <addaction name="actionSystemView"/>
+   </widget>
+   <addaction name="menuNew"/>
   </widget>
+  <action name="actionSystemView">
+   <property name="text">
+    <string>System View</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -480,5 +492,25 @@ QTabBar::tab:!selected {
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionSystemView</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>newsystemview()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>newsystemview()</slot>
+ </slots>
 </ui>
