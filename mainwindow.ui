@@ -40,7 +40,7 @@ QPushButton {
   border-style: solid;
   border-radius: 0px;
   border-color: rgb(46, 53, 71);
-  alternate-background-color: blue;
+/*  alternate-background-color: blue;*/
 }
 QPushButton:pressed {
   background-color: rgb(26, 30, 38);
@@ -65,6 +65,36 @@ QPlainTextEdit {
   border-style: solid;
   border-radius: 0px;
   border-color: rgb(26,29,40);
+}
+QTabWidget::pane {
+    position: absolute;
+    top: -1px; /* allow the tabs to overlap over the top border and join with the window below*/
+}
+QTabWidget::tab-bar {
+  left: 5px; /* move to the right by 5px */
+}
+QTabBar {
+  background: rgb(38, 44, 59); /* captures the margin above unselected tabs */
+  /* the rest of the background color of the tab bar is handled by the containing widget on an individual basis*/
+}
+QTabBar::tab {
+  background: rgb(72, 98, 145);
+  border: 1px solid #9B9B9B;
+  min-width: 8ex;
+  padding: 2px;
+  margin-right: -1px; /* overlap on borders so they arent doubled up */
+}
+QTabBar::tab:last {
+  margin-right: 0px; /* prevent rightmost border from being chopped off */
+}
+QTabBar::tab:selected {
+  background: rgb(44, 86, 145);
+  border-color: rgb(105, 156, 232);
+  border-bottom-color: rgb(44, 86, 145);
+}
+QTabBar::tab:!selected {
+  margin-top: 3px; /* make non-selected tabs look smaller */
+  /*border-bottom: 0px;*/
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -437,7 +467,7 @@ QPlainTextEdit {
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
