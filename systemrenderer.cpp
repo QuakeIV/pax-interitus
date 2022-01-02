@@ -337,7 +337,8 @@ void SystemRenderer::clickDrag(QPoint delta)
 
 void SystemRenderer::scrollUp(void)
 {
-    if (currentZoom > 0)
+    // TODO: actual min is 0, tweaked to 10 for now so you arent zooming in to mm when ships dont draw which is weird looking
+    if (currentZoom > 10)
         currentZoom--;
 }
 

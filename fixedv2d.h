@@ -1,6 +1,16 @@
 #ifndef FIXEDV2D_H
 #define FIXEDV2D_H
 
+// TODO: make sure math on the limit is right in light of signedness and so forth
+// NOTE: 6521908912666391105 should be considered max x or y coordinate in any direction from 0, as it is
+// the max value at which the length of the diagonal of is still expressible as a 64 bit signed integer
+// this is about 70% of the otherwise expected range
+//
+// these limits could actually be expressed as a sphere its just not obvious how that aught to be
+// calculated or enforced
+
+#include <QDebug>
+
 class FixedV2D
 {
 public:
@@ -26,6 +36,25 @@ public:
     {
         x -= v.x;
         y -= v.y;
+    }
+
+    // TODO: might be possible to set high to max int64 since thats meant to be the max possible diagonal distance, which would halve iterations to converge
+    inline long distance(FixedV2D other)
+    {
+        __int128_t dx = this->x - other.x;
+        __int128_t dy = this->y - other.y;
+        __uint128_t r2 = dx*dx + dy*dy;
+        __uint128_t low = 0;
+        __uint128_t high = __int128_t(-1L);
+        while (high - low > (__uint128_t)1)
+        {
+            __uint128_t mid = low + ((high - low) >> 1);
+            if (mid * mid < r2)
+                low = mid;
+            else
+                high = mid;
+        }
+        return low;
     }
 
     long x = 0;

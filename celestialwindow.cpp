@@ -32,6 +32,9 @@ void CelestialWindow::refresh()
     s += "mass: " + QString::number(celestial->mass) + "\n";
     s += "radius: " + distance_to_str(celestial->radius) + "\n";
     s += "orbital radius: " + distance_to_str(celestial->trajectory.orbital_radius);
+    // test v2d shittery
+    if (celestial->trajectory.parent)
+        s += "\ndist from primary: " + distance_to_str(celestial->trajectory.position.distance(celestial->trajectory.parent->trajectory.position));
     text->document()->setPlainText(s);
 }
 
