@@ -87,7 +87,7 @@ void SystemRenderer::render_fleets(void)
         painter.drawText(pos + offset, fleet->name);
 
         // find colocated fleets
-        long i = list.length() - 1;
+        int64_t i = list.length() - 1;
         while (i >= 0)
         {
             // TODO: would be nice to pre-calculate fleet screen coordinates for the frame
@@ -151,11 +151,11 @@ QPointF SystemRenderer::position_to_screen_coordinates(FixedV2D pos)
     FixedV2D a = pos - (offset + focus->position);
 
     // TODO: this is capturing remainders so that the anti aliased lines drawn look much nicer, look into optimizing (mainly the float division sucks)
-    long mask = (1l << currentZoom) - 1l;
+    int64_t mask = (1l << currentZoom) - 1l;
     float factor = 1l<<currentZoom;
-    long rem_xi = a.x&mask;
+    int64_t rem_xi = a.x&mask;
     float rem_xf = (float)rem_xi / factor;
-    long rem_yi = a.y&mask;
+    int64_t rem_yi = a.y&mask;
     float rem_yf = (float)rem_yi / factor;
 
     a.x >>= currentZoom;
@@ -171,7 +171,7 @@ void SystemRenderer::render_planet_recurse(CelestialType *cel)
     if (cel->trajectory.parent && (cel->trajectory.orbital_radius >> currentZoom) >= 10)
     {
         painter.setPen(orbit);
-        long pts = cel->trajectory.racetrack_points;
+        int64_t pts = cel->trajectory.racetrack_points;
         FixedV2D parent_pos = cel->trajectory.parent->trajectory.position;
         QPointF start = position_to_screen_coordinates(cel->trajectory.rel_racetrack[pts-1] + parent_pos);
 
@@ -330,8 +330,8 @@ void SystemRenderer::doubleClick(QPoint location)
 void SystemRenderer::clickDrag(QPoint delta)
 {
     FixedV2D d;
-    d.x = ((long)delta.x()) << currentZoom;
-    d.y = ((long)delta.y()) << currentZoom;
+    d.x = ((int64_t)delta.x()) << currentZoom;
+    d.y = ((int64_t)delta.y()) << currentZoom;
     offset -= d;
 }
 

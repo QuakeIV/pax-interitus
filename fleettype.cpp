@@ -2,9 +2,9 @@
 #include "celestialtype.h"
 #include "solarsystemtype.h"
 
-unsigned long FleetType::fleet_id = 0;
+uint64_t FleetType::fleet_id = 0;
 
-FleetType::FleetType(CelestialType *p, unsigned long r):
+FleetType::FleetType(CelestialType *p, int64_t r):
     trajectory(p, r)
 {
     color = QColor(Qt::yellow);

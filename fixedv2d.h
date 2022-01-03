@@ -20,7 +20,7 @@ public:
         y = 0;
     }
 
-    inline FixedV2D(long xx, long yy)
+    inline FixedV2D(int64_t xx, int64_t yy)
     {
         x = xx;
         y = yy;
@@ -39,13 +39,13 @@ public:
     }
 
     // TODO: might be possible to set high to max int64 since thats meant to be the max possible diagonal distance, which would halve iterations to converge
-    inline long distance(FixedV2D other)
+    inline int64_t distance(FixedV2D other)
     {
         __int128_t dx = this->x - other.x;
         __int128_t dy = this->y - other.y;
         __uint128_t r2 = dx*dx + dy*dy;
         __uint128_t low = 0;
-        __uint128_t high = __int128_t(-1L);
+        __uint128_t high = LLONG_MAX; //__int128_t(-1L); // given assumed coordinate limits, can start with a lower max
         while (high - low > (__uint128_t)1)
         {
             __uint128_t mid = low + ((high - low) >> 1);
@@ -57,8 +57,27 @@ public:
         return low;
     }
 
-    long x = 0;
-    long y = 0;
+    inline int64_t length(void)
+    {
+        __uint128_t r2 = x*x + y*y;
+        __uint128_t low = 0;
+        __uint128_t high = LLONG_MAX; //__int128_t(-1L); // given assumed coordinate limits, can start with a lower max
+        int iterations = 0;
+        while (high - low > (__uint128_t)1)
+        {
+            __uint128_t mid = low + ((high - low) >> 1);
+            if (mid * mid < r2)
+                low = mid;
+            else
+                high = mid;
+            iterations++;
+        }
+        qDebug() << iterations;
+        return low;
+    }
+
+    int64_t x = 0;
+    int64_t y = 0;
 };
 
 inline FixedV2D operator+(const FixedV2D &v1, const FixedV2D &v2)

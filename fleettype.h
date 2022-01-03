@@ -13,7 +13,7 @@ class FleetType
 public:
     OrbitType trajectory;
 
-    static unsigned long fleet_id; //currently just a counter used to initialize 'name'
+    static uint64_t fleet_id; //currently just a counter used to initialize 'name'
 
     QColor color;
 
@@ -21,7 +21,7 @@ public:
 
     QList<Spacecraft*> ships;
 
-    FleetType(CelestialType *p, unsigned long r);
+    FleetType(CelestialType *p, int64_t r);
     ~FleetType();
 };
 

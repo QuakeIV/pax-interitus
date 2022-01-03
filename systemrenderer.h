@@ -63,7 +63,7 @@ private:
     // for handling click drag
     FixedV2D offset; //this offset is relative to the 'focus' point
     //TODO: bracket zooming
-    long currentZoom = 40; //zoom factor (exponent of 2)
+    int64_t currentZoom = 40; //zoom factor (exponent of 2)
     QPoint mousedrag_position; // mouse backend crap
     QPoint singleclick_position;
     QPoint center; // center point of screen in pixels

@@ -6,8 +6,8 @@
 #include "spacecraft.h"
 
 bool universe_paused = false;
-long universe_time_warp = 0; //this is a power applied to 2
-long universe_time;
+int64_t universe_time_warp = 0; //this is a power applied to 2
+int64_t universe_time;
 
 //TODO: it might be better to only update the transforms we are currently looking at (cull by current system if nothing else)
 // at that point the transforms can just be handed whatever the current universe time is when they come into view
@@ -181,17 +181,17 @@ void universe_init(void)
 }
 
 // delta t in milliseconds
-void universe_update(long delta_t)
+void universe_update(int64_t delta_t)
 {
     if (universe_paused)
         return;
 
-    static long remainder_milliseconds = 0;
+    static int64_t remainder_milliseconds = 0;
 
     if (universe_time_warp < 0)
     {
         delta_t += remainder_milliseconds;
-        long mask = (1 << -1*universe_time_warp) - 1;
+        int64_t mask = (1 << -1*universe_time_warp) - 1;
         remainder_milliseconds = delta_t & mask;
         universe_time += (delta_t >> -1*universe_time_warp);
     }

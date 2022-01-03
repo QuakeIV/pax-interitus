@@ -10,7 +10,7 @@ OrbitType::OrbitType()
 extern QRandomGenerator qrand;
 
 //TODO: non circular orbits (racetrack should support this, we just need to be able to take additional parameters)
-OrbitType::OrbitType(CelestialType *p, unsigned long r)
+OrbitType::OrbitType(CelestialType *p, int64_t r)
 {
     parent = p;
     orbital_radius = r;
@@ -33,20 +33,20 @@ OrbitType::OrbitType(CelestialType *p, unsigned long r)
         const double G = 66743000; //gravitational constant, in cubic mm per exagram millisecond squared
         //did some algebra, assuming newtonian gravity, newtonian motion this should yield orbital period
         double period_d = (radius_d*PI*2.0*sqrt(((radius_d) / (p->mass * G))));
-        orbital_period = (long)period_d;
+        orbital_period = (int64_t)period_d;
         //worst case roundoff error here is I think racetrack_points - 1 milliseconds (this is the true reference for orbital period in terms of calculating position)
         racetrack_delta_time = orbital_period/racetrack_points;
         //start the planet at a random spot in its orbit
-        orbit_clock_offset = (long)(qrand.bounded(period_d)); //TODO: make this not random by default?
+        orbit_clock_offset = (int64_t)(qrand.bounded(period_d)); //TODO: make this not random by default?
     }
 }
 
-static long muldiv(long x, long mul, long div)
+static int64_t muldiv(int64_t x, int64_t mul, int64_t div)
 {
     __int128_t trueval = x;
     trueval*= mul;
     trueval/= div;
-    return (long) trueval;
+    return (int64_t) trueval;
 }
 
 void OrbitType::UpdatePosition(void)
@@ -54,7 +54,7 @@ void OrbitType::UpdatePosition(void)
     if (parent != NULL)
     {
         //TODO: avoid modulo by issuing updates to each planets time concept
-        long orbit_clock = (universe_time + orbit_clock_offset) % orbital_period;
+        int64_t orbit_clock = (universe_time + orbit_clock_offset) % orbital_period;
         int index  = (int)(orbit_clock/racetrack_delta_time);
         int next   = (index + 1) % racetrack_points; //wraps back around to 0 if we are about to overflow
         FixedV2D d = rel_racetrack[next] - rel_racetrack[index];

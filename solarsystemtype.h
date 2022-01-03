@@ -16,7 +16,7 @@ public:
     QList<CelestialType*> celestials;
 
     // parameters for root celestial object
-    SolarSystemType(unsigned long r, unsigned long m);
+    SolarSystemType(int64_t r, uint64_t m);
 };
 
 #endif // SOLARSYSTEMTYPE_H
