@@ -9,6 +9,7 @@
 QString distance_to_str(double distance);
 
 // only takes positive numbers (i cant be bothered to represent imaginary numbers)
+// TODO: newtons method?
 inline uint64_t int_sqrt(__uint128_t i)
 {
     __uint128_t low = 0;

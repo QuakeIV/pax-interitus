@@ -4,6 +4,7 @@
 #include "fleettype.h"
 #include "solarsystemtype.h"
 #include "spacecraft.h"
+#include "beamtype.h"
 
 bool universe_paused = false;
 int64_t universe_time_warp = 0; //this is a power applied to 2
@@ -186,6 +187,9 @@ void universe_init(void)
     static FleetType testfleet3 = FleetType(&earth, 400000000 + earth.radius);
 
     static Spacecraft testcraft = Spacecraft();
+
+    static BeamType test_beam = BeamType(FixedV2D(3000,525), FixedV2D(2000,233));
+    qDebug() << test_beam.distance(FixedV2D(300,222));
 }
 
 // delta t in milliseconds

@@ -2,6 +2,7 @@
 #define BEAMTYPE_H
 
 #include "fixedv2d.h"
+#include "utilities.h"
 
 // laser beam as such
 // for now beams are assumed to be truly instantaneous (as are sensors pretty much)
@@ -11,16 +12,24 @@ class BeamType
 public:
     inline BeamType(FixedV2D o, FixedV2D a)
     {
-        origin = o;
-        aimpoint = a;
+        origin = o; //point at which shot was fired
+        aimpoint = a; //point of aim
+        aim_length2 = (o - a).length2(); //length of aim arc, which can be pre-computed
+        aim_length = int_sqrt(aim_length2);
     }
 
     // distance from line to specified point
+    // TODO: may be cheaper to just stick with squared distance, then compare that with squared radius of target
     inline int64_t distance(FixedV2D p)
     {
-        // TODO: algorithm is not great in terms of overflows
-//        __uint128_t d2 =
-        return 0;
+        __uint128_t origin_target2 = p.distance2(origin);
+        __uint128_t aim_target2 = p.distance2(aimpoint);
+        // TODO: algorithm is not great in terms of managing overflows
+        // also takes some effeciency hits by dividing more than needed to try to lessen the overflow problem somewhat
+        // TODO: there is also an unfortuante degree of roundoff, this just typically amounts to a few millimeters so meh
+        __uint128_t intermediate = ((origin_target2 / aim_length) >> 1) + (aim_length >> 1) - ((aim_target2 / aim_length) >> 1);
+        __uint128_t d2 = origin_target2 - intermediate * intermediate;
+        return int_sqrt(d2);
     }
 
 private:
