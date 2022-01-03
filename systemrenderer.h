@@ -23,6 +23,9 @@ public slots:
 public:
     SystemRenderer(QWidget *parent);
 
+    void set_focus_system(SolarSystemType *s);
+    SolarSystemType * get_focus_system(void);
+
 protected:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override; //mouse backend crap
@@ -70,6 +73,7 @@ private:
 
     // you can focus on transforms and follow them
     Transform *focus;
+    SolarSystemType *focus_system;
 
     // render
     QPainter painter;

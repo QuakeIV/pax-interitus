@@ -30,7 +30,7 @@ void SystemRenderer::mousePressEvent(QMouseEvent *event)
             clickTimer.start(qapp->doubleClickInterval()/2); // going with half of doubleclick interval to fire singleclick, and counting from mousedown
     }
 
-    if (event->buttons() == Qt::RightButton)
+    if (event->buttons() & Qt::RightButton)
     {
         rightClick(eventpos);
     }

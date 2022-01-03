@@ -20,6 +20,7 @@ CelestialType::CelestialType(int64_t r, uint64_t m, int64_t distance, CelestialT
 
     color = QColor(180,180,180); //assume gray dusty moon until overridden
     trajectory = OrbitType(parent, distance);
+
     name = parent->name + " " + QString::number(parent->children.length());
     parent->children.append(this);
     system->celestials.append(this);

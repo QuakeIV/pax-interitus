@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include "universe.h"
+#include "systemwindow.h"
+
+extern MainWindow *mainwindow;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -12,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     pause_button = this->findChild<QPushButton*>("pausebutton");
     display_warp = this->findChild<QPushButton*>("displaywarp");
 
+    //TODO: seriously consider moving the timer into the systemrenderer itself
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, openGL, &SystemRenderer::animate);
     // TODO: fiddle with frame rate
@@ -105,7 +109,8 @@ void MainWindow::update_warp_display()
 void MainWindow::newsystemview()
 {
     //TODO: maybe make these things track to viewed system name when they arent the parent window (or maybe even when they are?)
-    MainWindow *w = new MainWindow(this);
+    //MainWindow *w = new MainWindow(this); // NOTE: it is possible to spawn multiple main windows, but im tending away from that at this point
+    SystemWindow *w = new SystemWindow(openGL->get_focus_system(), mainwindow);
     w->setWindowTitle("System View");
     w->show();
 }

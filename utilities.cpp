@@ -3,6 +3,8 @@
 
 QString distance_to_str(double distance)
 {
+    if (distance < 0)
+        distance *= -1;
     // TODO: make this selectable?
     // metric mode
     //static const QString si_scale[] = {"m", "", "k","M","G","T"};

@@ -10,6 +10,7 @@
 // calculated or enforced
 
 #include <QDebug>
+#include "utilities.h"
 
 class FixedV2D
 {
@@ -38,42 +39,28 @@ public:
         y -= v.y;
     }
 
-    // TODO: might be possible to set high to max int64 since thats meant to be the max possible diagonal distance, which would halve iterations to converge
     inline int64_t distance(FixedV2D other)
+    {
+        return int_sqrt(distance2(other));
+    }
+
+    // squared distance
+    inline __int128_t distance2(FixedV2D other)
     {
         __int128_t dx = this->x - other.x;
         __int128_t dy = this->y - other.y;
-        __uint128_t r2 = dx*dx + dy*dy;
-        __uint128_t low = 0;
-        __uint128_t high = LLONG_MAX; //__int128_t(-1L); // given assumed coordinate limits, can start with a lower max
-        while (high - low > (__uint128_t)1)
-        {
-            __uint128_t mid = low + ((high - low) >> 1);
-            if (mid * mid < r2)
-                low = mid;
-            else
-                high = mid;
-        }
-        return low;
+        return dx*dx + dy*dy;
     }
 
     inline int64_t length(void)
     {
-        __uint128_t r2 = x*x + y*y;
-        __uint128_t low = 0;
-        __uint128_t high = LLONG_MAX; //__int128_t(-1L); // given assumed coordinate limits, can start with a lower max
-        int iterations = 0;
-        while (high - low > (__uint128_t)1)
-        {
-            __uint128_t mid = low + ((high - low) >> 1);
-            if (mid * mid < r2)
-                low = mid;
-            else
-                high = mid;
-            iterations++;
-        }
-        qDebug() << iterations;
-        return low;
+        return int_sqrt(length2());
+    }
+
+    // squared length
+    inline __int128_t length2(void)
+    {
+        return __int128_t(x) * __int128_t(x) + __int128_t(y) * __int128_t(y);
     }
 
     int64_t x = 0;

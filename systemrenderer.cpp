@@ -6,8 +6,10 @@
 #include <QMenu>
 #include "celestialwindow.h"
 #include "utilities.h"
+#include "mainwindow.h"
 
 extern QApplication *qapp;
+extern MainWindow *mainwindow;
 
 SystemRenderer::SystemRenderer(QWidget *parent) :
   QOpenGLWidget(parent)
@@ -23,9 +25,26 @@ SystemRenderer::SystemRenderer(QWidget *parent) :
     //test = QPen(Qt::white, 12, Qt::DashDotLine, Qt::RoundCap);
 
     // TODO: this is temporary, this is not long-term the suitable place to set initial focus i think
-    focus = &sol.root.trajectory;
+    focus_system = systems[0]; //TODO: default to zeroeth system for now (later track home system?)
+    focus = &focus_system->root.trajectory;
 
     orbit = QPen(Qt::green);//, 1, Qt::SolidLine, Qt::SquareCap);
+}
+
+void SystemRenderer::set_focus_system(SolarSystemType *s)
+{
+    if (s != focus_system)
+    {
+        focus_system = s;
+        focus = &s->root.trajectory;
+        currentZoom = 40; //default zoom
+        //TODO: factor default zoom so it isnt repeated here and in the header
+    }
+}
+
+SolarSystemType * SystemRenderer::get_focus_system(void)
+{
+    return focus_system;
 }
 
 void SystemRenderer::paintEvent(QPaintEvent *event)
@@ -44,7 +63,7 @@ void SystemRenderer::paintEvent(QPaintEvent *event)
     glClear(GL_COLOR_BUFFER_BIT);
     painter.endNativePainting();
 
-    render_planet_recurse(&sol.root);
+    render_planet_recurse(&focus_system->root);
 
     render_scale();
 
@@ -59,7 +78,7 @@ void SystemRenderer::paintEvent(QPaintEvent *event)
 void SystemRenderer::render_fleets(void)
 {
     // copy the list
-    QList<FleetType*> list = sol.fleets;
+    QList<FleetType*> list = focus_system->fleets;
 
     // sort by y axis to promote displaying text in the right order
     // this did not help readability at all and seemed to impact it negatively but may as well leave this here since i came back to it twice
@@ -214,8 +233,8 @@ void SystemRenderer::animate()
 
 void SystemRenderer::singleClick(QPoint location)
 {
-    //TODO: optimally this would grab the current focused solar system rather than just going to the 'sol' variable, this is a placeholder design
-    CelestialType *cel = planet_click_recurse(&sol.root, QPointF(location));
+    // TODO: might be nice to keep a root celestial pointer on hand to reduce derefences? possibly over factoring
+    CelestialType *cel = planet_click_recurse(&focus_system->root, QPointF(location));
     if (cel)
     {
         focus = &cel->trajectory;
@@ -237,14 +256,14 @@ void SystemRenderer::singleClick(QPoint location)
 
     // if the click misses, focus onto star and incorporate position of last focused object into offset
     offset += focus->position;
-    focus = &sol.root.trajectory;
+    focus = &focus_system->root.trajectory;
 }
 
 void SystemRenderer::rightClick(QPoint location)
 {
     // TODO: track current selected solar system instead of hardcoding sol
     QList<CelestialType*> cels;
-    foreach (CelestialType* c, sol.celestials)
+    foreach (CelestialType* c, focus_system->celestials)
     {
         //TODO: it would be nice to calculate display radii and coordinates at render time and then re-use them here, rather than re-calculating
         //TODO: this should be functionalized as its identical to other code
@@ -264,7 +283,7 @@ void SystemRenderer::rightClick(QPoint location)
 
     // TODO: track current selected solar system instead of hardcoding sol
     QList<FleetType*> fleets;
-    foreach (FleetType *f, sol.fleets)
+    foreach (FleetType *f, focus_system->fleets)
     {
         //TODO: would be nice to pre-compute fleet screen position every frame
         // can track screen corners in fixedv2d form and then calculate which things are displayed, and only update those coords? maybe needless complexity
@@ -297,7 +316,7 @@ void SystemRenderer::rightClick(QPoint location)
 
         submenu->addAction("Info",  [this, c]()
         {
-            CelestialWindow *w = new CelestialWindow(c,this);
+            CelestialWindow *w = new CelestialWindow(c,mainwindow); // all new windwos should root on mainwindow so they persist as one might expect
             w->setAttribute(Qt::WA_DeleteOnClose);
             w->move(qapp->activeWindow()->mapToGlobal(QPoint(40,20)));
             w->show();
@@ -351,7 +370,7 @@ void SystemRenderer::scrollDown(void)
 FleetType * SystemRenderer::fleet_click(QPointF p)
 {
     // TODO: track 'current solar system', check that things fleets instead
-    foreach (FleetType *fleet, sol.fleets)
+    foreach (FleetType *fleet, focus_system->fleets)
     {
         //TODO: would be nice to pre-compute fleet screen position every frame
         QPointF l = position_to_screen_coordinates(fleet->trajectory.position);

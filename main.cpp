@@ -6,7 +6,7 @@
 #include <QFile>
 
 QApplication *qapp;
-QRandomGenerator qrand; //TODO: figure out how to key this little shit off of the clock so its not procedural
+MainWindow *mainwindow;
 
 int main(int argc, char *argv[])
 {
@@ -15,6 +15,8 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     qapp = &a;
     MainWindow w;
+
+    mainwindow = &w;
 
     // le icon
     Q_INIT_RESOURCE(images);

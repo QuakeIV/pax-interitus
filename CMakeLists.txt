@@ -29,6 +29,8 @@ set(PROJECT_SOURCES
         celestialwindow.h celestialwindow.cpp celestialwindow.ui
         spacecraft.h spacecraft.cpp
         utilities.cpp utilities.h
+        beamtype.h
+        systemwindow.h systemwindow.cpp systemwindow.ui
 )
 
 

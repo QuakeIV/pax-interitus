@@ -12,10 +12,10 @@ class CelestialType;
 class OrbitType : public Transform
 {
 public:
-    int64_t orbital_period         = 0; //in milliseconds
-    int64_t orbit_clock_offset     = 0; //initial position, in milliseconds
-    int64_t orbital_radius         = 0; //radius in mm (this is currently only used for trajectory render culling)
-    CelestialType *parent        = NULL; //for now assume you can only really orbit a celestial TODO: improve?
+    int64_t orbital_period     = 0; //in milliseconds
+    int64_t orbit_clock_offset = 0; //initial position, in milliseconds
+    int64_t orbital_radius     = 0; //radius in mm (this is currently only used for trajectory render culling)
+    CelestialType *parent      = NULL; //for now assume you can only really orbit a celestial TODO: improve?
 
     OrbitType(CelestialType *p, int64_t r);
     OrbitType();

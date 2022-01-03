@@ -34,6 +34,11 @@ void CelestialWindow::refresh()
     s += "orbital radius: " + distance_to_str(celestial->trajectory.orbital_radius);
     // test v2d shittery
     s += "\ndist from primary: " + distance_to_str(celestial->trajectory.position.length());
+    if (celestial->trajectory.parent)
+    {
+        s += "\nrootfinder error: " + distance_to_str((celestial->trajectory.position - celestial->trajectory.parent->trajectory.position).length() - celestial->trajectory.orbital_radius);
+        s += "\nerror should go to 1 or 0 on the racetrack nodes";
+    }
     text->document()->setPlainText(s);
 }
 

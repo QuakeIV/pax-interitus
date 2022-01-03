@@ -7,6 +7,9 @@
 
 bool universe_paused = false;
 int64_t universe_time_warp = 0; //this is a power applied to 2
+// TODO: we may be obliged to go over into microseconds or something to get better definition on fast-moving objects
+// we have plenty of resolution left, at present we could model time out to +/-146 million years from t=0 (however admittedly it would be fun to have planet formation levels of time scale)
+// TODO: negative time is extremely not-functional
 int64_t universe_time;
 
 //TODO: it might be better to only update the transforms we are currently looking at (cull by current system if nothing else)
@@ -14,14 +17,16 @@ int64_t universe_time;
 // this will require complicated handling for things that have routes
 QList<Transform*> transforms;
 
-// for now hard code the solar system because to heck with it i tell you
-SolarSystemType sol = SolarSystemType(695700000000, 1988500000000000);
+// track all extant solar systems
+QList<SolarSystemType*> systems;
 
 void universe_init(void)
 {
     // for now hard code the solar system because to heck with it i tell you
+    static SolarSystemType sol = SolarSystemType(695700000000, 1988500000000000);
     sol.root.color = QColor(226, 223, 24); // nice sun color
     sol.root.name = "Sol";
+    sol.name = "Sol";
 
     static CelestialType mercury = CelestialType(2439700000, 330110000, 57909050000000, &sol.root);
     mercury.name = "Mercury";
@@ -91,8 +96,11 @@ void universe_init(void)
     static CelestialType rhea       = CelestialType(763800000,  2306518,   527108000000, &saturn);
     rhea.name = "Rhea";
     static CelestialType iapetus    = CelestialType(734300000,  1805635,   3560820000000, &saturn);
+    iapetus.name = "Iapetus";
     static CelestialType dione      = CelestialType(561400000,  1095452,   377396000000, &saturn);
+    dione.name = "Dione";
     static CelestialType tethys     = CelestialType(531100000,  617449,    294619000000, &saturn);
+    tethys.name = "Tethys";
     static CelestialType enceladus  = CelestialType(252100000,  108022,    237950000000, &saturn);
     static CelestialType mimas      = CelestialType(198200000,  37493,     185404000000, &saturn);
     static CelestialType phoebe     = CelestialType(106500000,  8292,      12905900000000, &saturn);

@@ -15,6 +15,9 @@ public:
     QList<FleetType*> fleets;
     QList<CelestialType*> celestials;
 
+    static uint64_t system_id; //currently just a counter used to initialize 'name'
+    QString name;
+
     // parameters for root celestial object
     SolarSystemType(int64_t r, uint64_t m);
 };

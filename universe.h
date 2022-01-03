@@ -13,7 +13,7 @@ extern int64_t universe_time_warp;
 const int64_t universe_min_warp = -10;
 const int64_t universe_max_warp =  24;
 extern QList<Transform*> transforms;
-extern SolarSystemType sol;
+extern QList<SolarSystemType*> systems;
 
 void universe_init(void);
 void universe_update(int64_t delta_t);
