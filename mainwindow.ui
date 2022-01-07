@@ -106,7 +106,7 @@ QTabBar::tab:!selected {
      <number>0</number>
     </property>
     <property name="topMargin">
-     <number>0</number>
+     <number>3</number>
     </property>
     <property name="rightMargin">
      <number>0</number>
@@ -142,13 +142,13 @@ QTabBar::tab:!selected {
         <number>6</number>
        </property>
        <property name="topMargin">
-        <number>6</number>
+        <number>0</number>
        </property>
        <property name="rightMargin">
         <number>6</number>
        </property>
        <property name="bottomMargin">
-        <number>6</number>
+        <number>0</number>
        </property>
        <item>
         <widget class="QSplitter" name="splitter">
@@ -156,7 +156,7 @@ QTabBar::tab:!selected {
           <enum>Qt::Vertical</enum>
          </property>
          <property name="handleWidth">
-          <number>10</number>
+          <number>9</number>
          </property>
          <property name="childrenCollapsible">
           <bool>false</bool>

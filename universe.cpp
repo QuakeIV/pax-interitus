@@ -189,7 +189,7 @@ void universe_init(void)
     static Spacecraft testcraft = Spacecraft();
 
     static BeamType test_beam = BeamType(FixedV2D(3000,525), FixedV2D(2000,233));
-    qDebug() << test_beam.distance(FixedV2D(300,222));
+    qDebug() << "beam distance test:" << test_beam.distance(FixedV2D(300,222));
 }
 
 // delta t in milliseconds
