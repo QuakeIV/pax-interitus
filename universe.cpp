@@ -198,20 +198,20 @@ void universe_update(int64_t delta_t)
     if (universe_paused)
         return;
 
-    static int64_t remainder_milliseconds = 0;
+    static int64_t remainder_microseconds = 0;
 
     if (universe_time_warp < 0)
     {
-        delta_t += remainder_milliseconds;
+        delta_t += remainder_microseconds;
         int64_t mask = (1 << -1*universe_time_warp) - 1;
-        remainder_milliseconds = delta_t & mask;
+        remainder_microseconds = delta_t & mask;
         universe_time += (delta_t >> -1*universe_time_warp);
     }
     else
     {
         // handle case where we transition back into positive warp (bit wasteful but meh its just integer addition)
-        universe_time += (delta_t << universe_time_warp) + remainder_milliseconds;
-        remainder_milliseconds = 0; // only need to do this once really
+        universe_time += (delta_t << universe_time_warp) + remainder_microseconds;
+        remainder_microseconds = 0; // only need to do this once really
     }
 
     foreach (Transform *t, transforms)

@@ -21,6 +21,8 @@ public:
 public slots:
     void newsystemview(void);
 
+    void update_status_bar(void);
+
 private slots:
     void on_systemlist_doubleClicked(const QModelIndex &index);
 
@@ -43,6 +45,7 @@ private:
     SystemRenderer *openGL;
     QPushButton *pause_button;
     QPushButton *display_warp;
+    QStatusBar *status_bar;
 
     void update_warp_display(void);
 };

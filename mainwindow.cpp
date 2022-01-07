@@ -14,10 +14,12 @@ MainWindow::MainWindow(QWidget *parent)
     openGL = this->findChild<SystemRenderer*>("systemview");
     pause_button = this->findChild<QPushButton*>("pausebutton");
     display_warp = this->findChild<QPushButton*>("displaywarp");
+    status_bar = this->findChild<QStatusBar*>("statusbar");
 
     //TODO: seriously consider moving the timer into the systemrenderer itself
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, openGL, &SystemRenderer::animate);
+    connect(timer, &QTimer::timeout, this, &MainWindow::update_status_bar);
     // TODO: fiddle with frame rate
     timer->start(50);
 }
@@ -95,7 +97,11 @@ void MainWindow::on_warpmax_clicked()
 
 void MainWindow::update_warp_display()
 {
-    if (universe_time_warp < 0)
+    if (universe_time_warp <= -20)
+        display_warp->setText("1/" + QString::number((1<<(-1*universe_time_warp - 20))) + "Mx");
+    else if (universe_time_warp <= -10)
+        display_warp->setText("1/" + QString::number((1<<(-1*universe_time_warp - 10))) + "kx");
+    else if (universe_time_warp < 0)
         display_warp->setText("1/" + QString::number((1<<(-1*universe_time_warp))) + "x");
     else if (universe_time_warp < 10)
         display_warp->setText(QString::number((1<<(universe_time_warp))) + "x");
@@ -103,6 +109,18 @@ void MainWindow::update_warp_display()
         display_warp->setText(QString::number((1<<(universe_time_warp-10))) + "kx");
     else if (universe_time_warp < 30)
         display_warp->setText(QString::number((1<<(universe_time_warp-20))) + "Mx");
+}
+
+void MainWindow::update_status_bar()
+{
+    // TODO: functionalize probably (this also might be fun insofar as also being able to do delta times with the same function?)
+    int64_t seconds = universe_time / 1000000;
+    int64_t mins = seconds / 60;
+    int64_t hours = mins / 60;
+    int64_t days = hours / 24;
+    int64_t years = days / 365;
+    QString message = "Time: year " + QString::number(years) + " day " + QString::number(days % 365) + "  " + QString::number(hours % 24) + "h " + QString::number(mins % 60) + "m " + QString::number(seconds % 60) + "s";
+    status_bar->showMessage(message);
 }
 
 

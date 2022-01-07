@@ -12,8 +12,8 @@ class CelestialType;
 class OrbitType : public Transform
 {
 public:
-    int64_t orbital_period     = 0; //in milliseconds
-    int64_t orbit_clock_offset = 0; //initial position, in milliseconds
+    int64_t orbital_period     = 0; //in microseconds
+    int64_t orbit_clock_offset = 0; //initial position, in microseconds
     int64_t orbital_radius     = 0; //radius in mm (this is currently only used for trajectory render culling)
     CelestialType *parent      = NULL; //for now assume you can only really orbit a celestial TODO: improve?
 
@@ -26,7 +26,7 @@ public:
     FixedV2D rel_racetrack[racetrack_points];
 
 private:
-    int64_t racetrack_delta_time; //in milliseconds
+    int64_t racetrack_delta_time; //in microseconds
 };
 
 #endif // ORBITTYPE_H
