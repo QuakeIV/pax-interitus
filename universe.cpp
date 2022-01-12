@@ -21,6 +21,9 @@ QList<Transform*> transforms;
 // track all extant solar systems
 QList<SolarSystemType*> systems;
 
+// put the fleet type auto increment in the universe because it has to live in some compile unit
+uint64_t FleetType::fleet_id = 0;
+
 void universe_init(void)
 {
     // for now hard code the solar system because to heck with it i tell you
@@ -103,6 +106,7 @@ void universe_init(void)
     static CelestialType tethys     = CelestialType(531100000,  617449,    294619000000, &saturn);
     tethys.name = "Tethys";
     static CelestialType enceladus  = CelestialType(252100000,  108022,    237950000000, &saturn);
+    enceladus.name = "Enceladus";
     static CelestialType mimas      = CelestialType(198200000,  37493,     185404000000, &saturn);
     static CelestialType phoebe     = CelestialType(106500000,  8292,      12905900000000, &saturn);
     static CelestialType hyperion   = CelestialType(135000000,  5619,      1481010000000, &saturn);
@@ -188,7 +192,7 @@ void universe_init(void)
 
     static Spacecraft testcraft = Spacecraft();
 
-    static BeamType test_beam = BeamType(FixedV2D(3000,525), FixedV2D(2000,233));
+    static BeamType test_beam = BeamType(FixedV2D(20000,11111), FixedV2D(33111,-10000));
     qDebug() << "beam distance test:" << test_beam.distance(FixedV2D(300,222));
 }
 

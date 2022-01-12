@@ -1,11 +1,12 @@
 #ifndef SOLARSYSTEMTYPE_H
 #define SOLARSYSTEMTYPE_H
 
-#include "fleettype.h"
 #include <QList>
 #include "celestialtype.h"
 
-class CelestialType;
+class FleetType;
+class SolarSystemType;
+extern QList<SolarSystemType*> systems;
 
 class SolarSystemType
 {

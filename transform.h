@@ -3,13 +3,24 @@
 
 #include "fixedv2d.h"
 
+class Transform;
+extern QList<Transform*> transforms;
+
 class Transform
 {
 public:
-    Transform();
-    ~Transform();
+    Transform()
+    {
+        transforms.append(this);
+    }
 
-    virtual void UpdatePosition(void);
+    ~Transform()
+    {
+        // shouldnt wind up in here multiple times anyhow, thus try to save a bit of time by yeeting only one
+        transforms.removeOne(this);
+    }
+
+    virtual void UpdatePosition(void) {}
 
     FixedV2D position;
 };

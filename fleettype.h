@@ -5,8 +5,8 @@
 #include <QString>
 #include <QColor>
 #include "spacecraft.h"
-
-class SolarSystemType;
+#include "celestialtype.h"
+#include "solarsystemtype.h"
 
 class FleetType
 {
@@ -21,8 +21,21 @@ public:
 
     QList<Spacecraft*> ships;
 
-    FleetType(CelestialType *p, int64_t r);
-    ~FleetType();
+    FleetType(CelestialType *p, int64_t r):
+        trajectory(p, r)
+    {
+        color = QColor(Qt::yellow);
+
+        name = "Task Force " + QString::number(fleet_id++);
+
+        p->system->fleets.append(this);
+    }
+
+    ~FleetType()
+    {
+        // shouldnt get redundant entries, in which case this is an acceptable optimization to not scan the whole list
+        trajectory.parent->system->fleets.removeOne(this);
+    }
 };
 
 #endif // FLEETTYPE_H

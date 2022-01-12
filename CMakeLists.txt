@@ -22,15 +22,16 @@ set(PROJECT_SOURCES
         universe.h universe.cpp
         solarsystemtype.h solarsystemtype.cpp
         celestialtype.h celestialtype.cpp
-        transform.h transform.cpp
+        transform.h
         orbittype.h orbittype.cpp
-        fleettype.h fleettype.cpp
+        fleettype.h
         fixedv2d.h
         celestialwindow.h celestialwindow.cpp celestialwindow.ui
-        spacecraft.h spacecraft.cpp
+        spacecraft.h
         utilities.cpp utilities.h
         beamtype.h
         systemwindow.h systemwindow.cpp systemwindow.ui
+        component.h component.cpp
 )
 
 

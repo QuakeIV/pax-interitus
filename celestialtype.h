@@ -11,7 +11,8 @@ class SolarSystemType;
 class CelestialType
 {
 public:
-    CelestialType(int64_t r, uint64_t m); //for stars
+    //for stars
+    CelestialType(int64_t r, uint64_t m);
     CelestialType(int64_t r, uint64_t m, int64_t distance, CelestialType *parent);
 
     QString name;

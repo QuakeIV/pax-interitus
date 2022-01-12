@@ -9,6 +9,7 @@
 
 class CelestialType;
 
+//TODO: create a subtype 'fixed orbit' for planets and a different more expensive to compute type for fleets when they are on the move
 class OrbitType : public Transform
 {
 public:

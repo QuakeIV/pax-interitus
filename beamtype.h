@@ -32,11 +32,15 @@ public:
         return int_sqrt(d2);
     }
 
-private:
+    // beam radius in mm, this is currently meant to be the radius at the target (which may shift based on distance)
+    int64_t radius;
+
+protected:
     FixedV2D origin; // where shot originated from
     FixedV2D aimpoint; // point of aim (weapon inaccuracy is to be baked into this quantity)
     int64_t aim_length; // length of point of origin->aim
     __uint128_t aim_length2; // squared length of point of origin->aim
+    int64_t damage; // damage at position of target
 };
 
 #endif // BEAMTYPE_H
