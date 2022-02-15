@@ -8,6 +8,8 @@
 #include "celestialtype.h"
 #include "solarsystemtype.h"
 
+// TODO: order handling infrastructure
+
 class FleetType
 {
 public:

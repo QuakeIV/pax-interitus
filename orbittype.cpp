@@ -2,6 +2,7 @@
 #include "orbittype.h"
 #include "celestialtype.h"
 #include "universe.h"
+#include "utilities.h"
 
 OrbitType::OrbitType()
 {
@@ -40,27 +41,32 @@ OrbitType::OrbitType(CelestialType *p, int64_t r)
     }
 }
 
-static int64_t muldiv(int64_t x, int64_t mul, int64_t div)
-{
-    __int128_t trueval = x;
-    trueval*= mul;
-    trueval/= div;
-    return trueval;
-}
-
-void OrbitType::UpdatePosition(void)
+FixedV2D OrbitType::get_position_at_time(int64_t time)
 {
     if (parent != NULL)
     {
-        //TODO: avoid modulo by issuing updates to each planets time concept and then wrapping around
+        //TODO: avoid modulo by tracking each planets time concept and then wrapping around
+        //(i think the ideal case is to remember when our current orbit started and then subtract)
         int64_t orbit_clock = (universe_time + orbit_clock_offset) % orbital_period;
         int index  = (int)(orbit_clock/racetrack_delta_time);
-        int next   = (index + 1) % racetrack_points; //wraps back around to 0 if we are about to overflow
+        int next   = (index + 1) % racetrack_points; //wraps back around to 0 if we are about to overflow (avoid modulo here as well)
         FixedV2D d = rel_racetrack[next] - rel_racetrack[index];
 
         d.x = muldiv(d.x, orbit_clock%racetrack_delta_time, racetrack_delta_time);
         d.y = muldiv(d.y, orbit_clock%racetrack_delta_time, racetrack_delta_time);
 
-        position = d + rel_racetrack[index] + parent->trajectory.position;
+        return d + rel_racetrack[index] + parent->trajectory.position;
     }
+    return position;
 }
+
+FixedV2D OrbitType::project_position(int64_t delta_time)
+{
+    return get_position_at_time(universe_time + delta_time);
+}
+
+void OrbitType::update_position(void)
+{
+    position = get_position_at_time(universe_time);
+}
+

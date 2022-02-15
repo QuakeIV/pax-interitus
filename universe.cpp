@@ -4,7 +4,6 @@
 #include "fleettype.h"
 #include "solarsystemtype.h"
 #include "spacecraft.h"
-#include "beamtype.h"
 
 bool universe_paused = false;
 int64_t universe_time_warp = 0; //this is a power applied to 2
@@ -13,6 +12,10 @@ int64_t universe_time_warp = 0; //this is a power applied to 2
 // TODO: negative time is extremely not-functional
 int64_t universe_time;
 
+// universe time for next event (drives update scheduling)
+// TODO: we really need to be careful with how this gets set
+uint64_t universe_next_event = LLONG_MAX;
+
 //TODO: it might be better to only update the transforms we are currently looking at (cull by current system if nothing else)
 // at that point the transforms can just be handed whatever the current universe time is when they come into view
 // this will require complicated handling for things that have routes
@@ -20,6 +23,9 @@ QList<Transform*> transforms;
 
 // track all extant solar systems
 QList<SolarSystemType*> systems;
+
+// track all spacecraft in existence
+QList<Spacecraft*> spacecraft;
 
 // put the fleet type auto increment in the universe because it has to live in some compile unit
 uint64_t FleetType::fleet_id = 0;
@@ -191,9 +197,7 @@ void universe_init(void)
     static FleetType testfleet3 = FleetType(&earth, 400000000 + earth.radius);
 
     static Spacecraft testcraft = Spacecraft();
-
-    static BeamType test_beam = BeamType(FixedV2D(20000,11111), FixedV2D(33111,-10000));
-    qDebug() << "beam distance test:" << test_beam.distance(FixedV2D(300,222));
+    testfleet1.ships.append(&testcraft);
 }
 
 // delta t in milliseconds
@@ -209,18 +213,33 @@ void universe_update(int64_t delta_t)
         delta_t += remainder_microseconds;
         int64_t mask = (1 << -1*universe_time_warp) - 1;
         remainder_microseconds = delta_t & mask;
-        universe_time += (delta_t >> -1*universe_time_warp);
+        delta_t = (delta_t >> -1*universe_time_warp);
     }
     else
     {
         // handle case where we transition back into positive warp (bit wasteful but meh its just integer addition)
-        universe_time += (delta_t << universe_time_warp) + remainder_microseconds;
+        delta_t = (delta_t << universe_time_warp) + remainder_microseconds;
         remainder_microseconds = 0; // only need to do this once really
     }
 
+    if (universe_next_event < universe_time)
+        qDebug() << "ERROR: universe next event somehow set into the past";
+    if ((delta_t + universe_time) > universe_next_event)
+        universe_time = universe_next_event;
+    else
+        universe_time += delta_t;
+    // reset next event to the end of time, and then let the following update functions set 'next event' accordingly if they indeed have anything to say on the matter
+    universe_next_event = LLONG_MAX;
+
+    // TODO: respect orbit heirarchy instead of just blindly traversing list
     foreach (Transform *t, transforms)
     {
-        t->UpdatePosition();
+        t->update_position();
+    }
+
+    foreach (Spacecraft *s, spacecraft)
+    {
+        s->update(delta_t);
     }
 
     //TODO: ?

@@ -15,24 +15,8 @@ set(CMAKE_PREFIX_PATH "/home/matthew/Qt/6.2.2/gcc_64;/Users/MatthewGlitsch/Qt/6.
 find_package(QT NAMES Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
 find_package(Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
 
-set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp mainwindow.h mainwindow.ui
-        systemrenderer.h systemrenderer.cpp systemrenderermousebackend.cpp
-        universe.h universe.cpp
-        solarsystemtype.h solarsystemtype.cpp
-        celestialtype.h celestialtype.cpp
-        transform.h
-        orbittype.h orbittype.cpp
-        fleettype.h
-        fixedv2d.h
-        celestialwindow.h celestialwindow.cpp celestialwindow.ui
-        spacecraft.h
-        utilities.cpp utilities.h
-        beamtype.h
-        systemwindow.h systemwindow.cpp systemwindow.ui
-        component.h component.cpp
-)
+file(GLOB PROJECT_SOURCES "*.cpp" "*.h")
+add_subdirectory(components)
 
 
 qt_add_executable(freespace-aurora

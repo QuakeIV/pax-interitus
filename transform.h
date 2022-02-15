@@ -20,7 +20,13 @@ public:
         transforms.removeOne(this);
     }
 
-    virtual void UpdatePosition(void) {}
+    virtual void update_position(void) { qDebug() << "ERROR: Transform update position was called"; }
+
+    // project position (to be overidden by different sub types of transform)
+    FixedV2D project_position(int64_t delta_t)
+    {
+        return position;
+    }
 
     FixedV2D position;
 };

@@ -113,13 +113,7 @@ void MainWindow::update_warp_display()
 
 void MainWindow::update_status_bar()
 {
-    // TODO: functionalize probably (this also might be fun insofar as also being able to do delta times with the same function?)
-    int64_t seconds = universe_time / 1000000;
-    int64_t mins = seconds / 60;
-    int64_t hours = mins / 60;
-    int64_t days = hours / 24;
-    int64_t years = days / 365;
-    QString message = "Time: year " + QString::number(years) + " day " + QString::number(days % 365) + "  " + QString::number(hours % 24) + "h " + QString::number(mins % 60) + "m " + QString::number(seconds % 60) + "s";
+    QString message = "Time: " + get_date_str();
     status_bar->showMessage(message);
 }
 

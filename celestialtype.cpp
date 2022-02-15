@@ -12,14 +12,14 @@ CelestialType::CelestialType(int64_t r, uint64_t m)
     //just use default constructor for trajectory, which will result in a do-nothing trajectory centered at 0,0
 }
 
-CelestialType::CelestialType(int64_t r, uint64_t m, int64_t distance, CelestialType *parent)
+CelestialType::CelestialType(int64_t r, uint64_t m, int64_t distance, CelestialType *parent):
+    trajectory(parent, distance)
 {
     system = parent->system;
     radius = r;
     mass = m;
 
     color = QColor(180,180,180); //assume gray dusty moon until overridden
-    trajectory = OrbitType(parent, distance);
 
     name = parent->name + " " + QString::number(parent->children.length());
     parent->children.append(this);
