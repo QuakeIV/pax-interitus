@@ -3,6 +3,7 @@
 
 #include "orbittype.h"
 #include "components/component.h"
+#include "components/jumpdrive.h"
 #include "universe.h"
 
 

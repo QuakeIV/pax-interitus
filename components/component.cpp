@@ -2,35 +2,7 @@
 #include "component.h"
 #include "spacecraft.h"
 
-Component::Component()
-{
-
-}
-// component mass is in grams
-int64_t Component::get_mass(void)
-{
-    return mass;
-}
-// damage in joules for now
-// returns damage absorbed so it can fall through to other components
-int64_t Component::apply_damage(int64_t dmg)
-{
-    return 0;
-}
-// this is meant to be called by the parent vessel to allow the component to function
-void Component::update(Spacecraft *parent)
-{
-
-}
-
-
 Engine::Engine()
-{
-
-}
-
-
-JumpDrive::JumpDrive()
 {
 
 }

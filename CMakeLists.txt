@@ -20,7 +20,6 @@ add_subdirectory(components)
 
 
 qt_add_executable(freespace-aurora
-    MANUAL_FINALIZATION
     ${PROJECT_SOURCES}
 )
 

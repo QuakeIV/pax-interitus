@@ -21,14 +21,16 @@ protected:
     // ideally the update functions
     int64_t damage;
 public:
-    Component();
+    Component() {}
 
-    // component mass is in grams (this lets the component factor its state into the mass result)
-    virtual int64_t get_mass(void);
+    // component mass is in grams (this function lets the component factor its current state into the mass result)
+    virtual int64_t get_mass(void) { return mass; }
 
     // damage in joules for now
     // returns damage absorbed so it can fall through to other components
-    virtual int64_t apply_damage(int64_t dmg);
+    // TODO: default HP system?
+    // TODO: absorption of some sort (maybe temperature and pressure tolerance thing)
+    virtual int64_t apply_damage(int64_t dmg) { return 0; };
 
     QString name;
 
@@ -37,7 +39,11 @@ public:
 
     // this is meant to be called by the parent vessel to allow the component to function
     // or perhaps explode, or so forth
-    virtual void update(Spacecraft *parent);
+    virtual void update(Spacecraft *parent) {}
+
+    // provide power to the component (in watts)
+    virtual void charge(int64_t wattage) {}
+
     // TODO: more overrides for planetary defense facilities and so forth
     // (probably this will result in common callbacks for both types of thing, or maybe both get a common subtype?)
 };
@@ -49,20 +55,9 @@ public:
     Engine();
 };
 
-// advanced propulsion component
-class JumpDrive : Component
-{
-public:
-    JumpDrive();
-
-    static const bool uses_power = true;
-};
-
 // power generation component
 class Reactor : Component
 {
-    // if no power was generated last update, store remainder time in microseconds
-    int64_t remainder = 0;
 public:
     Reactor();
     static const bool produces_power = true;
