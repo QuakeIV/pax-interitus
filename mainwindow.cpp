@@ -3,6 +3,9 @@
 #include "universe.h"
 #include "systemwindow.h"
 
+//TODO: temporary
+#include "designer_windows/capacitordesigner.h"
+
 extern MainWindow *mainwindow;
 
 MainWindow::MainWindow(QWidget *parent)
@@ -22,6 +25,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(timer, &QTimer::timeout, this, &MainWindow::update_status_bar);
     // TODO: fiddle with frame rate
     timer->start(50);
+
+    CapacitorDesigner *d = new CapacitorDesigner(this);
+    d->show();
 }
 
 MainWindow::~MainWindow()

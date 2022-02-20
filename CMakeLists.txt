@@ -15,8 +15,9 @@ set(CMAKE_PREFIX_PATH "/home/matthew/Qt/6.2.2/gcc_64;/Users/MatthewGlitsch/Qt/6.
 find_package(QT NAMES Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
 find_package(Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
 
-file(GLOB PROJECT_SOURCES "*.cpp" "*.h")
+file(GLOB PROJECT_SOURCES "*.cpp" "*.h" "*.ui")
 add_subdirectory(components)
+add_subdirectory(designer_windows)
 
 
 qt_add_executable(freespace-aurora

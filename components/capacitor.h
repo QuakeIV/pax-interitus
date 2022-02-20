@@ -2,60 +2,65 @@
 #define CAPACITOR_H
 
 #include "component.h"
+#include "materials.h"
 
 // what is edited in the designer window
 // probably all components will have a special design type, i cant forsee any actual overlap there (unlike the components themselves)
-class CapacitorDesign
+class CapacitorDesign : public ComponentDesign
 {
 public:
-    // in micrometers, for now (special local reference frame)
+    // dielectric sandwich material
+    Dialectric *dialectric;
+    // in micrometers, for now (special local distance reference frame, not as yet standard)
     int64_t plate_separation = 0;
-    // this will be derived from a material later
-    // (volts per meter)
-    int64_t dielectric_strength = 0;
-    // should be stored as absolute dielectric (farads/meter)
-    int64_t permittivity = 0;
     // plate area (sq mm)
     int64_t plate_area = 0;
     // inline resistor milliohms
     int64_t resistance = 1;
 
-    // returns millivolts i guess?
+    // returns millivolts
     int64_t max_voltage(void)
     {
         // funnily enough this actually appears to work out as millivolts
-        return dielectric_strength * plate_separation;
+        return dialectric->strength * plate_separation;
     }
 
-    // returns farads (TBR)
+    // returns millifarads
     int64_t capacitance(void)
     {
-        return (permittivity * plate_area) / plate_separation;
+        if (plate_separation <= 0)
+            return 0;
+        // *1000 for farads to millifarads
+        return (dialectric->permittivity * plate_area * 1000) / plate_separation;
     }
 
     // takes voltage in millivolts
     // returns joules
-    int64_t max_energy(int64_t voltage)
+    int64_t max_energy(__int128_t voltage)
     {
         // TODO: need a standard way to go into power of 2 divisors of true values, so that division is avoided
-        // /1000000 converting millivolts to volts
-        return ((capacitance() * voltage * voltage) >> 1) / 1000000;
+        // /1000 converting millivolts to volts, vs dealing with millifarads
+        return (((__int128_t)capacitance() * voltage * voltage) >> 1) / 1000;
     }
 
     // takes voltage in millivolts
-    // returns amps (TBR)
+    // returns milliamps (TBR)
     int64_t max_current(int64_t voltage)
     {
-        // funnily enough (again) millivolts/milliohms is equivalent to volts/ohms
-        return voltage / resistance;
+        if (resistance <= 0)
+            return 0;
+        // *1000 for amps to milliamps
+        return (1000*voltage) / resistance;
     }
 
     // returns microseconds
     int64_t charge_time(void)
     {
-        // /1000 for milliohms to ohms
-        return (5 * resistance * capacitance()) / 1000;
+        // /1000 for milliohms to ohms, 1000 for millifarads to farads, *1000000 to get to microseconds
+        return (5 * resistance * capacitance());
     }
+
+    //TODO: weight, volume
 };
 
 // power storage component (stores charge for devices that require the sudden release of energy)

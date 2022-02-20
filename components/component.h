@@ -7,6 +7,12 @@
 class BeamType;
 class Spacecraft;
 
+// common properties of component designs
+class ComponentDesign
+{
+    QString name;
+};
+
 class Component
 {
 protected:

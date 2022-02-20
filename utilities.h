@@ -37,13 +37,13 @@ static inline int64_t muldiv(int64_t x, int64_t mul, int64_t div)
 // takes a double since the pythagorean distance tends to get calculated in the FPU at the moment
 // TODO: get a root solver going for integer sqrt (or find an existing one)
 //TODO: this shit should be config file sensitive eventually
-static inline QString distance_to_str(double distance)
+static inline QString get_distance_str(double distance)
 {
     if (distance < 0)
         distance *= -1;
     // TODO: make this selectable?
     // metric mode
-    //static const QString si_scale[] = {"m", "", "k","M","G","T"};
+    //static const QString si_scale[] = {"m", "", "k","M","G","T","P"};
     // aurora mode
     static const QString si_scale[] = {"m", "", "k","kk","mk","bk"};
     int i;
@@ -54,7 +54,7 @@ static inline QString distance_to_str(double distance)
 }
 
 // TODO: kindof sucks effeciency wise but i mean this isnt going to happen that much
-static inline QString time_to_str(int64_t time)
+static inline QString get_time_str(int64_t time)
 {
     int64_t seconds = time / 1000000;
     int64_t mins = seconds / 60;
@@ -77,6 +77,8 @@ static inline QString time_to_str(int64_t time)
     if (mins || list.length())
         list.append(QString::number(mins) + "m");
     if (seconds || list.length())
+        list.append(QString::number(seconds) + "s");
+    if (!list.length())
         list.append(QString::number(seconds) + "s");
 
     return list.join(" ");
@@ -102,6 +104,54 @@ static inline QString get_date_str(void)
                        QString::number(seconds) + "s"};
 
     return list.join(" ");
+}
+
+// currently in millivolts
+static inline QString get_voltage_str(double voltage)
+{
+    // TODO: make this selectable?
+    static const QString si_scale[] = {"m", "", "k","M","G","T","P"};
+    int i;
+    for (i = 0; i < (sizeof(si_scale)/sizeof(si_scale[0]) - 1) && voltage > 10000.0; i++)
+        voltage /= 1000;
+
+    return QString("%1%2V").arg(QString::number(voltage, 'f', 1), si_scale[i]);
+}
+
+// currently in joules
+static inline QString get_energy_str(double energy)
+{
+    // TODO: make this selectable?
+    static const QString si_scale[] = {"m", "", "k","M","G","T","P"};
+    int i;
+    for (i = 0; i < (sizeof(si_scale)/sizeof(si_scale[0]) - 1) && energy > 10000.0; i++)
+        energy /= 1000;
+
+    return QString("%1%2J").arg(QString::number(energy, 'f', 1), si_scale[i]);
+}
+
+// currently in milliamps
+static inline QString get_amperage_str(double amperage)
+{
+    // TODO: make this selectable?
+    static const QString si_scale[] = {"m", "", "k","M","G","T","P"};
+    int i;
+    for (i = 0; i < (sizeof(si_scale)/sizeof(si_scale[0]) - 1) && amperage > 10000.0; i++)
+        amperage /= 1000;
+
+    return QString("%1%2A").arg(QString::number(amperage, 'f', 1), si_scale[i]);
+}
+
+// currently in millifarads
+static inline QString get_capacitance_str(double capacitance)
+{
+    // TODO: make this selectable?
+    static const QString si_scale[] = {"m", "", "k","M","G","T","P"};
+    int i;
+    for (i = 0; i < (sizeof(si_scale)/sizeof(si_scale[0]) - 1) && capacitance > 10000.0; i++)
+        capacitance /= 1000;
+
+    return QString("%1%2F").arg(QString::number(capacitance, 'f', 1), si_scale[i]);
 }
 
 

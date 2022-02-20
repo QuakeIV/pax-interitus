@@ -2,6 +2,7 @@
 #define UNIVERSE_H
 
 #include <QList>
+#include "materials.h"
 
 class Transform;
 class CelestialType;
@@ -18,6 +19,13 @@ const int64_t universe_max_warp =  26;
 extern QList<Transform*> transforms;
 extern QList<SolarSystemType*> systems;
 extern QList<Spacecraft*> spacecraft;
+
+// master list of extant dialectric materials
+extern QList<Dialectric> dialectric_materials;
+
+//TODO: temporary
+#include "empire.h"
+extern Empire player_empire;
 
 void universe_init(void);
 void universe_update(int64_t delta_t);

@@ -1,5 +1,5 @@
 
-file(GLOB COMPONENT_SOURCES "*.cpp" "*.h")
+file(GLOB COMPONENT_SOURCES "*.cpp" "*.h" "*.ui")
 list(APPEND PROJECT_SOURCES
         ${COMPONENT_SOURCES}
 )

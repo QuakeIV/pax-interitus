@@ -66,6 +66,19 @@ QPlainTextEdit {
   border-radius: 0px;
   border-color: rgb(26,29,40);
 }
+QPlainTextEdit:focus  {
+  border-color: rgb(105, 156, 232);
+}
+QLineEdit {
+  background-color: rgb(38, 44, 59);
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 0px;
+  border-color: rgb(26,29,40);
+}
+QLineEdit:focus  {
+  border-color: rgb(105, 156, 232);
+}
 QTabWidget::pane {
     position: absolute;
     top: -1px; /* allow the tabs to overlap over the top border and join with the window below*/
@@ -467,7 +480,7 @@ QTabBar::tab:!selected {
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuNew">

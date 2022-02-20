@@ -150,7 +150,7 @@ void SystemRenderer::render_yardstick(void)
     //draw distance
     QPointF d = mousedrag_position - singleclick_position;
     double dist = (double)sqrt(d.x()*d.x() + d.y()*d.y()) * (double)(1l<<currentZoom);
-    painter.drawText(mousedrag_position + QPointF(0,-2), distance_to_str(dist));
+    painter.drawText(mousedrag_position + QPointF(0,-2), get_distance_str(dist));
 }
 
 void SystemRenderer::render_scale()
@@ -163,7 +163,7 @@ void SystemRenderer::render_scale()
 
     painter.setPen(orbit);
     painter.drawLine(scale_from, scale_to);
-    painter.drawText(scale_text, distance_to_str(dist));
+    painter.drawText(scale_text, get_distance_str(dist));
 }
 
 QPointF SystemRenderer::position_to_screen_coordinates(FixedV2D pos)

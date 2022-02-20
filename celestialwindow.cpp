@@ -30,13 +30,13 @@ void CelestialWindow::refresh()
     s += "x: " + QString::number(celestial->trajectory.position.x) + "\n";
     s += "y: " + QString::number(celestial->trajectory.position.y) + "\n";
     s += "mass: " + QString::number(celestial->mass) + "\n";
-    s += "radius: " + distance_to_str(celestial->radius) + "\n";
-    s += "orbital radius: " + distance_to_str(celestial->trajectory.orbital_radius);
+    s += "radius: " + get_distance_str(celestial->radius) + "\n";
+    s += "orbital radius: " + get_distance_str(celestial->trajectory.orbital_radius);
     // test v2d shittery
-    s += "\ndist from primary: " + distance_to_str(celestial->trajectory.position.length());
+    s += "\ndist from primary: " + get_distance_str(celestial->trajectory.position.length());
     if (celestial->trajectory.parent)
     {
-        s += "\nrootfinder error: " + distance_to_str((celestial->trajectory.position - celestial->trajectory.parent->trajectory.position).length() - celestial->trajectory.orbital_radius);
+        s += "\nrootfinder error: " + get_distance_str((celestial->trajectory.position - celestial->trajectory.parent->trajectory.position).length() - celestial->trajectory.orbital_radius);
         s += "\nerror should go to 1 or 0 on the racetrack nodes";
     }
     text->document()->setPlainText(s);

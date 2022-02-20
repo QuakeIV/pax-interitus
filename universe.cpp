@@ -5,6 +5,12 @@
 #include "solarsystemtype.h"
 #include "spacecraft.h"
 
+// TODO: temporary
+Empire player_empire;
+
+// master list of extant dialectric materials
+QList<Dialectric> dialectric_materials;
+
 bool universe_paused = false;
 int64_t universe_time_warp = 0; //this is a power applied to 2
 // TODO: we may be obliged to go over into microseconds or something to get better definition on fast-moving objects
@@ -32,6 +38,22 @@ uint64_t FleetType::fleet_id = 0;
 
 void universe_init(void)
 {
+    // TODO: temporary
+    // add some dialectric materials
+    Dialectric d;
+    d.permittivity = 20;
+    d.strength = 20000;
+    d.name = "wumbo";
+    dialectric_materials.append(d);
+    d.permittivity = 10;
+    d.strength = 40000;
+    d.name = "mumbo";
+    dialectric_materials.append(d);
+    d.permittivity = 30;
+    d.strength = 30000;
+    d.name = "jumbo";
+    dialectric_materials.append(d);
+
     // for now hard code the solar system because to heck with it i tell you
     static SolarSystemType sol = SolarSystemType(695700000000, 1988500000000000);
     sol.root.color = QColor(226, 223, 24); // nice sun color
