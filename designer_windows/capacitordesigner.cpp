@@ -2,6 +2,7 @@
 #include "ui_capacitordesigner.h"
 #include "universe.h"
 #include "utilities.h"
+#include "units.h"
 
 // TODO: put in common area somewhere?
 class Qint64Validator : public QValidator
@@ -48,6 +49,7 @@ public:
     }
 };
 
+
 CapacitorDesigner::CapacitorDesigner(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CapacitorDesigner)
@@ -71,10 +73,12 @@ CapacitorDesigner::CapacitorDesigner(QWidget *parent) :
     details = this->findChild<QLabel*>("details");
 
     // set validators
-    // (TODO: this probably needs a Qint64 validator, additionally we may need to write that)
-    resistance_edit->setValidator(new Qint64Validator(1, LONG_MAX, resistance_edit));
-    area_edit->setValidator(new Qint64Validator(1, LONG_MAX, area_edit));
-    separation_edit->setValidator(new Qint64Validator(1, LONG_MAX, separation_edit));
+//    resistance_edit->setValidator(new Qint64Validator(1, LONG_MAX, resistance_edit));
+//    area_edit->setValidator(new Qint64Validator(1, LONG_MAX, area_edit));
+//    separation_edit->setValidator(new Qint64Validator(1, LONG_MAX, separation_edit));
+    resistance_edit->setValidator(new QDoubleValidator(1, ((double)LONG_MAX)/RESISTANCE_FACTOR, (RESISTANCE_SHIFT/10)*3, resistance_edit));
+    area_edit->setValidator(new QDoubleValidator(1, ((double)LONG_MAX)/PRECISION_AREA_FACTOR, (PRECISION_AREA_SHIFT/10)*3, area_edit));
+    separation_edit->setValidator(new QDoubleValidator(1, ((double)LONG_MAX)/PRECISION_DISTANCE_FACTOR, (PRECISION_DISTANCE_SHIFT/10)*3, separation_edit));
 
     // capture combobox changes
     connect(dialectric_combobox, QOverload<int>::of(&QComboBox::activated),
@@ -115,13 +119,13 @@ void CapacitorDesigner::update(void)
     dialectric_combobox->setCurrentText(selected_dialectric->descriptor_string());
 
     design.dialectric = selected_dialectric;
-    design.resistance = resistance_edit->text().toLong();
-    design.plate_area = area_edit->text().toLong();
-    design.plate_separation = separation_edit->text().toLong();
+    design.resistance = resistance_edit->text().toDouble() * RESISTANCE_FACTOR;
+    design.plate_area = area_edit->text().toDouble() * PRECISION_AREA_FACTOR;
+    design.plate_separation = separation_edit->text().toDouble() * PRECISION_DISTANCE_FACTOR;
 
     int64_t max_voltage = design.max_voltage();
     QString s = "Max Voltage: " + get_voltage_str(max_voltage);
-    s += "\nPeak Amperage: " + get_amperage_str(design.max_current(max_voltage));
+    s += "\nPeak Current: " + get_amperage_str(design.max_current(max_voltage));
     s += "\nCapacitance: " + get_capacitance_str(design.capacitance());
     s += "\nEnergy Storage (at max voltage): " + get_energy_str(design.max_energy(max_voltage));
     s += "\nTime to Full Charge: " + get_time_str(design.charge_time());

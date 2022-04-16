@@ -11,53 +11,46 @@ class CapacitorDesign : public ComponentDesign
 public:
     // dielectric sandwich material
     Dialectric *dialectric;
-    // in micrometers, for now (special local distance reference frame, not as yet standard)
+    // meters
     int64_t plate_separation = 0;
-    // plate area (sq mm)
+    // square meters
     int64_t plate_area = 0;
-    // inline resistor milliohms
+    // inline resistor ohms
     int64_t resistance = 1;
 
-    // returns millivolts
+    // returns volts
     int64_t max_voltage(void)
     {
-        // funnily enough this actually appears to work out as millivolts
-        return dialectric->strength * plate_separation;
+        return (dialectric->strength * plate_separation) >> ((DIALECTRIC_STRENGTH_SHIFT + PRECISION_DISTANCE_SHIFT) - VOLTAGE_SHIFT);
     }
 
-    // returns millifarads
+    // returns farads
     int64_t capacitance(void)
     {
         if (plate_separation <= 0)
             return 0;
-        // *1000 for farads to millifarads
-        return (dialectric->permittivity * plate_area * 1000) / plate_separation;
+        return ((dialectric->permittivity * plate_area) / plate_separation) >> ((DIALECTRIC_CONSTANT_SHIFT + PRECISION_AREA_SHIFT - PRECISION_DISTANCE_SHIFT) - CAPACITANCE_SHIFT);
     }
 
-    // takes voltage in millivolts
     // returns joules
     int64_t max_energy(__int128_t voltage)
     {
-        // TODO: need a standard way to go into power of 2 divisors of true values, so that division is avoided
-        // /1000 converting millivolts to volts, vs dealing with millifarads
-        return (((__int128_t)capacitance() * voltage * voltage) >> 1) / 1000;
+        return ((((__int128_t)capacitance() * voltage * voltage) >> 1) >> ((CAPACITANCE_SHIFT + VOLTAGE_SHIFT + VOLTAGE_SHIFT) - ENERGY_SHIFT));
     }
 
-    // takes voltage in millivolts
-    // returns milliamps (TBR)
+    // amps
     int64_t max_current(int64_t voltage)
     {
         if (resistance <= 0)
             return 0;
-        // *1000 for amps to milliamps
-        return (1000*voltage) / resistance;
+        return ((voltage << (AMPERAGE_SHIFT)) / resistance) >> (VOLTAGE_SHIFT - RESISTANCE_SHIFT);
     }
 
-    // returns microseconds
+    // returns standard reference frame time (in delta T, not absolute)
     int64_t charge_time(void)
     {
-        // /1000 for milliohms to ohms, 1000 for millifarads to farads, *1000000 to get to microseconds
-        return (5 * resistance * capacitance());
+        // 5 for 'five time units' which we shall assume is de facto capacitor charging time
+        return (5 * resistance * capacitance()) >> ((RESISTANCE_SHIFT + CAPACITANCE_SHIFT) - TIME_SHIFT);
     }
 
     //TODO: weight, volume
@@ -69,9 +62,6 @@ class Capacitor : Component
     CapacitorDesign *design;
 
     int64_t initial_time = 0;
-    // TODO: consider power of 2 division
-    // getting the math to perfectly converge on this would require backend work however
-    // to perhaps for instance make the time units base 2 fractions of a second or so forth
 
 public:
     Capacitor() {}
@@ -121,10 +111,10 @@ public:
         // TODO: might be a way to share this among multiple capacitors, maybe this can live at the circuit level somehow?
         if (rate)
         {
-            // factor of 1000000 is converting seconds of charge time to microseconds
-            initial_time = (stored_energy * 1000000) / rate;
-            max_dt = (max_energy * 1000000) / rate;
-            discharge_dt = (discharge_energy * 1000000) / rate;
+            // converting seconds of charge time to time units
+            initial_time = (stored_energy << TIME_SHIFT) / rate;
+            max_dt = (max_energy << TIME_SHIFT) / rate;
+            discharge_dt = (discharge_energy << TIME_SHIFT) / rate;
         }
         current_charge_rate = rate;
     }

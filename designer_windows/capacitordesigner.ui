@@ -70,7 +70,7 @@
     <set>Qt::ImhNone</set>
    </property>
    <property name="text">
-    <string>1</string>
+    <string>1.0</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
@@ -83,7 +83,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Resistance (mΩ): </string>
+    <string>Resistance (Ω): </string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -99,7 +99,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Area (mm²): </string>
+    <string>Area (m²): </string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -118,7 +118,7 @@
     <set>Qt::ImhNone</set>
    </property>
    <property name="text">
-    <string>1</string>
+    <string>1.0</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_4">
@@ -134,7 +134,7 @@
     <set>Qt::ImhNone</set>
    </property>
    <property name="text">
-    <string>Separation (µm): </string>
+    <string>Separation (m): </string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -153,7 +153,7 @@
     <set>Qt::ImhNone</set>
    </property>
    <property name="text">
-    <string>1</string>
+    <string>0.001</string>
    </property>
   </widget>
   <widget class="QLabel" name="details">

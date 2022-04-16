@@ -32,7 +32,7 @@ public:
     // TODO: tie this to an empire's knowledge of dialectric materials instead
     QString descriptor_string() override
     {
-        return "(" + get_voltage_str(strength) + "/m)(" + QString::number(permittivity) + "F/m) " + name;
+        return "(" + get_voltage_str(strength) + "/m)(" + get_capacitance_str(permittivity) + "/m) " + name;
     }
 };
 

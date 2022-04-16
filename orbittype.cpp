@@ -3,6 +3,7 @@
 #include "celestialtype.h"
 #include "universe.h"
 #include "utilities.h"
+#include "units.h"
 
 OrbitType::OrbitType()
 {
@@ -14,7 +15,7 @@ OrbitType::OrbitType(CelestialType *p, int64_t r)
     parent = p;
     orbital_radius = r;
     //doing sine/cosine math in double land, and then converting back to the fixed reference frame
-    //TODO: figure out how to do this right with integers (maybe just use bigint or something)
+    //TODO: figure out how to do this right with integers
     double radius_d = r; //radius in MM
 
     // only define an orbit if there is a parent object
@@ -31,13 +32,14 @@ OrbitType::OrbitType(CelestialType *p, int64_t r)
         //period in milliseconds (doing calculation in double land, and then converting back to the integral reference frame)
         const double G = 66743000; //gravitational constant, in cubic mm per exagram millisecond squared
         //did some algebra, assuming newtonian gravity, newtonian motion this should yield orbital period
-        //TODO: 1m factor is to compensate for microsecond time
-        double period_d = (radius_d*PI*2.0*sqrt(((radius_d * 1000000) / (p->mass * G))));
+        //TODO: 1 << TIME_SHIFT factor is to compensate for microsecond time
+        double period_d = (radius_d*PI*2.0*sqrt(((radius_d * (double)TIME_FACTOR) / (p->mass * G))));
         orbital_period = (int64_t)period_d;
         //worst case roundoff error here is I think racetrack_points - 1 milliseconds (this is the true reference for orbital period in terms of calculating position)
         racetrack_delta_time = orbital_period/racetrack_points;
         //start the planet at a random spot in its orbit
-        orbit_clock_offset = (int64_t)(QRandomGenerator::system()->bounded(period_d)); //TODO: make this not random by default?
+        //TODO: make this not random by default? (or at least procedurally random)
+        orbit_clock_offset = (int64_t)(QRandomGenerator::system()->bounded(period_d));
     }
 }
 

@@ -4,6 +4,7 @@
 #include <QString>
 #include <QStringList>
 #include <limits.h>
+#include "units.h"
 
 // only takes positive numbers (i cant be bothered to represent imaginary numbers)
 // TODO: newtons method?
@@ -56,7 +57,7 @@ static inline QString get_distance_str(double distance)
 // TODO: kindof sucks effeciency wise but i mean this isnt going to happen that much
 static inline QString get_time_str(int64_t time)
 {
-    int64_t seconds = time / 1000000;
+    int64_t seconds = time >> TIME_SHIFT;
     int64_t mins = seconds / 60;
     int64_t hours = mins / 60;
     int64_t days = hours / 24;
@@ -87,7 +88,7 @@ static inline QString get_time_str(int64_t time)
 static inline QString get_date_str(void)
 {
     extern int64_t universe_time; //aha now i dont need to include universe.h
-    int64_t seconds = universe_time / 1000000;
+    int64_t seconds = universe_time >> TIME_SHIFT;
     int64_t mins = seconds / 60;
     int64_t hours = mins / 60;
     int64_t days = hours / 24;
@@ -109,11 +110,20 @@ static inline QString get_date_str(void)
 // currently in millivolts
 static inline QString get_voltage_str(double voltage)
 {
-    // TODO: make this selectable?
-    static const QString si_scale[] = {"m", "", "k","M","G","T","P"};
-    int i;
-    for (i = 0; i < (sizeof(si_scale)/sizeof(si_scale[0]) - 1) && voltage > 10000.0; i++)
-        voltage /= 1000;
+    voltage = voltage / VOLTAGE_FACTOR;
+    // TODO: make this selectable/configurable?
+    static const QString si_scale[] = {"n", "µ", "m", "", "k","M","G","T","P"};
+    int i = 3;
+    while (i > 0 && voltage < 1.0)
+    {
+        voltage *= 1000.0;
+        i--;
+    }
+    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && voltage > 10000.0)
+    {
+        voltage /= 1000.0;
+        i++;
+    }
 
     return QString("%1%2V").arg(QString::number(voltage, 'f', 1), si_scale[i]);
 }
@@ -121,11 +131,22 @@ static inline QString get_voltage_str(double voltage)
 // currently in joules
 static inline QString get_energy_str(double energy)
 {
-    // TODO: make this selectable?
-    static const QString si_scale[] = {"m", "", "k","M","G","T","P"};
-    int i;
-    for (i = 0; i < (sizeof(si_scale)/sizeof(si_scale[0]) - 1) && energy > 10000.0; i++)
-        energy /= 1000;
+    energy = energy / ENERGY_FACTOR;
+    // TODO: make this selectable/configurable?
+    static const QString si_scale[] = {"n", "µ", "m", "", "k","M","G","T","P"};
+
+    int i = 3;
+    while (i > 0 && energy < 1.0)
+    {
+        energy *= 1000.0;
+        i--;
+    }
+
+    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && energy > 10000.0)
+    {
+        energy /= 1000.0;
+        i++;
+    }
 
     return QString("%1%2J").arg(QString::number(energy, 'f', 1), si_scale[i]);
 }
@@ -133,11 +154,20 @@ static inline QString get_energy_str(double energy)
 // currently in milliamps
 static inline QString get_amperage_str(double amperage)
 {
-    // TODO: make this selectable?
-    static const QString si_scale[] = {"m", "", "k","M","G","T","P"};
-    int i;
-    for (i = 0; i < (sizeof(si_scale)/sizeof(si_scale[0]) - 1) && amperage > 10000.0; i++)
-        amperage /= 1000;
+    amperage = amperage / AMPERAGE_FACTOR;
+    // TODO: make this selectable/configurable?
+    static const QString si_scale[] = {"n", "µ", "m", "", "k","M","G","T","P"};
+    int i = 3;
+    while (i > 0 && amperage < 1.0)
+    {
+        amperage *= 1000.0;
+        i--;
+    }
+    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && amperage > 10000.0)
+    {
+        amperage /= 1000.0;
+        i++;
+    }
 
     return QString("%1%2A").arg(QString::number(amperage, 'f', 1), si_scale[i]);
 }
@@ -145,11 +175,22 @@ static inline QString get_amperage_str(double amperage)
 // currently in millifarads
 static inline QString get_capacitance_str(double capacitance)
 {
-    // TODO: make this selectable?
-    static const QString si_scale[] = {"m", "", "k","M","G","T","P"};
-    int i;
-    for (i = 0; i < (sizeof(si_scale)/sizeof(si_scale[0]) - 1) && capacitance > 10000.0; i++)
-        capacitance /= 1000;
+    capacitance = capacitance / CAPACITANCE_FACTOR;
+
+    // TODO: make this selectable/configurable?
+    static const QString si_scale[] = {"n", "µ", "m", "", "k","M","G","T","P"};
+
+    int i = 3;
+    while (i > 0 && capacitance < 1.0)
+    {
+        capacitance *= 1000.0;
+        i--;
+    }
+    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && capacitance > 10000.0)
+    {
+        capacitance /= 1000.0;
+        i++;
+    }
 
     return QString("%1%2F").arg(QString::number(capacitance, 'f', 1), si_scale[i]);
 }

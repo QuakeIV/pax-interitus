@@ -4,6 +4,7 @@
 #include "fleettype.h"
 #include "solarsystemtype.h"
 #include "spacecraft.h"
+#include "units.h"
 
 // TODO: temporary
 Empire player_empire;
@@ -41,16 +42,16 @@ void universe_init(void)
     // TODO: temporary
     // add some dialectric materials
     Dialectric d;
-    d.permittivity = 20;
-    d.strength = 20000;
+    d.permittivity = 20 * DIALECTRIC_CONSTANT_FACTOR;
+    d.strength = 20 * DIALECTRIC_STRENGTH_FACTOR;
     d.name = "wumbo";
     dialectric_materials.append(d);
-    d.permittivity = 10;
-    d.strength = 40000;
+    d.permittivity = 10 * DIALECTRIC_CONSTANT_FACTOR;
+    d.strength = 40 * DIALECTRIC_STRENGTH_FACTOR;
     d.name = "mumbo";
     dialectric_materials.append(d);
-    d.permittivity = 30;
-    d.strength = 30000;
+    d.permittivity = 30 * DIALECTRIC_CONSTANT_FACTOR;
+    d.strength = 30 * DIALECTRIC_STRENGTH_FACTOR;
     d.name = "jumbo";
     dialectric_materials.append(d);
 
@@ -225,6 +226,7 @@ void universe_init(void)
 // delta t in milliseconds
 void universe_update(int64_t delta_t)
 {
+    delta_t = MILLISECONDS_TO_TIME(delta_t);
     if (universe_paused)
         return;
 

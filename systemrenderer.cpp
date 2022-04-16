@@ -223,7 +223,7 @@ void SystemRenderer::render_planet_recurse(CelestialType *cel)
 
 void SystemRenderer::animate()
 {
-    int delta = qobject_cast<QTimer*>(sender())->interval() * 1000;
+    int delta = qobject_cast<QTimer*>(sender())->interval();
     elapsed += delta;
 
     //TODO: this is kindof messy to do this in gui land...
