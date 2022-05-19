@@ -1,3 +1,5 @@
-All files in this directory and subordinate directories are licensed in accordance with license headers in the given files, except for the following binaries.
+All files in this directory and subordinate directories are licensed in accordance with license headers in the given files, except for the following binaries:
 
 Source code for libicudata.so.56, libicui18n.so.56, libicuuc.so.56 can be found at https://github.com/unicode-org/icu.  Per their license agreement it does not appear to be necessary to specify the details of the license for these binaries.  They are licensed under ICU License - ICU 1.8.1 to ICU 57.1.  These files were obtained to get shiboken6 working reliably on Ubuntu.
+
+libshiboken6.abi3.so.6.3 is used under the terms of the GNU Lesser General Public License Usage and the file/source code can be found at https://pypi.org/project/shiboken6/.
