@@ -55,7 +55,19 @@
     <primitive-type name="bool"/>
     <primitive-type name="std::string"/>
 -->
-    <primitive-type name="int64_t"/>
+
+    <load-typesystem name="shiboken6/typesystems/typesystem_core.xml" generate="no"/>
+    <load-typesystem name="shiboken6/typesystems/typesystem_opengl.xml" generate="no"/>
+    <load-typesystem name="shiboken6/typesystems/typesystem_openglwidgets.xml" generate="no"/>
+    <load-typesystem name="shiboken6/typesystems/typesystem_gui_common.xml" generate="no"/>
+    <load-typesystem name="shiboken6/typesystems/typesystem_gui.xml" generate="no"/>
+    <load-typesystem name="shiboken6/typesystems/core_common.xml" generate="no"/>
+
+<!--    <primitive-type name="int64_t"/> -->
+    
+    <!-- TODO: TEMPORARY -->
+<!--    <suppress-warning text="*does not have a type entry" />
+    <suppress-warning text="*Cannot find type entry for*" /> -->
 
 
     <object-type name="SystemRenderer">

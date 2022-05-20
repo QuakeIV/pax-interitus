@@ -6,11 +6,9 @@
 #include <QMenu>
 #include "celestialwindow.h"
 #include "utilities.h"
-#include "mainwindow.h"
 #include "fleettype.h"
 
 extern QApplication *qapp;
-extern MainWindow *mainwindow;
 
 SystemRenderer::SystemRenderer(QWidget *parent) :
   QOpenGLWidget(parent)
@@ -317,7 +315,7 @@ void SystemRenderer::rightClick(QPoint location)
 
         submenu->addAction("Info",  [this, c]()
         {
-            CelestialWindow *w = new CelestialWindow(c,mainwindow); // all new windwos should root on mainwindow so they persist as one might expect
+            CelestialWindow *w = new CelestialWindow(c,root_window); // all new windows should root on the main window, not self, so they persist as one might expect
             w->setAttribute(Qt::WA_DeleteOnClose);
             w->move(qapp->activeWindow()->mapToGlobal(QPoint(40,20)));
             w->show();
