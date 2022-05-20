@@ -8,11 +8,5 @@ Makefile
 freespace-aurora
 *.autosave
 .rcc/
-paxpython/
 libuniverse.so
-paxpython.so
-paxpython_autogen/
-libuniverse_autogen/
-mjb_rejected_*.log
-python_binding_autogen/
-libpython_binding.so
+universe_autogen/
