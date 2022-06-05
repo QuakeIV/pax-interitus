@@ -5,6 +5,8 @@
 #include <QClipboard>
 #include "utilities.h"
 
+extern QApplication *qapp;
+
 CelestialWindow::CelestialWindow(CelestialType *c, QWidget *parent):
     QMainWindow(parent),
     ui(new Ui::CelestialWindow)

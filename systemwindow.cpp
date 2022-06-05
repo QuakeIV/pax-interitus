@@ -11,7 +11,7 @@ SystemWindow::SystemWindow(SolarSystemType *system, QWidget *parent) :
     r->root_window = parent;
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, r, &SystemRenderer::animate);
-    // TODO: fiddle with frame rate
+    // TODO: fiddle with frame rate, configurable frame rate?
     timer->start(50);
 
     setWindowTitle(system->name + " System View");

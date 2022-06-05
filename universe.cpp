@@ -9,6 +9,9 @@
 // TODO: temporary
 Empire player_empire;
 
+// TODO: temporary
+QApplication *qapp;
+
 // master list of extant dialectric materials
 QList<Dialectric> dialectric_materials;
 

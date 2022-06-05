@@ -21,9 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     //TODO: seriously consider moving the timer into the systemrenderer itself
     QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, openGL, &SystemRenderer::animate);
     connect(timer, &QTimer::timeout, this, &MainWindow::update_status_bar);
-    // TODO: fiddle with frame rate
+    // TODO: configurable framerate, ideally track to that during runtime as well
     timer->start(50);
 
     CapacitorDesigner *d = new CapacitorDesigner(this);

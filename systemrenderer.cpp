@@ -13,6 +13,11 @@ extern QApplication *qapp;
 SystemRenderer::SystemRenderer(QWidget *parent) :
   QOpenGLWidget(parent)
 {
+    //TODO: configurable frame rate, ideally track to that during runtime as well
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &SystemRenderer::animate);
+    timer->start(50);
+
     elapsed = 0;
     clickTimer.setSingleShot(true);
     setAutoFillBackground(false); //TODO: does this do anything useful

@@ -16,6 +16,10 @@ widge = QWidget()
 widge.setLayout(layout)
 widge.show()
 
+paxpython.test(app)
+
+print(dir(app))
+
 print(dir(paxpython))
 
 app.exec()

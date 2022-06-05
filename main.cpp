@@ -5,7 +5,8 @@
 #include "universe.h"
 #include <QFile>
 
-QApplication *qapp;
+// TODO: fix, temporarily moving this to universe
+extern QApplication *qapp;
 MainWindow *mainwindow;
 
 int main(int argc, char *argv[])
