@@ -17,6 +17,7 @@ find_package(QT NAMES Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
 find_package(Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
 find_package(Python COMPONENTS Development)
 
+# this is effectively the frontend library
 file(GLOB PROJECT_SOURCES "*.h" "*.ui")
 list(APPEND PROJECT_SOURCES "main.cpp;mainwindow.cpp;systemwindow.cpp;celestialwindow.cpp;systemrenderer.cpp;systemrenderermousebackend.cpp")
 message(${PROJECT_SOURCES})
@@ -42,15 +43,10 @@ set_target_properties(freespace-aurora PROPERTIES
 
 # =============================== CMake target - libuniverse ===============================
 
-# Define the sample shared library for which we will create bindings.
+# Define the shared library for the backend logic
+# this was originally used for python bindings, and conceptually should probalby be kept
 set(libuniverse_sources universe.cpp orbittype.cpp solarsystemtype.cpp celestialtype.cpp)
 add_library(universe SHARED ${libuniverse_sources})
 target_link_libraries(universe PUBLIC Qt6::Widgets Qt6::OpenGLWidgets)
-
-# wrapper annex
-# Apply relevant include and link flags.
-add_library(paxpython SHARED paxpython.cpp systemrenderer.cpp systemrenderermousebackend.cpp celestialwindow.cpp)
-target_link_libraries(paxpython PUBLIC Qt6::Widgets Qt6::OpenGLWidgets universe)
-target_include_directories(paxpython PRIVATE ${Python_INCLUDE_DIRS})
 
 
