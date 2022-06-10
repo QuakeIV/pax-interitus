@@ -8,7 +8,6 @@ SystemWindow::SystemWindow(SolarSystemType *system, QWidget *parent) :
     ui->setupUi(this);
 
     SystemRenderer *r = this->findChild<SystemRenderer*>("systemview");
-    r->root_window = parent;
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, r, &SystemRenderer::animate);
     // TODO: fiddle with frame rate, configurable frame rate?

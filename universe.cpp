@@ -11,6 +11,7 @@ Empire player_empire;
 
 // TODO: temporary
 QApplication *qapp;
+QWidget *main_widget;
 
 // master list of extant dialectric materials
 QList<Dialectric> dialectric_materials;

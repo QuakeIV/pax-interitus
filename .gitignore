@@ -10,7 +10,7 @@ freespace-aurora
 .rcc/
 libuniverse.so
 universe_autogen/
-paxpython.so
+libpaxpython.so
 paxpython_autogen/
 *.pyc
 .ninja_deps

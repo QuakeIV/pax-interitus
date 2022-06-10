@@ -25,8 +25,6 @@ public:
 
     void set_focus_system(SolarSystemType *s);
     SolarSystemType * get_focus_system(void);
-    // what to root newly spawned windows to
-    QWidget *root_window;
 
 protected:
     void paintEvent(QPaintEvent *event) override;

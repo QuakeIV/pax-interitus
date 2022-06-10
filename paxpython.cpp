@@ -6,24 +6,52 @@
 #include <QApplication>
 
 extern QApplication *qapp;
-static PyTypeObject **SbkPySide6_QtWidgetsTypes;
+extern QWidget *main_widget;
 
 static PyObject *method_bind_to_qapp(PyObject *self, PyObject *args)
 {
-    //TODO: temp
-    universe_init();
-    
     uint64_t ptr = 0;
     // Parse arguments
     if(!PyArg_ParseTuple(args, "K", &ptr))
         return Py_False;
     
-    //TODO: make it clear there is not currently error checkign on this
     qapp = (QApplication *)ptr;
     
     return Py_True;
 }
 
+// handy snippet for later
+//extern "C"
+//{
+//    PyObject* foo(const char* FILE_NAME)
+//    {
+//        string line;
+//        ifstream myfile(FILE_NAME);
+//        PyObject* result = PyList_New(0);
+//
+//        while (getline(myfile, line))
+//        {
+//            PyList_Append(result, PyLong_FromLong(1));
+//        }
+//
+//        return result;
+//    }
+//}
+
+
+static PyObject *method_define_main_widget(PyObject *self, PyObject *args)
+{
+    uint64_t ptr = 0;
+    // Parse arguments
+    if(!PyArg_ParseTuple(args, "K", &ptr))
+        return Py_False;
+    
+    main_widget = (QWidget *)ptr;
+    
+    return Py_True;
+}
+
+// TODO: set parent?
 static PyObject *method_add_systemrenderer_to_layout(PyObject *self, PyObject *args)
 {
     uint64_t ptr = 0;
@@ -32,14 +60,14 @@ static PyObject *method_add_systemrenderer_to_layout(PyObject *self, PyObject *a
         return Py_False;
     
     QVBoxLayout *layout = (QVBoxLayout *)ptr;
-    printf("%p\n",(void*)ptr);
-//    QWidget *parent = new QWidget();
-    SystemRenderer *renderer = new SystemRenderer(0);
+//    printf("%p\n",(void*)ptr);
+    SystemRenderer *renderer = new SystemRenderer(main_widget);
     layout->addWidget(renderer);
 
     return Py_True;
 }
 
+// currently does nothing
 static PyObject *method_test(PyObject *self, PyObject *args)
 {
 //    uint64_t ptr = 0;
@@ -48,10 +76,10 @@ static PyObject *method_test(PyObject *self, PyObject *args)
     if(!PyArg_ParseTuple(args, "O", obj))
         return Py_False;
     
-    void* ptr = obj;
+//    void* ptr = obj;
     
-    printf("%p\n", obj);
-    printf("%p\n", ptr);
+//    printf("%p\n", obj);
+//    printf("%p\n", ptr);
     
     //QVBoxLayout *layout = (QVBoxLayout *)ptr;
 //    QWidget *parent = new QWidget();
@@ -90,26 +118,26 @@ static PyObject *method_fputs(PyObject *self, PyObject *args)
 
 }*/
 
-static PyMethodDef paxpythonMethods[] = {
+static PyMethodDef libpaxpythonMethods[] = {
 //TODO: for the love of toast try to find some other way to do the keyboard stuff
     {"bindToQApp", method_bind_to_qapp, METH_VARARGS, "Pax Interitus requires a QApplication pointer for keyboard logic to work"},
+    {"defineMainWidget", method_define_main_widget, METH_VARARGS, "Allows you to set the main parent window which will cause all others to close when it does"},
     {"addSystemRendererToLayout", method_add_systemrenderer_to_layout, METH_VARARGS, "Python interface for pax interitus system renderer widget"},
     {"test", method_test, METH_VARARGS, "generic function to play around with"},
     {NULL, NULL, 0, NULL} // i think this just terminates the list
 };
 
 
-static struct PyModuleDef paxpythonmodule = {
+static struct PyModuleDef libpaxpythonmodule = {
     PyModuleDef_HEAD_INIT,
     "paxpython",
     "Python interface for pax interitus",
     -1,
-    paxpythonMethods
+    libpaxpythonMethods
 };
 
-PyMODINIT_FUNC PyInit_paxpython(void)
+PyMODINIT_FUNC PyInit_libpaxpython(void)
 {
-//    Shiboken::AutoDecRef requiredModule(Shiboken::Module::import("PySide6.QtCore"));
-//    SbkPySide6_QtWidgetsTypes = Shiboken::Module::getTypes(requiredModule);
-    return PyModule_Create(&paxpythonmodule);
+    universe_init();
+    return PyModule_Create(&libpaxpythonmodule);
 }

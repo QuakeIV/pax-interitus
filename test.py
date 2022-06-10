@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import shiboken6, sys, paxpython
+import sys, paxpython
 
 from PySide6.QtWidgets import QApplication, QLabel, QPushButton, QWidget, QVBoxLayout
 
@@ -9,17 +9,13 @@ layout = QVBoxLayout()
 
 button = QPushButton("Click me")
 layout.addWidget(button)
-paxpython.bindToQApp(shiboken6.getCppPointer(app)[0])
-paxpython.addSystemRendererToLayout(shiboken6.getCppPointer(layout)[0])
+paxpython.bindToQApp(app)
+paxpython.addSystemRendererToLayout(layout)
 
 widge = QWidget()
 widge.setLayout(layout)
 widge.show()
 
-paxpython.test(app)
 
-print(dir(app))
-
-print(dir(paxpython))
 
 app.exec()

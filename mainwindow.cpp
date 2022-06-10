@@ -2,11 +2,12 @@
 #include "./ui_mainwindow.h"
 #include "universe.h"
 #include "systemwindow.h"
+#include <QWidget>
 
 //TODO: temporary
 #include "designer_windows/capacitordesigner.h"
 
-extern MainWindow *mainwindow;
+extern QWidget *main_widget;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -127,6 +128,6 @@ void MainWindow::newsystemview()
 {
     //TODO: maybe make these things track to viewed system name when they arent the parent window (or maybe even when they are?)
     //MainWindow *w = new MainWindow(this); // NOTE: it is possible to spawn multiple main windows, but im tending away from that at this point
-    SystemWindow *w = new SystemWindow(openGL->get_focus_system(), mainwindow);
+    SystemWindow *w = new SystemWindow(openGL->get_focus_system(), main_widget);
     w->show();
 }
