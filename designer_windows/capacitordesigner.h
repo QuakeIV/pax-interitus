@@ -15,7 +15,7 @@ class CapacitorDesigner : public QDialog
     CapacitorDesign design;
     Dialectric *selected_dialectric;
     QComboBox *dialectric_combobox;
-    QLineEdit *area_edit;
+    QLineEdit *capacity_edit; // target capacity in joules
     QLineEdit *voltage_edit;
     QLineEdit *amperage_edit;
     QLabel *details;
@@ -29,21 +29,28 @@ class CapacitorDesigner : public QDialog
     // update everything to reflect new world state or other updates
     void update(void)
     {
+        // TODO: support 100kJ notation
+
         // update dialectric display
         dialectric_combobox->clear();
         // TODO: this should iterate on an empire's knowledge of dialectrics instead
         foreach(Dialectric d, dialectric_materials)
             dialectric_combobox->addItem(d.descriptor_string());
-        //annoyingly this has to match one of the existing items exactly
+
+        // NOTE: annoyingly this has to match one of the existing items exactly
         dialectric_combobox->setCurrentText(selected_dialectric->descriptor_string());
 
         design.dialectric = selected_dialectric;
-        design.plate_area = area_edit->text().toDouble();
 
         // TODO: spec voltage/amperage can probably change to a dropdown of established circuit specs
         double spec_voltage = voltage_edit->text().toDouble();
         // TODO: this needs to change if we ever introduce min separation
-        design.plate_separation = spec_voltage/design.dialectric->strength;
+        double separation = spec_voltage/design.dialectric->strength;
+        design.plate_separation = separation;
+
+        double spec_capacity = capacity_edit->text().toDouble();
+        double plate_area = (2 * spec_capacity * separation) / (spec_voltage * spec_voltage * design.dialectric->permittivity);
+        design.plate_area = plate_area;
 
         double spec_amperage = amperage_edit->text().toDouble();
         double resistance = spec_voltage/spec_amperage;
@@ -55,6 +62,9 @@ class CapacitorDesigner : public QDialog
         s += "\nTime to Full Charge: " + get_time_str(design.charge_time());
         s += "\nSpecced Plate Separation: " + get_distance_str(design.plate_separation);
         s += "\nSpecced Inline Resistor: " + get_resistance_str(resistance);
+        s += "\nSpecced Area: " + get_area_str(plate_area);
+        s += "\nVolume: " + get_volume_str(design.volume());
+//        s += "\nMass: " + get_mass_str(design.mass()); // TODO: need defined densities
         s += "\nAmperage at spec voltage: " + get_amperage_str(design.max_current(spec_voltage));
         s += "\nMax Design Voltage: " + get_voltage_str(design.max_voltage());
         // TODO: document overall size of capacitor
@@ -79,10 +89,10 @@ public:
 
         // capture pointers for UI elements
         dialectric_combobox = this->findChild<QComboBox*>("dialectric");
-        area_edit = this->findChild<QLineEdit*>("area_edit");
-        voltage_edit = this->findChild<QLineEdit*>("voltage_edit");
-        amperage_edit = this->findChild<QLineEdit*>("amperage_edit");
-        details = this->findChild<QLabel*>("details");
+        capacity_edit       = this->findChild<QLineEdit*>("capacity_edit");
+        voltage_edit        = this->findChild<QLineEdit*>("voltage_edit");
+        amperage_edit       = this->findChild<QLineEdit*>("amperage_edit");
+        details             = this->findChild<QLabel*>("details");
 
         // set validators
         //resistance_edit->setValidator(new QDoubleValidator(1, ((double)LONG_MAX)/RESISTANCE_FACTOR, (RESISTANCE_SHIFT/10)*3, resistance_edit));
@@ -100,7 +110,7 @@ public:
         });
 
         // capture area changes
-        connect(area_edit, QOverload<const QString &>::of(&QLineEdit::textEdited),
+        connect(capacity_edit, QOverload<const QString &>::of(&QLineEdit::textEdited),
             [=](const QString &text)
         { this->update(); });
 

@@ -51,10 +51,27 @@ public:
         return voltage / resistance;
     }
 
+    // cubic meters
+    // TODO: ships should fairly ineffeciently use volume, with this being a factor related to the design itself
+    // TODO: move to component parent class
+    double volume(void)
+    {
+        return CUBIC_METER_TO_LITER(plate_separation * plate_area);
+    }
+
+    // kilograms
+    // TODO: ships should use mass with perfect efficiency
+    // TODO: move to component parent class
+    double mass(void)
+    {
+        return volume() * dialectric->density;
+    }
+
     // returns standard reference frame time (in delta T, not absolute)
     int64_t charge_time(void)
     {
         // 5 for 'five time units' which we shall assume is de facto capacitor charging time
+        // TODO: might be a better fit to go for 3 time units or so?
         return (5.0 * resistance * capacitance() * TIME_FACTOR);
     }
 

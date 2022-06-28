@@ -19,4 +19,6 @@
 
 #define DISTANCE_FIXED_TO_FLOAT(x) ((x)/1024.0)
 
+#define CUBIC_METER_TO_LITER(x) ((x)*1000)
+
 #endif // UNITS_H

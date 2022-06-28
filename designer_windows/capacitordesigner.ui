@@ -35,7 +35,7 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>60</y>
+     <y>40</y>
      <width>311</width>
      <height>22</height>
     </rect>
@@ -45,7 +45,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>60</y>
+     <y>40</y>
      <width>71</width>
      <height>21</height>
     </rect>
@@ -61,23 +61,23 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>90</y>
+     <y>70</y>
      <width>110</width>
      <height>21</height>
     </rect>
    </property>
    <property name="text">
-    <string>Area (m²): </string>
+    <string>Spec Capacity (J): </string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
    </property>
   </widget>
-  <widget class="QLineEdit" name="area_edit">
+  <widget class="QLineEdit" name="capacity_edit">
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>90</y>
+     <y>70</y>
      <width>271</width>
      <height>22</height>
     </rect>
@@ -86,16 +86,16 @@
     <set>Qt::ImhNone</set>
    </property>
    <property name="text">
-    <string>1.0</string>
+    <string>100000</string>
    </property>
   </widget>
   <widget class="QLabel" name="details">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>180</y>
+     <y>160</y>
      <width>381</width>
-     <height>111</height>
+     <height>131</height>
     </rect>
    </property>
    <property name="text">
@@ -106,7 +106,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>120</y>
+     <y>100</y>
      <width>110</width>
      <height>21</height>
     </rect>
@@ -125,7 +125,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>120</y>
+     <y>100</y>
      <width>271</width>
      <height>22</height>
     </rect>
@@ -141,7 +141,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>150</y>
+     <y>130</y>
      <width>271</width>
      <height>22</height>
     </rect>
@@ -157,7 +157,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>150</y>
+     <y>130</y>
      <width>110</width>
      <height>21</height>
     </rect>

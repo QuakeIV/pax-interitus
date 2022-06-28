@@ -232,5 +232,59 @@ static inline QString get_resistance_str(double resistance)
     return QString("%1%2Ω").arg(QString::number(resistance, 'f', 1), si_scale[i]);
 }
 
+// convert area in square meters to a string representation
+// TODO: this should be config file sensitive eventually
+static inline QString get_area_str(double area)
+{
+    if (area < 0)
+        area *= -1;
+
+    // aurora mode
+    // TODO: configurable?
+    static const QString si_scale[] = {"p", "n", "µ", "m", "", "k", "kk", "mk", "bk"};
+
+    int i = 4;
+    while (i > 0 && area < 0.1)
+    {
+        area *= 1000000.0;
+        i--;
+    }
+    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && area > 100000.0)
+    {
+        area /= 1000.0;
+        i++;
+    }
+
+    // TODO: we might want to actually unify this behavior a bit
+    int digits = round(6.0 - log10(area));
+    if (digits < 1)
+        digits = 1;
+    if (digits > 6)
+        digits = 6;
+
+    return QString("%1%2m²").arg(QString::number(area, 'f', digits), si_scale[i]);
+}
+
+// takes volume in liters
+static inline QString get_volume_str(double volume)
+{
+    // TODO: make this selectable/configurable?
+    static const QString si_scale[] = {"p", "n", "µ", "m", "", "k","M","G","T","P"};
+
+    int i = 4;
+    while (i > 0 && volume < 1.0)
+    {
+        volume *= 1000.0;
+        i--;
+    }
+    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && volume > 10000.0)
+    {
+        volume /= 1000.0;
+        i++;
+    }
+
+    return QString("%1%2L").arg(QString::number(volume, 'f', 1), si_scale[i]);
+}
+
 
 #endif // UTILITIES_H

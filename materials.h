@@ -8,6 +8,7 @@
 class Material
 {
 public:
+    // kg per liter
     double density;
     // TODO: tie this to an empire's knowledge of dialectric materials instead
     QString name;
