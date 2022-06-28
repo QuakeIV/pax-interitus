@@ -24,7 +24,7 @@ protected:
 
     // track joules of damage taken so far
     // the apply damage function will have an opportunity to absorb a degree of it as appropriate
-    // ideally the update functions
+    // TODO: ideally the update functions update this
     int64_t damage;
 public:
     Component() {}
@@ -47,8 +47,9 @@ public:
     // or perhaps explode, or so forth
     virtual void update(Spacecraft *parent) {}
 
-    // provide power to the component (in watts)
-    virtual void charge(int64_t wattage) {}
+    // circuit will calculate supply voltage based on intended circuit voltage, load, and max rated wattage
+    // circuit shall take care of not re-calling this if the voltage remains unchanged
+    virtual void update_voltage(double voltage) {}
 
     // TODO: more overrides for planetary defense facilities and so forth
     // (probably this will result in common callbacks for both types of thing, or maybe both get a common subtype?)
@@ -62,6 +63,8 @@ public:
 };
 
 // power generation component
+// TODO: per calculating loads, we could store a max load in terms of resistance to toggle between regular operation and voltage drop modes
+// eh note that should probably be at the circuit level, the reactor should just have a wattage and voltage rating
 class Reactor : Component
 {
 public:

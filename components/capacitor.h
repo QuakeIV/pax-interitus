@@ -3,6 +3,7 @@
 
 #include "component.h"
 #include "materials.h"
+#include "universe.h"
 
 // what is edited in the designer window
 // probably all components will have a special design type, i cant forsee any actual overlap there (unlike the components themselves)
@@ -12,45 +13,49 @@ public:
     // dielectric sandwich material
     Dialectric *dialectric;
     // meters
-    int64_t plate_separation = 0;
+    double plate_separation = 0;
     // square meters
-    int64_t plate_area = 0;
+    double plate_area = 0;
     // inline resistor ohms
-    int64_t resistance = 1;
+    double resistance = 1;
+
+    //TODO: track spec voltage, which will inform when it starts to take damage
+    //TODO: spec amperage as well
+    //TODO: eventual failures due to mismatch between spec and reality?
 
     // returns volts
-    int64_t max_voltage(void)
+    double max_voltage(void)
     {
-        return (dialectric->strength * plate_separation) >> ((DIALECTRIC_STRENGTH_SHIFT + PRECISION_DISTANCE_SHIFT) - VOLTAGE_SHIFT);
+        return dialectric->strength * plate_separation;
     }
 
     // returns farads
-    int64_t capacitance(void)
+    double capacitance(void)
     {
         if (plate_separation <= 0)
             return 0;
-        return ((dialectric->permittivity * plate_area) / plate_separation) >> ((DIALECTRIC_CONSTANT_SHIFT + PRECISION_AREA_SHIFT - PRECISION_DISTANCE_SHIFT) - CAPACITANCE_SHIFT);
+        return (dialectric->permittivity * plate_area) / plate_separation;
     }
 
     // returns joules
-    int64_t max_energy(__int128_t voltage)
+    double energy_at_voltage(double voltage)
     {
-        return ((((__int128_t)capacitance() * voltage * voltage) >> 1) >> ((CAPACITANCE_SHIFT + VOLTAGE_SHIFT + VOLTAGE_SHIFT) - ENERGY_SHIFT));
+        return (capacitance() * voltage * voltage) * (1/2.0);
     }
 
     // amps
-    int64_t max_current(int64_t voltage)
+    double max_current(double voltage)
     {
         if (resistance <= 0)
             return 0;
-        return ((voltage << (AMPERAGE_SHIFT)) / resistance) >> (VOLTAGE_SHIFT - RESISTANCE_SHIFT);
+        return voltage / resistance;
     }
 
     // returns standard reference frame time (in delta T, not absolute)
     int64_t charge_time(void)
     {
         // 5 for 'five time units' which we shall assume is de facto capacitor charging time
-        return (5 * resistance * capacitance()) >> ((RESISTANCE_SHIFT + CAPACITANCE_SHIFT) - TIME_SHIFT);
+        return (5.0 * resistance * capacitance() * TIME_FACTOR);
     }
 
     //TODO: weight, volume
@@ -61,77 +66,84 @@ class Capacitor : Component
 {
     CapacitorDesign *design;
 
-    int64_t initial_time = 0;
-
 public:
-    Capacitor() {}
+    Capacitor()
+    {
+        assert(design!=NULL); // TODO: kill by defining NDEBUG
+        max_dt = design->charge_time();
+    }
 
     static const bool uses_power = true;
 
+    // returns joules per second instead of joules per 'time unit'
+    double get_current_wattage()
+    {
+        return current_charge_rate * TIME_FACTOR;
+    }
+
+    int64_t get_stored_energy()
+    {
+        if (initial_energy > current_max_energy)
+            return initial_energy;
+
+        if (universe_time > charge_time)
+            return current_max_energy;
+
+        // TODO: this still feels like a really unfortunate compromise in every way
+        // it might be better to just accept energy as a double
+        int64_t dt = universe_time - initial_time;
+        int64_t e = (int64_t)(((double)dt) * current_charge_rate) + initial_energy;
+        if (e > initial_energy)
+            return e;
+        return initial_energy;
+    }
+
     void update(Spacecraft *parent) override
     {
-        extern int64_t universe_time;
-        // track initial_time to offset of current time if fully charged, so that charge stays consistent with reality
-        if (initial_time + max_dt > universe_time)
-        {
-            initial_time = universe_time - max_dt;
-            stored_energy = max_energy;
-        }
-        else
-        {
-            // TODO: would be nice to not do this all too often (in fairness once we are fully charged we are set for life)
-            // thats probably going to turn out to nuke the majority of the unwanted performance impact so we are probably fine
-            if (current_charge_rate)
-                stored_energy = current_charge_rate * (universe_time - initial_time);
-        }
+        // this should probably remain a stub until we add reactions to damage (which should set the universe step time appropriately so this doesn't miss the window on that)
     }
-    int64_t current_charge_rate = 0;
-    int64_t max_energy = 0;
-    int64_t max_dt = 0; // time it takes to fully charge
-    int64_t discharge_energy = 0; // amount of energy consumed per discharge
-    int64_t discharge_dt = 0; // time it takes at current charge rate to regain one discharge
-    int64_t stored_energy = 0;
+    int64_t initial_time = 0;
+    int64_t initial_energy = 0;
+    double current_charge_rate = 0; // de facto this is joules per 'time unit' since thats cheaper for math purposes and its a double so that works out fine precision wise
+    double current_voltage = 0;
+    int64_t current_max_energy = 0; // energy
+    int64_t max_dt = 0; // time it takes to fully charge (currently no way this should change after initialization (maybe later it will degrade due to damage or other factors)
+    int64_t charge_time = 0; // time at which the capacitor will be fully charged
+    int64_t discharge_energy = 0; // amount of energy consumed per discharge (defined by containing component generally)
 
-    // charge rate in watts (for now)
-    void charge(int64_t rate) override
+    //NOTE: this will cope very poorly with rapidly fluctuating voltage
+    void update_voltage(double voltage) override
     {
-        if (current_charge_rate == rate)
+        // TODO: react to over-volt
+
+        if (current_voltage == voltage)
             return;
 
-        // reject negative numbers
-        // *backflip* (this actually should be a faster negative number check)
-        if (rate & (~LLONG_MAX))
-        {
-            qDebug() << "ERROR: trying to charge capacitor by negative rate";
-            rate = 0;
-        }
+        initial_energy = get_stored_energy();
 
-        //TODO: max charge rate?
+        // update max storeable energy (this function is needed for the designer so its shared)
+        current_max_energy = design->energy_at_voltage(voltage);
+        current_charge_rate = ((double)current_max_energy) / ((double)max_dt); // energy shift minus time shift, targeting wattage shift
 
-        // TODO: might be a way to share this among multiple capacitors, maybe this can live at the circuit level somehow?
-        if (rate)
-        {
-            // converting seconds of charge time to time units
-            initial_time = (stored_energy << TIME_SHIFT) / rate;
-            max_dt = (max_energy << TIME_SHIFT) / rate;
-            discharge_dt = (discharge_energy << TIME_SHIFT) / rate;
-        }
-        current_charge_rate = rate;
+        //TODO: later consider if its better to just back-compute an 'initial time' in the past and to then use universe_time + max_dt for charge time
+        initial_time = universe_time;
+        charge_time = universe_time + (int64_t)((current_max_energy - initial_energy) / current_charge_rate);
     }
 
     // for now this is simply an instantaneous action
     // TODO: there may one day be a need to have this take some amount of time, if small
-    // might even be a thing tech can effect
+    // might be a thing tech can effect
+    // TODO: could probably save cycles by having the containing LRU schedule events if it wants to fire
+    // in that case might be able to avoid the check? probably still need to recalculate to subtract out energy that was used
     bool discharge(void)
     {
-        extern int64_t universe_time;
-        if ((universe_time - initial_time) > discharge_dt)
+        int64_t energy = get_stored_energy();
+
+        if (energy > discharge_energy)
         {
-            initial_time += discharge_dt;
-            stored_energy -= discharge_energy;
+
             return true;
         }
-
         return false;
     }
 };

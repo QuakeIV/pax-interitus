@@ -60,7 +60,6 @@ private:
     FleetType *fleet_click(QPointF p);
 
     bool mouse_pressed;
-    int elapsed;
     QTimer clickTimer;
 
     // for handling click drag

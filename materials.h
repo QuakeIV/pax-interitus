@@ -8,7 +8,7 @@
 class Material
 {
 public:
-    int64_t density;
+    double density;
     // TODO: tie this to an empire's knowledge of dialectric materials instead
     QString name;
 
@@ -23,11 +23,12 @@ public:
 
 class Dialectric : public Material
 {
+    //TODO: it appears a relevant metric might be 'minimum thickness'
 public:
     // absolute dialectric (farads/meter)
-    int64_t permittivity;
+    double permittivity;
     // volts per meter
-    int64_t strength;
+    double strength;
 
     // TODO: tie this to an empire's knowledge of dialectric materials instead
     QString descriptor_string() override

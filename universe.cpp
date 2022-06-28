@@ -5,6 +5,7 @@
 #include "solarsystemtype.h"
 #include "spacecraft.h"
 #include "units.h"
+#include <QTimer>
 
 // TODO: temporary
 Empire player_empire;
@@ -46,17 +47,39 @@ void universe_init(void)
     // TODO: temporary
     // add some dialectric materials
     Dialectric d;
-    d.permittivity = 20 * DIALECTRIC_CONSTANT_FACTOR;
-    d.strength = 20 * DIALECTRIC_STRENGTH_FACTOR;
-    d.name = "wumbo";
+    // now featuring wikipedia capacitor materials
+    // (most optimistic figures)
+    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(40);
+    d.strength = VOLT_UM_TO_VOLT_M(100);
+    d.name = "Ceramic Class 1";
     dialectric_materials.append(d);
-    d.permittivity = 10 * DIALECTRIC_CONSTANT_FACTOR;
-    d.strength = 40 * DIALECTRIC_STRENGTH_FACTOR;
-    d.name = "mumbo";
+    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(14000);
+    d.strength = VOLT_UM_TO_VOLT_M(35);
+    d.name = "Ceramic Class 2";
     dialectric_materials.append(d);
-    d.permittivity = 30 * DIALECTRIC_CONSTANT_FACTOR;
-    d.strength = 30 * DIALECTRIC_STRENGTH_FACTOR;
-    d.name = "jumbo";
+    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(3.3);
+    d.strength = VOLT_UM_TO_VOLT_M(580);
+    d.name = "Film (PET)";
+    dialectric_materials.append(d);
+    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(9.6);
+    d.strength = VOLT_UM_TO_VOLT_M(710);
+    d.name = "Aluminum electrolytic";
+    dialectric_materials.append(d);
+    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(26);
+    d.strength = VOLT_UM_TO_VOLT_M(625);
+    d.name = "Tantalum electrolytic";
+    dialectric_materials.append(d);
+    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(42);
+    d.strength = VOLT_UM_TO_VOLT_M(455);
+    d.name = "Niobium electrolytic";
+    dialectric_materials.append(d);
+    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(10);
+    d.strength = VOLT_UM_TO_VOLT_M(450);
+    d.name = "Glass";
+    dialectric_materials.append(d);
+    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(8);
+    d.strength = VOLT_UM_TO_VOLT_M(118);
+    d.name = "Mica";
     dialectric_materials.append(d);
 
     // for now hard code the solar system because to heck with it i tell you
@@ -227,10 +250,9 @@ void universe_init(void)
     testfleet1.ships.append(&testcraft);
 }
 
-// delta t in milliseconds
+// delta t in time units
 void universe_update(int64_t delta_t)
 {
-    delta_t = MILLISECONDS_TO_TIME(delta_t);
     if (universe_paused)
         return;
 

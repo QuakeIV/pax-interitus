@@ -9,6 +9,7 @@
 
 extern QWidget *main_widget;
 
+// NOTE: not meant to be more than one of these
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -20,11 +21,17 @@ MainWindow::MainWindow(QWidget *parent)
     display_warp = this->findChild<QPushButton*>("displaywarp");
     status_bar = this->findChild<QStatusBar*>("statusbar");
 
-    //TODO: seriously consider moving the timer into the systemrenderer itself
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &MainWindow::update_status_bar);
-    // TODO: configurable framerate, ideally track to that during runtime as well
+    // TODO: configurable framerate (although this is just updating the status bar)
     timer->start(50);
+
+    // main timer driving the universe sim (should roughly match frame rate)
+    // TODO: this is kindof sloppy but should mostly work fine
+    timer = new QTimer(this);
+    QObject::connect(timer, &QTimer::timeout,  [timer]() {universe_update(MILLISECONDS_TO_TIME(timer->interval()));});
+    //circa 60 fps? TODO: maybe better frame time mechanism? probably not particularly vital to gun for accurate times
+    timer->start(1000.0/60.0);
 
     CapacitorDesigner *d = new CapacitorDesigner(this);
     d->show();

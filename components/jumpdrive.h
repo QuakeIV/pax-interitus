@@ -14,7 +14,7 @@ public:
 
     void update(Spacecraft *parent) override
     {
-        cap.update(parent);
+        //cap.update(parent);
     }
 
     static const bool uses_power = true;

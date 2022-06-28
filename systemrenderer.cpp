@@ -17,9 +17,8 @@ SystemRenderer::SystemRenderer(QWidget *parent) :
     //TODO: configurable frame rate, ideally track to that during runtime as well
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &SystemRenderer::animate);
-    timer->start(50);
+    timer->start(1000.0/60.0); //circa 60 fps? TODO: maybe better frame time mechanism? probably not particularly vital
 
-    elapsed = 0;
     clickTimer.setSingleShot(true);
     setAutoFillBackground(false); //TODO: does this do anything useful
 
@@ -118,6 +117,7 @@ void SystemRenderer::render_fleets(void)
             QPointF copos = position_to_screen_coordinates(list[i]->trajectory.position);
             QPointF d = copos - pos;
 
+            // TODO: needs work to eliminate vertical jitter, shouldnt exist at long range zoom
             // TODO: dont hard code horizontal space?
             if ((abs(d.y()) < font_size) && (abs(d.x()) < 50.0))
             {
@@ -153,7 +153,7 @@ void SystemRenderer::render_yardstick(void)
 
     //draw distance
     QPointF d = mousedrag_position - singleclick_position;
-    double dist = (double)sqrt(d.x()*d.x() + d.y()*d.y()) * (double)(1l<<currentZoom);
+    double dist = DISTANCE_FIXED_TO_FLOAT((double)sqrt(d.x()*d.x() + d.y()*d.y()) * (double)(1l<<currentZoom));
     painter.drawText(mousedrag_position + QPointF(0,-2), get_distance_str(dist));
 }
 
@@ -163,7 +163,7 @@ void SystemRenderer::render_scale()
     static const QPointF scale_from = QPointF(20,30);
     static const QPointF scale_text = QPointF(20,28);
     static const QPointF scale_to   = QPointF(120,30);
-    double dist = (100ul << currentZoom); //assuming 100px width for now, this needs to stay in sync with the above
+    double dist = DISTANCE_FIXED_TO_FLOAT((100ul << currentZoom)); //assuming 100px width for now, this needs to stay in sync with the above
 
     painter.setPen(orbit);
     painter.drawLine(scale_from, scale_to);
@@ -227,12 +227,6 @@ void SystemRenderer::render_planet_recurse(CelestialType *cel)
 
 void SystemRenderer::animate()
 {
-    int delta = qobject_cast<QTimer*>(sender())->interval();
-    elapsed += delta;
-
-    //TODO: this is kindof messy to do this in gui land...
-    universe_update(delta);
-
     update();
 }
 

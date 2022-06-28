@@ -4,7 +4,7 @@ project(freespace-aurora VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-cmake_policy(VERSION 3.12)
+cmake_policy(VERSION 3.12) #shutting up policy warnings
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -17,6 +17,7 @@ find_package(QT NAMES Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
 find_package(Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
 find_package(Python COMPONENTS Development)
 
+#TODO: prolly update project sources to be named something else, at this point its the C++ frontend i think
 # this is effectively the frontend library
 file(GLOB PROJECT_SOURCES "*.h" "*.ui")
 list(APPEND PROJECT_SOURCES "main.cpp;mainwindow.cpp;systemwindow.cpp;celestialwindow.cpp;systemrenderer.cpp;systemrenderermousebackend.cpp")
@@ -45,7 +46,7 @@ set_target_properties(freespace-aurora PROPERTIES
 
 # Define the shared library for the backend logic
 # this was originally used for python bindings, and conceptually should probalby be kept
-set(libuniverse_sources universe.cpp orbittype.cpp solarsystemtype.cpp celestialtype.cpp)
+set(libuniverse_sources universe.cpp universe.h orbittype.cpp orbittype.h solarsystemtype.cpp solarsystemtype.h celestialtype.cpp celestialtype.h)
 add_library(universe SHARED ${libuniverse_sources})
 target_link_libraries(universe PUBLIC Qt6::Widgets Qt6::OpenGLWidgets)
 

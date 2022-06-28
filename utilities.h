@@ -34,10 +34,8 @@ static inline int64_t muldiv(int64_t x, int64_t mul, int64_t div)
     return trueval;
 }
 
-// convert universal distance representation (millimeters) to string representation
-// takes a double since the pythagorean distance tends to get calculated in the FPU at the moment
-// TODO: get a root solver going for integer sqrt (or find an existing one)
-//TODO: this shit should be config file sensitive eventually
+// convert distance in meters to a string representation
+// TODO: this should be config file sensitive eventually
 static inline QString get_distance_str(double distance)
 {
     if (distance < 0)
@@ -46,10 +44,19 @@ static inline QString get_distance_str(double distance)
     // metric mode
     //static const QString si_scale[] = {"m", "", "k","M","G","T","P"};
     // aurora mode
-    static const QString si_scale[] = {"m", "", "k","kk","mk","bk"};
-    int i;
-    for (i = 0; i < (sizeof(si_scale)/sizeof(si_scale[0]) - 1) && distance > 10000.0; i++)
-        distance /= 1000;
+    static const QString si_scale[] = {"p", "n", "µ", "m", "", "k","kk","mk","bk"};
+
+    int i = 4;
+    while (i > 0 && distance < 1.0)
+    {
+        distance *= 1000.0;
+        i--;
+    }
+    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && distance > 10000.0)
+    {
+        distance /= 1000.0;
+        i++;
+    }
 
     return QString("%1 %2m").arg(QString::number(distance, 'f', 1), si_scale[i]);
 }
@@ -57,7 +64,7 @@ static inline QString get_distance_str(double distance)
 // TODO: kindof sucks effeciency wise but i mean this isnt going to happen that much
 static inline QString get_time_str(int64_t time)
 {
-    int64_t seconds = time >> TIME_SHIFT;
+    double seconds = ((double)time) / TIME_FACTOR;
     int64_t mins = seconds / 60;
     int64_t hours = mins / 60;
     int64_t days = hours / 24;
@@ -65,7 +72,22 @@ static inline QString get_time_str(int64_t time)
     days %= 365;
     hours %= 24;
     mins %= 60;
-    seconds %= 60;
+    seconds = fmod(seconds,60.0);
+
+    QString s = "s";
+    if (!mins && !hours && !days && !years)
+    {
+        if (seconds < 1.0)
+        {
+            seconds *= 1000.0;
+            s = "ms";
+        }
+        if (seconds < 1.0)
+        {
+            seconds *= 1000.0;
+            s = "µs";
+        }
+    }
 
     QStringList list;
 
@@ -78,9 +100,10 @@ static inline QString get_time_str(int64_t time)
     if (mins || list.length())
         list.append(QString::number(mins) + "m");
     if (seconds || list.length())
-        list.append(QString::number(seconds) + "s");
+        list.append(QString::number(seconds,'f',3) + s);
     if (!list.length())
-        list.append(QString::number(seconds) + "s");
+        list.append("0s");
+
 
     return list.join(" ");
 }
@@ -107,13 +130,11 @@ static inline QString get_date_str(void)
     return list.join(" ");
 }
 
-// currently in millivolts
 static inline QString get_voltage_str(double voltage)
 {
-    voltage = voltage / VOLTAGE_FACTOR;
     // TODO: make this selectable/configurable?
-    static const QString si_scale[] = {"n", "µ", "m", "", "k","M","G","T","P"};
-    int i = 3;
+    static const QString si_scale[] = {"p", "n", "µ", "m", "", "k","M","G","T","P"};
+    int i = 4;
     while (i > 0 && voltage < 1.0)
     {
         voltage *= 1000.0;
@@ -131,11 +152,10 @@ static inline QString get_voltage_str(double voltage)
 // currently in joules
 static inline QString get_energy_str(double energy)
 {
-    energy = energy / ENERGY_FACTOR;
     // TODO: make this selectable/configurable?
-    static const QString si_scale[] = {"n", "µ", "m", "", "k","M","G","T","P"};
+    static const QString si_scale[] = {"p", "n", "µ", "m", "", "k","M","G","T","P"};
 
-    int i = 3;
+    int i = 4;
     while (i > 0 && energy < 1.0)
     {
         energy *= 1000.0;
@@ -151,13 +171,11 @@ static inline QString get_energy_str(double energy)
     return QString("%1%2J").arg(QString::number(energy, 'f', 1), si_scale[i]);
 }
 
-// currently in milliamps
 static inline QString get_amperage_str(double amperage)
 {
-    amperage = amperage / AMPERAGE_FACTOR;
     // TODO: make this selectable/configurable?
-    static const QString si_scale[] = {"n", "µ", "m", "", "k","M","G","T","P"};
-    int i = 3;
+    static const QString si_scale[] = {"p", "n", "µ", "m", "", "k","M","G","T","P"};
+    int i = 4;
     while (i > 0 && amperage < 1.0)
     {
         amperage *= 1000.0;
@@ -175,12 +193,10 @@ static inline QString get_amperage_str(double amperage)
 // currently in millifarads
 static inline QString get_capacitance_str(double capacitance)
 {
-    capacitance = capacitance / CAPACITANCE_FACTOR;
-
     // TODO: make this selectable/configurable?
-    static const QString si_scale[] = {"n", "µ", "m", "", "k","M","G","T","P"};
+    static const QString si_scale[] = {"p", "n", "µ", "m", "", "k","M","G","T","P"};
 
-    int i = 3;
+    int i = 4;
     while (i > 0 && capacitance < 1.0)
     {
         capacitance *= 1000.0;
@@ -193,6 +209,27 @@ static inline QString get_capacitance_str(double capacitance)
     }
 
     return QString("%1%2F").arg(QString::number(capacitance, 'f', 1), si_scale[i]);
+}
+
+// currently in ohms
+static inline QString get_resistance_str(double resistance)
+{
+    // TODO: make this selectable/configurable?
+    static const QString si_scale[] = {"p", "n", "µ", "m", "", "k","M","G","T","P"};
+
+    int i = 4;
+    while (i > 0 && resistance < 1.0)
+    {
+        resistance *= 1000.0;
+        i--;
+    }
+    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && resistance > 10000.0)
+    {
+        resistance /= 1000.0;
+        i++;
+    }
+
+    return QString("%1%2Ω").arg(QString::number(resistance, 'f', 1), si_scale[i]);
 }
 
 

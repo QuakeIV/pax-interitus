@@ -24,5 +24,6 @@ int main(int argc, char *argv[])
     qapp->setWindowIcon(QIcon(":/images/icon.png"));
 
     w.show();
+
     return a.exec();
 }
