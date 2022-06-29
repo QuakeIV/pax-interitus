@@ -18,7 +18,7 @@ CelestialType::CelestialType(int64_t r, uint64_t m, int64_t distance, CelestialT
     system = parent->system;
     radius = r;
     mass = m;
-
+    
     color = QColor(180,180,180); //assume gray dusty moon until overridden
 
     name = parent->name + " " + QString::number(parent->children.length());

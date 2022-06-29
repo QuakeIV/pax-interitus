@@ -21,7 +21,7 @@ public:
 
     uint64_t mass; //in exagrams (10^18 grams) (quadrillions (10^15) of kgs), ideally later replaced with more parameters later
     int64_t radius; //in mm, radius of the object itself
-
+    
     QColor color;
 
     QList<CelestialType*> children;

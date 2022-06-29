@@ -19,9 +19,9 @@ find_package(Python COMPONENTS Development)
 
 #TODO: prolly update project sources to be named something else, at this point its the C++ frontend i think
 # this is effectively the frontend library
-file(GLOB PROJECT_SOURCES "*.h" "*.ui")
-list(APPEND PROJECT_SOURCES "main.cpp;mainwindow.cpp;systemwindow.cpp;celestialwindow.cpp;systemrenderer.cpp;systemrenderermousebackend.cpp")
-message(${PROJECT_SOURCES})
+file(GLOB PROJECT_SOURCES "*.ui")
+list(APPEND PROJECT_SOURCES "main.cpp;mainwindow.cpp;mainwindow.h;systemwindow.cpp;systemwindow.h;celestialwindow.cpp;celestialwindow.h;systemrenderer.cpp;systemrenderer.h;systemrenderermousebackend.cpp")
+set(UNIVERSE_SOURCES "universe.cpp;universe.h;orbittype.cpp;orbittype.h;solarsystemtype.cpp;solarsystemtype.h;celestialtype.cpp;celestialtype.h")
 add_subdirectory(components)
 add_subdirectory(designer_windows)
 
@@ -46,8 +46,7 @@ set_target_properties(freespace-aurora PROPERTIES
 
 # Define the shared library for the backend logic
 # this was originally used for python bindings, and conceptually should probalby be kept
-set(libuniverse_sources universe.cpp universe.h orbittype.cpp orbittype.h solarsystemtype.cpp solarsystemtype.h celestialtype.cpp celestialtype.h)
-add_library(universe SHARED ${libuniverse_sources})
-target_link_libraries(universe PUBLIC Qt6::Widgets Qt6::OpenGLWidgets)
+add_library(universe SHARED ${UNIVERSE_SOURCES})
+target_link_libraries(universe PUBLIC Qt6::Widgets) #QList, QColor currently (maybe more)
 
 
