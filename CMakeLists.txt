@@ -20,8 +20,20 @@ find_package(Python COMPONENTS Development)
 #TODO: prolly update project sources to be named something else, at this point its the C++ frontend i think
 # this is effectively the frontend library
 file(GLOB PROJECT_SOURCES "*.ui")
-list(APPEND PROJECT_SOURCES "main.cpp;mainwindow.cpp;mainwindow.h;systemwindow.cpp;systemwindow.h;celestialwindow.cpp;celestialwindow.h;systemrenderer.cpp;systemrenderer.h;systemrenderermousebackend.cpp")
-set(UNIVERSE_SOURCES "universe.cpp;universe.h;orbittype.cpp;orbittype.h;solarsystemtype.cpp;solarsystemtype.h;celestialtype.cpp;celestialtype.h")
+list(APPEND PROJECT_SOURCES
+    main.cpp
+    systemwindow.cpp systemwindow.h
+    mainwindow.cpp mainwindow.h
+    celestialwindow.cpp celestialwindow.h
+    systemrenderer.cpp systemrenderermousebackend.cpp systemrenderer.h
+)
+set(UNIVERSE_SOURCES
+    universe.cpp universe.h
+    spacecraft.h
+    orbittype.cpp orbittype.h 
+    solarsystemtype.cpp solarsystemtype.h
+    celestialtype.cpp celestialtype.h
+)
 add_subdirectory(components)
 add_subdirectory(designer_windows)
 
