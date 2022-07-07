@@ -22,10 +22,11 @@ find_package(Python COMPONENTS Development)
 file(GLOB PROJECT_SOURCES "*.ui")
 list(APPEND PROJECT_SOURCES
     main.cpp
-    systemwindow.cpp systemwindow.h
     mainwindow.cpp mainwindow.h
-    celestialwindow.cpp celestialwindow.h
     systemrenderer.cpp systemrenderermousebackend.cpp systemrenderer.h
+    systemwindow.h
+    celestialwindow.h
+    techwindow.h
 )
 set(UNIVERSE_SOURCES
     universe.cpp universe.h
@@ -42,6 +43,7 @@ qt_add_executable(freespace-aurora
     ${PROJECT_SOURCES}
 )
 
+# TODO: would be really nice to eventually have custom window icons for each kind of window, or at least to begin with broad categories
 qt_add_resources(freespace-aurora "images"
     PREFIX "/images"
     FILES icon.png)

@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 #include "universe.h"
 #include "systemwindow.h"
+#include "techwindow.h"
 #include <QWidget>
 
 //TODO: temporary
@@ -33,8 +34,8 @@ MainWindow::MainWindow(QWidget *parent)
     //circa 60 fps? TODO: maybe better frame time mechanism? probably not particularly vital to gun for accurate times
     timer->start(1000.0/60.0);
 
-    CapacitorDesigner *d = new CapacitorDesigner(this);
-    d->show();
+    //Qt::WindowStaysOnBottomHint Qt::X11BypassWindowManagerHint
+    //setWindowFlags(Qt::WindowStaysOnBottomHint);
 }
 
 MainWindow::~MainWindow()
@@ -130,11 +131,18 @@ void MainWindow::update_status_bar()
     status_bar->showMessage(message);
 }
 
-
-void MainWindow::newsystemview()
+void MainWindow::newsystemwindow()
 {
     //TODO: maybe make these things track to viewed system name when they arent the parent window (or maybe even when they are?)
     //MainWindow *w = new MainWindow(this); // NOTE: it is possible to spawn multiple main windows, but im tending away from that at this point
     SystemWindow *w = new SystemWindow(openGL->get_focus_system(), main_widget);
+    w->show();
+}
+
+void MainWindow::newtechwindow()
+{
+    //TODO: maybe make these things track to viewed system name when they arent the parent window (or maybe even when they are?)
+    //MainWindow *w = new MainWindow(this); // NOTE: it is possible to spawn multiple main windows, but im tending away from that at this point
+    TechWindow *w = new TechWindow(main_widget);
     w->show();
 }

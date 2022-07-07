@@ -78,7 +78,7 @@ public:
     {
         ui->setupUi(this);
 
-        setWindowTitle("Capacitor Designer");
+        setWindowFlags(Qt::Window); // set taskbar icon, enable minimize
 
         // TODO: this will need more logic later
         // (maybe the empire remembers the last selected dialectric,

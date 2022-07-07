@@ -20,7 +20,8 @@ public:
     ~MainWindow();
 
 public slots:
-    void newsystemview(void);
+    void newsystemwindow(void);
+    void newtechwindow(void);
 
     void update_status_bar(void);
 

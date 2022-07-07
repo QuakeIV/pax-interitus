@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1024</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -479,7 +479,7 @@ QTabBar::tab:!selected {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1024</width>
      <height>19</height>
     </rect>
    </property>
@@ -487,13 +487,19 @@ QTabBar::tab:!selected {
     <property name="title">
      <string>New</string>
     </property>
-    <addaction name="actionSystemView"/>
+    <addaction name="actionSystemWindow"/>
+    <addaction name="actionTechWindow"/>
    </widget>
    <addaction name="menuNew"/>
   </widget>
-  <action name="actionSystemView">
+  <action name="actionSystemWindow">
    <property name="text">
     <string>System View</string>
+   </property>
+  </action>
+  <action name="actionTechWindow">
+   <property name="text">
+    <string>Tech Window</string>
    </property>
   </action>
  </widget>
@@ -507,10 +513,26 @@ QTabBar::tab:!selected {
  <resources/>
  <connections>
   <connection>
-   <sender>actionSystemView</sender>
+   <sender>actionSystemWindow</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>newsystemview()</slot>
+   <slot>newsystemwindow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionTechWindow</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>newtechwindow()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -524,6 +546,7 @@ QTabBar::tab:!selected {
   </connection>
  </connections>
  <slots>
-  <slot>newsystemview()</slot>
+  <slot>newsystemwindow()</slot>
+  <slot>newtechwindow()</slot>
  </slots>
 </ui>
