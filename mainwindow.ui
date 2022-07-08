@@ -34,6 +34,13 @@ QListView {
   border-radius: 0px;
   border-color: rgb(26,29,40);
 }
+QTreeView {
+  background-color: rgb(38, 44, 59);
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 0px;
+  border-color: rgb(26,29,40);
+}
 QPushButton {
   background-color: rgb(46, 53, 71);
   border-width: 1px;

@@ -1,10 +1,8 @@
-<ui version="4.0" >
- <author></author>
- <comment></comment>
- <exportmacro></exportmacro>
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>SpacecraftDesigner</class>
- <widget class="QMainWindow" name="SpacecraftDesigner" >
-  <property name="geometry" >
+ <widget class="QMainWindow" name="SpacecraftDesigner">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -12,14 +10,33 @@
     <height>600</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Spacecraft Designer</string>
   </property>
-  <widget class="QMenuBar" name="menubar" />
-  <widget class="QWidget" name="centralwidget" />
-  <widget class="QStatusBar" name="statusbar" />
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTreeView" name="circuitview">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>230</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>19</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <pixmapfunction></pixmapfunction>
+ <resources/>
  <connections/>
 </ui>
-
