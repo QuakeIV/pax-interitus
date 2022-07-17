@@ -10,8 +10,11 @@
 class CapacitorDesign : public ComponentDesign
 {
 public:
+    // TODO: factor in conductor material?
+    // TODO: factor in insulating sheathing on outer surface to prevent arcing?
+
     // dielectric sandwich material
-    Dialectric *dialectric;
+    Insulator *insulator;
     // meters
     double plate_separation = 0;
     // square meters
@@ -26,7 +29,7 @@ public:
     // returns volts
     double max_voltage(void)
     {
-        return dialectric->strength * plate_separation;
+        return insulator->strength * plate_separation;
     }
 
     // returns farads
@@ -34,7 +37,7 @@ public:
     {
         if (plate_separation <= 0)
             return 0;
-        return (dialectric->permittivity * plate_area) / plate_separation;
+        return (insulator->permittivity * plate_area) / plate_separation;
     }
 
     // returns joules
@@ -64,7 +67,7 @@ public:
     // TODO: move to component parent class
     double mass(void)
     {
-        return volume() * dialectric->density;
+        return volume() * insulator->density;
     }
 
     // returns standard reference frame time (in delta T, not absolute)
@@ -81,13 +84,11 @@ public:
 // power storage component (stores charge for devices that require the sudden release of energy)
 class Capacitor : Component
 {
-    CapacitorDesign *design;
+    CapacitorDesign design;
 
 public:
-    Capacitor()
+    Capacitor(void)
     {
-        assert(design!=NULL); // TODO: kill by defining NDEBUG
-        max_dt = design->charge_time();
     }
 
     static const bool uses_power = true;
@@ -139,7 +140,7 @@ public:
         initial_energy = get_stored_energy();
 
         // update max storeable energy (this function is needed for the designer so its shared)
-        current_max_energy = design->energy_at_voltage(voltage);
+        current_max_energy = design.energy_at_voltage(voltage);
         current_charge_rate = ((double)current_max_energy) / ((double)max_dt); // energy shift minus time shift, targeting wattage shift
 
         //TODO: later consider if its better to just back-compute an 'initial time' in the past and to then use universe_time + max_dt for charge time

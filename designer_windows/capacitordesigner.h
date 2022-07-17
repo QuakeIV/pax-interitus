@@ -13,8 +13,8 @@ class CapacitorDesigner : public QDialog
     Q_OBJECT
 
     CapacitorDesign design;
-    Dialectric *selected_dialectric;
-    QComboBox *dialectric_combobox;
+    Insulator *selected_insulator;
+    QComboBox *dialectric_combobox; //TODO: prolly rename to insulator
     QLineEdit *capacity_edit; // target capacity in joules
     QLineEdit *voltage_edit;
     QLineEdit *amperage_edit;
@@ -34,22 +34,22 @@ class CapacitorDesigner : public QDialog
         // update dialectric display
         dialectric_combobox->clear();
         // TODO: this should iterate on an empire's knowledge of dialectrics instead
-        foreach(Dialectric d, dialectric_materials)
-            dialectric_combobox->addItem(d.descriptor_string());
+        foreach(Insulator i, insulator_materials)
+            dialectric_combobox->addItem(i.descriptor_string());
 
         // NOTE: annoyingly this has to match one of the existing items exactly
-        dialectric_combobox->setCurrentText(selected_dialectric->descriptor_string());
+        dialectric_combobox->setCurrentText(selected_insulator->descriptor_string());
 
-        design.dialectric = selected_dialectric;
+        design.insulator = selected_insulator;
 
         // TODO: spec voltage/amperage can probably change to a dropdown of established circuit specs
         double spec_voltage = voltage_edit->text().toDouble();
         // TODO: this needs to change if we ever introduce min separation
-        double separation = spec_voltage/design.dialectric->strength;
+        double separation = spec_voltage/design.insulator->strength;
         design.plate_separation = separation;
 
         double spec_capacity = capacity_edit->text().toDouble();
-        double plate_area = (2 * spec_capacity * separation) / (spec_voltage * spec_voltage * design.dialectric->permittivity);
+        double plate_area = (2 * spec_capacity * separation) / (spec_voltage * spec_voltage * design.insulator->permittivity);
         design.plate_area = plate_area;
 
         double spec_amperage = amperage_edit->text().toDouble();
@@ -78,14 +78,14 @@ public:
     {
         ui->setupUi(this);
 
-        setWindowFlags(Qt::Window); // set taskbar icon, enable minimize
+        setWindowFlags(Qt::Window); // enable taskbar icon, enable minimize
 
         // TODO: this will need more logic later
         // (maybe the empire remembers the last selected dialectric,
         // in addition to this polling known materials rather than
         // all materials ever, and also respecting hidden/obsolete
         // materials)
-        selected_dialectric = &dialectric_materials[0];
+        selected_insulator = &insulator_materials[0];
 
         // capture pointers for UI elements
         dialectric_combobox = this->findChild<QComboBox*>("dialectric");
@@ -104,8 +104,8 @@ public:
         connect(dialectric_combobox, QOverload<int>::of(&QComboBox::activated),
             [=](int index)
         {
-            if (index >= 0 && index < dialectric_materials.length())
-                this->selected_dialectric = &dialectric_materials[index];
+            if (index >= 0 && index < insulator_materials.length())
+                this->selected_insulator = &insulator_materials[index];
             this->update();
         });
 

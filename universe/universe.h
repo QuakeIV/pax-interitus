@@ -21,7 +21,7 @@ extern QList<SolarSystemType*> systems;
 extern QList<Spacecraft*> spacecraft;
 
 // master list of extant dialectric materials
-extern QList<Dialectric> dialectric_materials;
+extern QList<Insulator> insulator_materials;
 
 //TODO: temporary
 #include "empire.h"

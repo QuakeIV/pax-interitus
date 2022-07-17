@@ -15,7 +15,7 @@ QApplication *qapp;
 QWidget *main_widget;
 
 // master list of extant dialectric materials
-QList<Dialectric> dialectric_materials;
+QList<Insulator> insulator_materials;
 
 bool universe_paused = false;
 int64_t universe_time_warp = 0; //this is a power applied to 2
@@ -46,41 +46,60 @@ void universe_init(void)
 {
     // TODO: temporary
     // add some dialectric materials
-    Dialectric d;
+    Insulator i;
     // now featuring wikipedia capacitor materials
     // (most optimistic figures)
-    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(40);
-    d.strength = VOLT_UM_TO_VOLT_M(100);
-    d.name = "Ceramic Class 1";
-    dialectric_materials.append(d);
-    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(14000);
-    d.strength = VOLT_UM_TO_VOLT_M(35);
-    d.name = "Ceramic Class 2";
-    dialectric_materials.append(d);
-    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(3.3);
-    d.strength = VOLT_UM_TO_VOLT_M(580);
-    d.name = "Film (PET)";
-    dialectric_materials.append(d);
-    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(9.6);
-    d.strength = VOLT_UM_TO_VOLT_M(710);
-    d.name = "Aluminum electrolytic";
-    dialectric_materials.append(d);
-    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(26);
-    d.strength = VOLT_UM_TO_VOLT_M(625);
-    d.name = "Tantalum electrolytic";
-    dialectric_materials.append(d);
-    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(42);
-    d.strength = VOLT_UM_TO_VOLT_M(455);
-    d.name = "Niobium electrolytic";
-    dialectric_materials.append(d);
-    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(10);
-    d.strength = VOLT_UM_TO_VOLT_M(450);
-    d.name = "Glass";
-    dialectric_materials.append(d);
-    d.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(8);
-    d.strength = VOLT_UM_TO_VOLT_M(118);
-    d.name = "Mica";
-    dialectric_materials.append(d);
+    // TODO: it might be better to go the aurora route and just have 'conventional' followed by mainly fanciful materials
+    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(40);
+    i.strength = VOLT_UM_TO_VOLT_M(100);
+    i.name = "Ceramic Class 1";
+    insulator_materials.append(i);
+    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(14000);
+    i.strength = VOLT_UM_TO_VOLT_M(35);
+    i.name = "Ceramic Class 2";
+    insulator_materials.append(i);
+    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(3.3);
+    i.strength = VOLT_UM_TO_VOLT_M(580);
+    i.name = "Film (PET)";
+    insulator_materials.append(i);
+    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(9.6);
+    i.strength = VOLT_UM_TO_VOLT_M(710);
+    i.name = "Aluminum electrolytic";
+    insulator_materials.append(i);
+    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(26);
+    i.strength = VOLT_UM_TO_VOLT_M(625);
+    i.name = "Tantalum electrolytic";
+    insulator_materials.append(i);
+    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(42);
+    i.strength = VOLT_UM_TO_VOLT_M(455);
+    i.name = "Niobium electrolytic";
+    insulator_materials.append(i);
+    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(10);
+    i.strength = VOLT_UM_TO_VOLT_M(450);
+    i.name = "Glass";
+    insulator_materials.append(i);
+    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(8);
+    i.strength = VOLT_UM_TO_VOLT_M(118);
+    i.name = "Mica";
+    insulator_materials.append(i);
+
+    // regular insulators (dunno the permittivity but presumably poor)
+    i.permittivity = 0; // TODO: placeholder for not-known permittivity
+    i.strength = VOLT_UM_TO_VOLT_M(2000);
+    i.name = "Diamond";
+    insulator_materials.append(i);
+    i.permittivity = 0;
+    i.strength = VOLT_UM_TO_VOLT_M(670);
+    i.name = "Fused Silica";
+    insulator_materials.append(i);
+    i.permittivity = 0;
+    i.strength = VOLT_UM_TO_VOLT_M(160);
+    i.name = "Polyethylene";
+    insulator_materials.append(i);
+    i.permittivity = 0;
+    i.strength = VOLT_UM_TO_VOLT_M(170);
+    i.name = "Teflon Film";
+    insulator_materials.append(i);
 
     // for now hard code the solar system because to heck with it i tell you
     static SolarSystemType sol = SolarSystemType(695700000000, 1988500000000000);

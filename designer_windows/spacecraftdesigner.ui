@@ -17,9 +17,9 @@
    <widget class="QTreeView" name="circuitview">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>230</y>
-      <width>256</width>
+      <x>10</x>
+      <y>360</y>
+      <width>781</width>
       <height>192</height>
      </rect>
     </property>
