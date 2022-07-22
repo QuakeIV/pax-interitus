@@ -1,16 +1,11 @@
 #ifndef EFFECTS_H
 #define EFFECTS_H
 
-#include "fixedv2d.h"
-
-typedef enum effect_e
-{
-    effect_base = 0,
-
-} effect_t;
+#include "orbittype.h"
 
 // effects exist purely to cue rendering of things
-// will be newed up and need to be destroyed
+// TODO: which list the effect lives in will define what it looks like
+// TODO: maybe provide a generic field to customize it somewhat?
 class Effect
 {
 public:
@@ -19,13 +14,11 @@ public:
 
     }
 
-    FixedV2D loc;
+    OrbitType position;
 
-    // return true if the time has come to yeet this particular effect out of existence
-    bool update(void)
-    {
-        return true;
-    }
+    int64_t creation_time;
+    int64_t destruction_time;
+    int64_t radius; // in standard distance reference frame (mm)
 };
 
 #endif // EFFECTS_H

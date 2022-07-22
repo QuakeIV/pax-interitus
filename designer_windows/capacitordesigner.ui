@@ -31,12 +31,12 @@
   <property name="windowTitle">
    <string>Capacitor Designer</string>
   </property>
-  <widget class="QComboBox" name="dialectric">
+  <widget class="QComboBox" name="insulator">
    <property name="geometry">
     <rect>
-     <x>80</x>
+     <x>70</x>
      <y>40</y>
-     <width>311</width>
+     <width>321</width>
      <height>22</height>
     </rect>
    </property>
@@ -46,12 +46,12 @@
     <rect>
      <x>10</x>
      <y>40</y>
-     <width>71</width>
+     <width>61</width>
      <height>21</height>
     </rect>
    </property>
    <property name="text">
-    <string>Dialectric: </string>
+    <string>Insulator: </string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

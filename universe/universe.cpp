@@ -84,11 +84,11 @@ void universe_init(void)
     insulator_materials.append(i);
 
     // regular insulators (dunno the permittivity but presumably poor)
-    i.permittivity = 0; // TODO: placeholder for not-known permittivity
+    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(10);
     i.strength = VOLT_UM_TO_VOLT_M(2000);
     i.name = "Diamond";
     insulator_materials.append(i);
-    i.permittivity = 0;
+    i.permittivity = 0;// TODO: placeholder for not-known permittivity
     i.strength = VOLT_UM_TO_VOLT_M(670);
     i.name = "Fused Silica";
     insulator_materials.append(i);

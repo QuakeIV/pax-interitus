@@ -4,20 +4,23 @@
 #include "component.h"
 #include "capacitor.h"
 
+class JumpdriveDesign : ComponentDesign
+{
+
+    static const bool uses_power = true;
+};
+
 // advanced propulsion component
-class JumpDrive : Component
+class Jumpdrive : Component
 {
 public:
-    JumpDrive() {};
-
+    JumpdriveDesign design;
     Capacitor cap;
 
     void update(Spacecraft *parent) override
     {
         //cap.update(parent);
     }
-
-    static const bool uses_power = true;
 };
 
 #endif // JUMPDRIVE_H

@@ -4,37 +4,26 @@
 #include "orbittype.h"
 #include "components/component.h"
 #include "components/jumpdrive.h"
+#include "components/circuit.h"
 #include "universe.h"
 
+class Component;
 
+// TODO: parent class for spacecraft vs installations or other such things
 class SpacecraftDesign
 {
 public:
-    SpacecraftDesign()
-    {
-
-    }
-
-    QList<Component*> all_components;
-
-    QList<Component*>* selected_recharge_queue;
-    QMap<QString, QList<Component*>> recharge_profiles;
-
-    QList<Engine*> engines;
-
-    QList<Reactor*> reactors;
-
-    QList<DirectedWeapon*> directed_weapons;
-    //TODO: missile launchers (which are not directed)
-
-    // aught to be possible to have multiples, however i reckon there
-    // should be engineering problems to overcome before multiples are practical
-    QList<JumpDrive*> jump_drives;
-    JumpDrive *selected_jump_drive; // you can only jump with one drive at a time, this tracks the currently selected drive you can attempt to jump with
+    SpacecraftDesign();
 
     // to be initialized
     // TODO: this gets inherited by the Spacecraft class, retrofits should probably update this
     QString class_name = "Spacecraft Design";
+
+    QList<EngineDesign> engines;
+    QList<ReactorDesign> reactors;
+    QList<DirectedweaponDesign> directed_weapons;
+    QList<JumpdriveDesign> jump_drives;
+    QList<CircuitDesign> circuits;
 
     // max acceleration (mm/sec/sec)
     int64_t max_acceleration(void);
@@ -54,64 +43,32 @@ class SpacecraftStatus
     bool jumping = false;
 };
 
+// TODO: parent class for spacecraft vs installations or other such things
 // TODO: some concept of orientation and perhaps maneuvering thrusters?
-class Spacecraft : public SpacecraftDesign
+class Spacecraft
 {
 public:
-    Spacecraft()
-    {
-        spacecraft.append(this);
-
-        // assume that eventually recharge configurations would be loaded from a save file or such
-        if (!selected_recharge_queue)
-        {
-            if (recharge_profiles.isEmpty())
-            {
-                QList<Component*> profile = recharge_profiles["default"] = QList<Component*>();
-                foreach (Component *c, all_components)
-                {
-                    if (c->uses_power)
-                        profile.append(c);
-                }
-                selected_recharge_queue = &profile;
-            }
-            else
-            {
-                selected_recharge_queue = &recharge_profiles.first();
-            }
-        }
-    }
-    ~Spacecraft()
-    {
-        spacecraft.removeOne(this);
-    }
-
-    bool ready_to_jump(void)
-    {
-        if (!selected_jump_drive)
-            return false;
-
-        return true;
-    }
-    bool jump(OrbitType* tgt)
-    {
-        if (!ready_to_jump())
-            return false;
-
-        return true;
-    }
-    bool select_jump_drive(JumpDrive *drive)
-    {
-        if (jump_drives.contains(drive))
-        {
-            selected_jump_drive = drive;
-            return true;
-        }
-        return false;
-    }
-
+    Spacecraft();
+    ~Spacecraft();
+    
     // design that the spacecraft was most recently specced to
-    SpacecraftDesign *design;
+    SpacecraftDesign design;
+
+    bool ready_to_jump(void);
+    bool jump(OrbitType* tgt);
+    // notionally this would be used with an index from a dropdown
+    bool select_jump_drive(uint drive);
+
+    QList<Component*> components;
+    QList<Engine> engines;
+    QList<Reactor> reactors;
+    QList<Directedweapon> directed_weapons;
+    //TODO: missile launchers
+
+    // aught to be possible to have multiples, however i reckon there
+    // should be engineering problems to overcome before multiples are practical
+    QList<Jumpdrive> jump_drives;
+    Jumpdrive *selected_jump_drive; // you can only jump with one drive at a time, this tracks the currently selected drive you can attempt to jump with
 
     // meant to drive the display of spacecraft status
     SpacecraftStatus status;
@@ -124,25 +81,14 @@ public:
     QString name = "Spacecraft";
 
     // max acceleration (mm/sec/sec)
-    int64_t max_acceleration(void)
-    {
-        return 0;
-    }
+    int64_t max_acceleration(void);
 
+    // TODO: this may turn out to be a bit trash
     // damage in joules
-    void take_damage(uint64_t damage)
-    {
-    }
+    void take_damage(uint64_t damage);
 
     // drive regular operating of the craft
-    void update(int64_t delta_t)
-    {
-        // update components before trying to use them
-        foreach( Component *c, all_components)
-            c->update(this);
-
-        // do other stuff
-    }
+    void update(int64_t delta_t);
 };
 
 #endif // SPACECRAFT_H

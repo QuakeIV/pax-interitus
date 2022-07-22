@@ -11,9 +11,11 @@ class CircuitTreeModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    CircuitTreeModel(QObject *parent = nullptr):
+    SpacecraftDesign *design;
+    CircuitTreeModel(SpacecraftDesign *d, QObject *parent = nullptr):
         QAbstractItemModel(parent)
     {
+        design = d;
     }
     ~CircuitTreeModel() {}
 
@@ -52,7 +54,7 @@ public:
     }
     QModelIndex parent(const QModelIndex &index) const override
     {
-        qDebug() << "apparent";
+//        qDebug() << "apparent";
         if (!index.isValid())
             return QModelIndex();
 
@@ -66,7 +68,7 @@ public:
         if (parent.column() > 0)
             return 0;
         if (!parent.isValid())
-            return 20;
+            return design->circuits.count() + 4;
 
         return 0;
     }
@@ -79,14 +81,33 @@ public:
     {
         if (!index.isValid())
             return Qt::NoItemFlags;
+        qDebug() << "fags";
         // TODO: only allow circuit voltage/amperage to be edited?
-        return QAbstractItemModel::flags(index) | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled; // Qt::ItemIsEditable |
+        Qt::ItemFlags flags = QAbstractItemModel::flags(index) | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
+        // Qt::ItemIsEditable |
+
+        return flags;
     }
 //    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override
 //    {
 //        return true;
 //    }
 //    bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole) override;
+
+    bool removeRow(int row, const QModelIndex &parent = QModelIndex())
+    {
+        if (row < design->circuits.count())
+        {
+
+        }
+        return true;
+    }
+
+    bool insertRow(int row, const QModelIndex &parent = QModelIndex())
+    {
+        qDebug() << "insert";
+        return true;
+    }
 
     bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild) override
     {
@@ -102,6 +123,9 @@ class SpacecraftDesigner : public QMainWindow
     SpacecraftDesign design;
 
     QTreeView *circuitview;
+    CircuitTreeModel *circuitmodel;
+    QPushButton *circuitadd;
+    QPushButton *circuitremove;
 
     void enterEvent(QEnterEvent *event) override
     {
@@ -121,9 +145,18 @@ public:
         ui->setupUi(this);
 
         // capture pointers for UI elements
-        circuitview = this->findChild<QTreeView*>("circuitview");
-        CircuitTreeModel *model = new CircuitTreeModel();
-        circuitview->setModel(model);
+        circuitview   = this->findChild<QTreeView*>("circuitview");
+        circuitadd    = this->findChild<QPushButton*>("circuitadd");
+        circuitremove = this->findChild<QPushButton*>("circuitremove");
+        circuitmodel = new CircuitTreeModel(&design, this);
+        circuitview->setModel(circuitmodel);
+        circuitview->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        circuitview->setDragEnabled(true);
+        circuitview->viewport()->setAcceptDrops(true);
+        circuitview->setDropIndicatorShown(true);
+        circuitview->setDragDropMode(QAbstractItemView::DragDrop);
+        circuitview->setSelectionBehavior(QAbstractItemView::SelectRows);
+        circuitview->setDefaultDropAction(Qt::MoveAction);
 
         // TODO: maybe assert on the pointers to the widgets, the below segfaults if the above findChild calls fail
         // capture circuit view changes
@@ -136,7 +169,28 @@ public:
     ~SpacecraftDesigner()
     {
         delete ui;
-    };
+    }
+
+private slots:
+    void on_circuitadd_clicked()
+    {
+        design.circuits.append(CircuitDesign());
+        circuitmodel->dataChanged(QModelIndex(), QModelIndex());
+    }
+
+    void on_circuitremove_clicked()
+    {
+        QList<QModelIndex> l = circuitview->selectionModel()->selectedRows();
+        for (int i = l.count()-1; i >= 0; i--)
+        {
+            if (i < design.circuits.count())
+            {
+                QModelIndex m = l[i];
+                circuitmodel->removeRow(m.row(), m.parent());
+            }
+        }
+        circuitview->dataChanged(QModelIndex(), QModelIndex());
+    }
 
 private:
     Ui::SpacecraftDesigner *ui;

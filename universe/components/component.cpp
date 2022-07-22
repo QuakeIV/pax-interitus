@@ -2,32 +2,22 @@
 #include "component.h"
 #include "spacecraft.h"
 
-Engine::Engine()
-{
 
-}
-
-
-Reactor::Reactor()
-{
-
-}
-
-
-DirectedWeapon::DirectedWeapon(Transform *pos)
+Directedweapon::Directedweapon(Transform *pos)
 {
 }
 // describe effective range (parameters defining what 'effective' means to come)
-int64_t DirectedWeapon::get_effective_range(void)
+int64_t Directedweapon::get_effective_range(void)
 {
     return 0;
 }
-int64_t DirectedWeapon::damage_at_range(int64_t distance)
+int64_t Directedweapon::damage_at_range(int64_t distance)
 {
     // TODO: adjust this later for overlapping radii area plus beam divergence
     return base_damage;
 }
-void DirectedWeapon::fire_on_target(FixedV2D aim, Spacecraft *tgt)
+// directedweapon has to at least partially live in a C file because its a component and its dealing with the spacecraft type, so something has to break the include loop
+void Directedweapon::fire_on_target(FixedV2D aim, Spacecraft *tgt)
 {
     // distance from line to specified point
     // TODO: may be cheaper to just stick with squared distance, then compare that with squared radius of target
@@ -46,15 +36,9 @@ void DirectedWeapon::fire_on_target(FixedV2D aim, Spacecraft *tgt)
     __uint128_t d2 = origin_target2 - intermediate * intermediate;
     int64_t distance_from_beam = int_sqrt(d2);
 
-    if (distance_from_beam < (tgt->radius + distance_from_beam))
+    if (distance_from_beam < (tgt->design.radius + distance_from_beam))
     {
         //TODO: overlapping circles math to calculate partial yield
         tgt->take_damage(int_sqrt(origin_target2));
     }
-}
-
-
-BeamCannon::BeamCannon(Transform *pos):
-    DirectedWeapon(pos)
-{
 }

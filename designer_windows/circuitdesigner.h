@@ -14,8 +14,8 @@ class CircuitDesigner : public QDialog
 
     CircuitDesign design;
     Insulator *selected_insulator;
-    QComboBox *dialectric_combobox;
-    QLineEdit *capacity_edit; // target capacity in joules
+    QComboBox *insulator_combobox;
+    QComboBox *conductor_combobox;
     QLineEdit *voltage_edit;
     QLineEdit *amperage_edit;
     QLabel *details;
@@ -88,8 +88,8 @@ public:
 //        selected_dialectric = &dialectric_materials[0];
 
         // capture pointers for UI elements
-        dialectric_combobox = this->findChild<QComboBox*>("dialectric");
-        capacity_edit       = this->findChild<QLineEdit*>("capacity_edit");
+//        dialectric_combobox = this->findChild<QComboBox*>("dialectric");
+//        capacity_edit       = this->findChild<QLineEdit*>("capacity_edit");
         voltage_edit        = this->findChild<QLineEdit*>("voltage_edit");
         amperage_edit       = this->findChild<QLineEdit*>("amperage_edit");
         details             = this->findChild<QLabel*>("details");
@@ -129,7 +129,7 @@ public:
     ~CircuitDesigner()
     {
         delete ui;
-    };
+    }
 
 private:
     Ui::CircuitDesigner *ui;

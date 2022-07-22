@@ -52,7 +52,7 @@ static inline QString get_distance_str(double distance)
         distance *= 1000.0;
         i--;
     }
-    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && distance > 10000.0)
+    while (i < (sizeof(si_scale)/sizeof(si_scale[0])-1) && distance > 10000.0)
     {
         distance /= 1000.0;
         i++;
@@ -140,7 +140,7 @@ static inline QString get_voltage_str(double voltage)
         voltage *= 1000.0;
         i--;
     }
-    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && voltage > 10000.0)
+    while (i < (sizeof(si_scale)/sizeof(si_scale[0])-1) && voltage > 10000.0)
     {
         voltage /= 1000.0;
         i++;
@@ -162,7 +162,7 @@ static inline QString get_energy_str(double energy)
         i--;
     }
 
-    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && energy > 10000.0)
+    while (i < (sizeof(si_scale)/sizeof(si_scale[0])-1) && energy > 10000.0)
     {
         energy /= 1000.0;
         i++;
@@ -181,7 +181,7 @@ static inline QString get_amperage_str(double amperage)
         amperage *= 1000.0;
         i--;
     }
-    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && amperage > 10000.0)
+    while (i < (sizeof(si_scale)/sizeof(si_scale[0])-1) && amperage > 10000.0)
     {
         amperage /= 1000.0;
         i++;
@@ -202,7 +202,7 @@ static inline QString get_capacitance_str(double capacitance)
         capacitance *= 1000.0;
         i--;
     }
-    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && capacitance > 10000.0)
+    while (i < (sizeof(si_scale)/sizeof(si_scale[0])-1) && capacitance > 10000.0)
     {
         capacitance /= 1000.0;
         i++;
@@ -223,7 +223,7 @@ static inline QString get_resistance_str(double resistance)
         resistance *= 1000.0;
         i--;
     }
-    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && resistance > 10000.0)
+    while (i < (sizeof(si_scale)/sizeof(si_scale[0])-1) && resistance > 10000.0)
     {
         resistance /= 1000.0;
         i++;
@@ -249,7 +249,7 @@ static inline QString get_area_str(double area)
         area *= 1000000.0;
         i--;
     }
-    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && area > 100000.0)
+    while (i < (sizeof(si_scale)/sizeof(si_scale[0])-1) && area > 100000.0)
     {
         area /= 1000.0;
         i++;
@@ -261,7 +261,6 @@ static inline QString get_area_str(double area)
         digits = 1;
     if (digits > 6)
         digits = 6;
-
     return QString("%1%2m²").arg(QString::number(area, 'f', digits), si_scale[i]);
 }
 
@@ -277,7 +276,7 @@ static inline QString get_volume_str(double volume)
         volume *= 1000.0;
         i--;
     }
-    while (i < sizeof(si_scale)/sizeof(si_scale[0]) && volume > 10000.0)
+    while (i < (sizeof(si_scale)/sizeof(si_scale[0])-1) && volume > 10000.0)
     {
         volume /= 1000.0;
         i++;

@@ -1,41 +1,50 @@
 #ifndef CIRCUIT_H
 #define CIRCUIT_H
 
-#include "component.h"
 #include "materials.h"
 #include "universe.h"
 
+class Spacecraft;
+class ComponentDesign;
+class Component;
+
 // what is edited in the designer window
 // probably all components will have a special design type, i cant forsee any actual overlap there (unlike the components themselves)
-class CircuitDesign : public ComponentDesign
+class CircuitDesign
 {
+public:
+    QString name;
     Insulator *insulator;
-    // TODO:
-    // spec voltage (insulator thickness)
-    // spec amperage (conductor sectional area?) actually compute this via
-    // conductor material?
-    // power drawing components on circuit
-    // generators on circuit
-    // overall size of spacecraft dictates average weight dedicated to circuit (maybe just diameter times cross section of different materials)
+    Conductor *conductor;
 
-    // TODO: capacitor-like description of temperature rising and falling based on dissipation vs
+    double rated_voltage;
+    double rated_amperage;
+
+    QList<ComponentDesign*> components;
+
+    // TODO:
+    // overall size of spacecraft dictates average weight dedicated to circuit (maybe just diameter times cross section of different materials)
 };
 
-// power storage component (stores charge for devices that require the sudden release of energy)
-class Circuit : Component
+// this represents the machinery in a spacecraft dedicated to transmitting power between components on a given circuit
+// specifies voltage, max current, material of conductor and insulator
+// insulator can break down due to heat
+// TODO: capacitor-like description of temperature rising and falling based on convection dissipation vs tolerances of materials
+class Circuit
 {
+public:
     CircuitDesign design;
 
-public:
-    Circuit()
-    {
-        
-    }
+    // TODO: jury rigs would go into this list but not the design?
+    QList<Component*> components;
 
-    void update(Spacecraft *parent) override
-    {
-        // this should probably remain a stub until we add reactions to damage (which should set the universe step time appropriately so this doesn't miss the window on that)
-    }
+    // stolen from smlease.com/calculator/heat-transfer/convective-heat-transfer/
+    // assume air convection for now, whatever (liquid cooling later?)
+    // W = heatcoeffecient * area * deltatemperature
+    // heatcoeffecient naturally is 5-25 W/(m^2K) in air without forced air flow (which could also maybe be designable later?)
+    // heatcoeffecient = 10.45 - v + 10sqrt(v) for airflow velocity
+
+    void update(Spacecraft *parent);
 };
 
 #endif // CIRCUIT_H

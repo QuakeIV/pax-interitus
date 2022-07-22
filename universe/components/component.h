@@ -3,6 +3,7 @@
 
 #include "utilities.h"
 #include "transform.h"
+#include "circuit.h"
 
 class BeamType;
 class Spacecraft;
@@ -10,15 +11,22 @@ class Spacecraft;
 // common properties of component designs
 class ComponentDesign
 {
+public:
     QString name;
+
+    CircuitDesign *circuit;
+
+    static const bool uses_power = false;
+    static const bool produces_power = false;
 };
 
 class Component
 {
-protected:
+public:
+    QString name;
     // where does the component currently live
-    // TODO: parent class for spacecraft vs installations or other such things
     Spacecraft *parent;
+
     // component mass is in grams
     int64_t mass;
 
@@ -26,7 +34,7 @@ protected:
     // the apply damage function will have an opportunity to absorb a degree of it as appropriate
     // TODO: ideally the update functions update this
     int64_t damage;
-public:
+
     Component() {}
 
     // component mass is in grams (this function lets the component factor its current state into the mass result)
@@ -36,12 +44,10 @@ public:
     // returns damage absorbed so it can fall through to other components
     // TODO: default HP system?
     // TODO: absorption of some sort (maybe temperature and pressure tolerance thing)
+    // TODO: it turns out vtables are a bit gay should probably discontinue the use thereof as much as possible
     virtual int64_t apply_damage(int64_t dmg) { return 0; };
 
-    QString name;
-
-    static const bool uses_power = false;
-    static const bool produces_power = false;
+    double resistive_load = 0;
 
     // this is meant to be called by the parent vessel to allow the component to function
     // or perhaps explode, or so forth
@@ -56,37 +62,53 @@ public:
 };
 
 // propulsion component
+class EngineDesign : ComponentDesign
+{
+
+};
+
 class Engine : Component
 {
 public:
-    Engine();
+    EngineDesign design;
 };
 
 // power generation component
 // TODO: per calculating loads, we could store a max load in terms of resistance to toggle between regular operation and voltage drop modes
-// eh note that should probably be at the circuit level, the reactor should just have a wattage and voltage rating
+// eh note that should probably be at the circuit level, the reactor should just have a wattage and voltage rating, and then be notified of its current voltage
+class ReactorDesign : ComponentDesign
+{
+    static const bool produces_power = true;
+};
 class Reactor : Component
 {
 public:
-    Reactor();
-    static const bool produces_power = true;
+    ReactorDesign design;
 
     int64_t max_power_generation;
 };
 
-class DirectedWeapon : Component
+class DirectedweaponDesign : ComponentDesign
+{
+    static const bool uses_power = true;
+};
+
+class Directedweapon : Component
 {
 protected:
     int64_t radius; // mm of radius of emitted firepower
     int64_t base_damage; // base damage
 
 public:
-    DirectedWeapon(Transform *pos);
+    DirectedweaponDesign design;
+
+    Directedweapon(Transform *pos);
 
     // in mm, this is probably going to change over time but something should be provided to characterize effective range
     // most likely will have parameters at some point
     // TODO: liable to be used for things like displaying the expected effective range of a beam weapon, or drive AI firing behavior
     // may also need a notion of separating when the weapon stops doing much damage from the idea of it being able to hit accurately
+    // TODO: maybe more like preferred range?
     virtual int64_t get_effective_range(void);
 
     // currently as a presumption towards a 2d projection of a 3d environment, rather than a truly 2d one, you can only
@@ -98,17 +120,18 @@ public:
     virtual int64_t damage_at_range(int64_t distance);
 };
 
-//TODO: invet active armor system that requires power to keep it running
+//TODO: active armor system that requires power to keep it running?
 //TODO: shields
 //TODO: battlefield armor repair system?
 
+// TODO: i am now thinking this should probably actually amount to a parameterization of the base directed weapon class
 // plasma beam cannon (currently instantaneous like all beams)
-class BeamCannon : DirectedWeapon
-{
+//class BeamCannon : DirectedWeapon
+//{
 
-public:
-    BeamCannon(Transform *pos);
-};
+//public:
+//    BeamCannon(Transform *pos);
+//};
 
 // missile launchers aught to work differently
 // TODO: missile launcher

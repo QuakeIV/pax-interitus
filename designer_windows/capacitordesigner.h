@@ -14,7 +14,7 @@ class CapacitorDesigner : public QDialog
 
     CapacitorDesign design;
     Insulator *selected_insulator;
-    QComboBox *dialectric_combobox; //TODO: prolly rename to insulator
+    QComboBox *insulator_combobox; //TODO: prolly rename to insulator
     QLineEdit *capacity_edit; // target capacity in joules
     QLineEdit *voltage_edit;
     QLineEdit *amperage_edit;
@@ -32,13 +32,13 @@ class CapacitorDesigner : public QDialog
         // TODO: support 100kJ notation
 
         // update dialectric display
-        dialectric_combobox->clear();
+        insulator_combobox->clear();
         // TODO: this should iterate on an empire's knowledge of dialectrics instead
         foreach(Insulator i, insulator_materials)
-            dialectric_combobox->addItem(i.descriptor_string());
+            insulator_combobox->addItem(i.descriptor_string());
 
         // NOTE: annoyingly this has to match one of the existing items exactly
-        dialectric_combobox->setCurrentText(selected_insulator->descriptor_string());
+        insulator_combobox->setCurrentText(selected_insulator->descriptor_string());
 
         design.insulator = selected_insulator;
 
@@ -55,7 +55,6 @@ class CapacitorDesigner : public QDialog
         double spec_amperage = amperage_edit->text().toDouble();
         double resistance = spec_voltage/spec_amperage;
         design.resistance = resistance;
-
 
         QString s = "Capacitance: " + get_capacitance_str(design.capacitance());
         s += "\nEnergy Storage (at spec voltage): " + get_energy_str(design.energy_at_voltage(spec_voltage));
@@ -88,7 +87,7 @@ public:
         selected_insulator = &insulator_materials[0];
 
         // capture pointers for UI elements
-        dialectric_combobox = this->findChild<QComboBox*>("dialectric");
+        insulator_combobox  = this->findChild<QComboBox*>("insulator");
         capacity_edit       = this->findChild<QLineEdit*>("capacity_edit");
         voltage_edit        = this->findChild<QLineEdit*>("voltage_edit");
         amperage_edit       = this->findChild<QLineEdit*>("amperage_edit");
@@ -101,7 +100,7 @@ public:
 
         // TODO: maybe assert on the pointers to the widgets, the below segfaults if the above findChild calls fail
         // capture combobox changes
-        connect(dialectric_combobox, QOverload<int>::of(&QComboBox::activated),
+        connect(insulator_combobox, QOverload<int>::of(&QComboBox::activated),
             [=](int index)
         {
             if (index >= 0 && index < insulator_materials.length())
@@ -129,7 +128,7 @@ public:
     ~CapacitorDesigner()
     {
         delete ui;
-    };
+    }
 
 private:
     Ui::CapacitorDesigner *ui;
