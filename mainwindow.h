@@ -20,9 +20,6 @@ public:
     ~MainWindow();
 
 public slots:
-    void newsystemwindow(void);
-    void newtechwindow(void);
-
     void update_status_bar(void);
 
 private slots:
@@ -41,6 +38,12 @@ private slots:
     void on_warp1k_clicked();
 
     void on_warp1M_clicked();
+
+    void on_actionSystemWindow_triggered();
+
+    void on_actionTechWindow_triggered();
+
+    void on_actionSpacecraftDesigner_triggered();
 
 private:
     Ui::MainWindow *ui;

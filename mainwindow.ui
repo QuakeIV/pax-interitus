@@ -496,6 +496,7 @@ QTabBar::tab:!selected {
     </property>
     <addaction name="actionSystemWindow"/>
     <addaction name="actionTechWindow"/>
+    <addaction name="actionSpacecraftDesigner"/>
    </widget>
    <addaction name="menuNew"/>
   </widget>
@@ -509,6 +510,11 @@ QTabBar::tab:!selected {
     <string>Tech Window</string>
    </property>
   </action>
+  <action name="actionSpacecraftDesigner">
+   <property name="text">
+    <string>Spacecraft Designer</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -518,40 +524,7 @@ QTabBar::tab:!selected {
   </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>actionSystemWindow</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>newsystemwindow()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionTechWindow</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>newtechwindow()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>399</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <slots>
   <slot>newsystemwindow()</slot>
   <slot>newtechwindow()</slot>

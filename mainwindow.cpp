@@ -7,8 +7,7 @@
 
 //TODO: temporary
 #include "designer_windows/capacitordesigner.h"
-
-extern QWidget *main_widget;
+#include "designer_windows/spacecraftdesigner.h"
 
 // NOTE: not meant to be more than one of these
 MainWindow::MainWindow(QWidget *parent)
@@ -131,18 +130,22 @@ void MainWindow::update_status_bar()
     status_bar->showMessage(message);
 }
 
-void MainWindow::newsystemwindow()
+void MainWindow::on_actionSystemWindow_triggered()
 {
     //TODO: maybe make these things track to viewed system name when they arent the parent window (or maybe even when they are?)
     //MainWindow *w = new MainWindow(this); // NOTE: it is possible to spawn multiple main windows, but im tending away from that at this point
-    SystemWindow *w = new SystemWindow(openGL->get_focus_system(), main_widget);
+    SystemWindow *w = new SystemWindow(openGL->get_focus_system(), this);
     w->show();
 }
 
-void MainWindow::newtechwindow()
+void MainWindow::on_actionTechWindow_triggered()
 {
-    //TODO: maybe make these things track to viewed system name when they arent the parent window (or maybe even when they are?)
-    //MainWindow *w = new MainWindow(this); // NOTE: it is possible to spawn multiple main windows, but im tending away from that at this point
-    TechWindow *w = new TechWindow(main_widget);
+    TechWindow *w = new TechWindow(this);
+    w->show();
+}
+
+void MainWindow::on_actionSpacecraftDesigner_triggered()
+{
+    SpacecraftDesigner *w = new SpacecraftDesigner(this);
     w->show();
 }

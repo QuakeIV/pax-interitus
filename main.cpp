@@ -7,7 +7,6 @@
 
 // TODO: fix, temporarily moving this to universe
 extern QApplication *qapp;
-extern MainWindow *main_widget;
 
 int main(int argc, char *argv[])
 {
@@ -16,8 +15,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     qapp = &a;
     MainWindow w;
-
-    main_widget = &w;
 
     // le icon
     Q_INIT_RESOURCE(images);

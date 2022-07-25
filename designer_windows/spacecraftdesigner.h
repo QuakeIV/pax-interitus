@@ -6,114 +6,159 @@
 #include <QMainWindow>
 #include <QTreeView>
 
-class CircuitTreeModel : public QAbstractItemModel
+//typedef enum circuitview_type_e
+//{
+//    circuit_type   = QTreeWidgetItem::UserType,
+//    component_type = QTreeWidgetItem::UserType + 1,
+//} circuitview_type_t;
+
+class TreeItem
+{
+public:
+    explicit TreeItem(const QList<QVariant> &data, TreeItem *parent = nullptr)
+        : m_itemData(data), m_parentItem(parent)
+    {}
+    ~TreeItem()
+    {
+        qDeleteAll(m_childItems);
+    }
+
+    void appendChild(TreeItem *child)
+    {
+        m_childItems.append(child);
+    }
+
+    TreeItem *child(int row)
+    {
+        if (row < 0 || row >= m_childItems.size())
+            return nullptr;
+        return m_childItems.at(row);
+    }
+    int childCount() const
+    {
+        return m_childItems.count();
+    }
+    int columnCount() const
+    {
+        return 3;
+    }
+    QVariant data(int column) const
+    {
+        if (column < 0 || column >= m_itemData.size())
+            return QVariant();
+        return m_itemData.at(column);
+    }
+    int row() const
+    {
+        if (m_parentItem)
+            return m_parentItem->m_childItems.indexOf(const_cast<TreeItem*>(this));
+
+        return 0;
+    }
+    TreeItem *parentItem()
+    {
+        return m_parentItem;
+    }
+
+private:
+    QList<TreeItem *> m_childItems;
+    QList<QVariant> m_itemData;
+    TreeItem *m_parentItem;
+};
+
+class TreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 
 public:
-    SpacecraftDesign *design;
-    CircuitTreeModel(SpacecraftDesign *d, QObject *parent = nullptr):
-        QAbstractItemModel(parent)
+    explicit TreeModel(QObject *parent = nullptr)
+        : QAbstractItemModel(parent)
     {
-        design = d;
+        rootItem = new TreeItem({tr("Title"), tr("Summary")});
     }
-    ~CircuitTreeModel() {}
+    ~TreeModel()
+    {
+        delete rootItem;
+    }
 
     QVariant data(const QModelIndex &index, int role) const override
     {
-        if (!index.isValid() || role != Qt::DisplayRole)
+        if (!index.isValid())
             return QVariant();
-        return QVariant("soy" + QString::number(index.row()));
-    }
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override
-    {
         if (role != Qt::DisplayRole)
             return QVariant();
 
-        switch(section)
-        {
-            case 0:
-                return QVariant("Name");
-            case 1:
-                return QVariant("Power (W)");
-            case 2:
-                return QVariant("Spec Voltage");
-            case 3:
-                return QVariant("Spec Amperage");
-        }
+        TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
-        return QVariant();
+        return item->data(index.column());
     }
-
-    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override
-    {
-        // TODO: range check needed? unclear
-//        qDebug() << "x: " << row << " y: " << column;
-        return createIndex(row, column);
-    }
-    QModelIndex parent(const QModelIndex &index) const override
-    {
-//        qDebug() << "apparent";
-        if (!index.isValid())
-            return QModelIndex();
-
-        // TODO: createIndex to circuit entry if iterating over actual circuit children
-        return QModelIndex();
-    }
-
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override
-    {
-        //TODO: actual real version of this
-        if (parent.column() > 0)
-            return 0;
-        if (!parent.isValid())
-            return design->circuits.count() + 4;
-
-        return 0;
-    }
-    int columnCount(const QModelIndex &parent = QModelIndex()) const override
-    {
-        return 4; // name, power, voltage, current
-    }
-
     Qt::ItemFlags flags(const QModelIndex &index) const override
     {
         if (!index.isValid())
             return Qt::NoItemFlags;
-        qDebug() << "fags";
-        // TODO: only allow circuit voltage/amperage to be edited?
-        Qt::ItemFlags flags = QAbstractItemModel::flags(index) | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
-        // Qt::ItemIsEditable |
 
-        return flags;
+        return QAbstractItemModel::flags(index);
     }
-//    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override
-//    {
-//        return true;
-//    }
-//    bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole) override;
-
-    bool removeRow(int row, const QModelIndex &parent = QModelIndex())
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override
     {
-        if (row < design->circuits.count())
-        {
+        if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
+            return rootItem->data(section);
 
-        }
-        return true;
+        return QVariant();
     }
-
-    bool insertRow(int row, const QModelIndex &parent = QModelIndex())
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override
     {
-        qDebug() << "insert";
-        return true;
+        if (!hasIndex(row, column, parent))
+            return QModelIndex();
+
+        TreeItem *parentItem;
+
+        if (!parent.isValid())
+            parentItem = rootItem;
+        else
+            parentItem = static_cast<TreeItem*>(parent.internalPointer());
+
+        TreeItem *childItem = parentItem->child(row);
+        if (childItem)
+            return createIndex(row, column, childItem);
+        return QModelIndex();
+    }
+    QModelIndex parent(const QModelIndex &index) const override
+    {
+        if (!index.isValid())
+            return QModelIndex();
+
+        TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
+        TreeItem *parentItem = childItem->parentItem();
+
+        if (parentItem == rootItem)
+            return QModelIndex();
+
+        return createIndex(parentItem->row(), 0, parentItem);
+    }
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override
+    {
+        TreeItem *parentItem;
+        if (parent.column() > 0)
+            return 0;
+
+        if (!parent.isValid())
+            parentItem = rootItem;
+        else
+            parentItem = static_cast<TreeItem*>(parent.internalPointer());
+
+        return parentItem->childCount();
+    }
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override
+    {
+        if (parent.isValid())
+            return static_cast<TreeItem*>(parent.internalPointer())->columnCount();
+        return rootItem->columnCount();
     }
 
-    bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild) override
-    {
-        qDebug() << "move";
-        return true;
-    }
+private:
+    TreeItem *rootItem;
 };
 
 class SpacecraftDesigner : public QMainWindow
@@ -122,8 +167,7 @@ class SpacecraftDesigner : public QMainWindow
 
     SpacecraftDesign design;
 
-    QTreeView *circuitview;
-    CircuitTreeModel *circuitmodel;
+    QTreeView   *circuitview;
     QPushButton *circuitadd;
     QPushButton *circuitremove;
 
@@ -148,21 +192,30 @@ public:
         circuitview   = this->findChild<QTreeView*>("circuitview");
         circuitadd    = this->findChild<QPushButton*>("circuitadd");
         circuitremove = this->findChild<QPushButton*>("circuitremove");
-        circuitmodel = new CircuitTreeModel(&design, this);
-        circuitview->setModel(circuitmodel);
-        circuitview->setSelectionMode(QAbstractItemView::ExtendedSelection);
-        circuitview->setDragEnabled(true);
-        circuitview->viewport()->setAcceptDrops(true);
-        circuitview->setDropIndicatorShown(true);
-        circuitview->setDragDropMode(QAbstractItemView::DragDrop);
-        circuitview->setSelectionBehavior(QAbstractItemView::SelectRows);
-        circuitview->setDefaultDropAction(Qt::MoveAction);
+
+
+
+//        QTreeWidgetItem *item = new QTreeWidgetItem({"Unassigned", "None", "None"});
+//        item->setFlags(item->flags() & ~Qt::ItemIsDragEnabled);
+//        circuitview->addTopLevelItem(item);
+//        item->addChild(new QTreeWidgetItem({"Reactor", "100kV", "200A", ""}));
+//        item->addChild(new QTreeWidgetItem({"Reactor", "200kV", "200A", ""}));
+
+//        circuitview->setSelectionMode(QAbstractItemView::ExtendedSelection);
+//        circuitview->setDragEnabled(true);
+//        circuitview->viewport()->setAcceptDrops(true);
+//        circuitview->setDropIndicatorShown(true);
+//        circuitview->setDragDropMode(QAbstractItemView::DragDrop);
+//        circuitview->setSelectionBehavior(QAbstractItemView::SelectRows);
+//        circuitview->setDefaultDropAction(Qt::MoveAction);
 
         // TODO: maybe assert on the pointers to the widgets, the below segfaults if the above findChild calls fail
         // capture circuit view changes
         connect(circuitview, QOverload<const QModelIndex &>::of(&QTreeView::activated),
             [=](const QModelIndex &index)
         { this->update(); });
+
+        circuitview->expandAll();
 
         update();
     }
@@ -174,22 +227,12 @@ public:
 private slots:
     void on_circuitadd_clicked()
     {
-        design.circuits.append(CircuitDesign());
-        circuitmodel->dataChanged(QModelIndex(), QModelIndex());
+
     }
 
     void on_circuitremove_clicked()
     {
-        QList<QModelIndex> l = circuitview->selectionModel()->selectedRows();
-        for (int i = l.count()-1; i >= 0; i--)
-        {
-            if (i < design.circuits.count())
-            {
-                QModelIndex m = l[i];
-                circuitmodel->removeRow(m.row(), m.parent());
-            }
-        }
-        circuitview->dataChanged(QModelIndex(), QModelIndex());
+
     }
 
 private:
