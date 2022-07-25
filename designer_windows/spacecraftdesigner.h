@@ -15,9 +15,12 @@
 class TreeItem
 {
 public:
-    explicit TreeItem(const QList<QVariant> &data, TreeItem *parent = nullptr)
-        : m_itemData(data), m_parentItem(parent)
-    {}
+    TreeItem(const QList<QVariant> &data, TreeItem *parent = nullptr)
+        : m_itemData(data)
+    {
+        m_parentItem = parent;
+    }
+
     ~TreeItem()
     {
         qDeleteAll(m_childItems);
@@ -37,10 +40,6 @@ public:
     int childCount() const
     {
         return m_childItems.count();
-    }
-    int columnCount() const
-    {
-        return 3;
     }
     QVariant data(int column) const
     {
@@ -71,7 +70,7 @@ class TreeModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    explicit TreeModel(QObject *parent = nullptr)
+    TreeModel(QObject *parent = nullptr)
         : QAbstractItemModel(parent)
     {
         rootItem = new TreeItem({tr("Title"), tr("Summary")});
@@ -102,8 +101,10 @@ public:
     }
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override
     {
+        // TODO: feels jank, no need to range check?
+        static QString poop[] = {"Head1", "head2", "poop"};
         if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-            return rootItem->data(section);
+            return poop[section];
 
         return QVariant();
     }
@@ -152,12 +153,9 @@ public:
     }
     int columnCount(const QModelIndex &parent = QModelIndex()) const override
     {
-        if (parent.isValid())
-            return static_cast<TreeItem*>(parent.internalPointer())->columnCount();
-        return rootItem->columnCount();
+        return 3;
     }
 
-private:
     TreeItem *rootItem;
 };
 
@@ -193,7 +191,10 @@ public:
         circuitadd    = this->findChild<QPushButton*>("circuitadd");
         circuitremove = this->findChild<QPushButton*>("circuitremove");
 
+        TreeModel *tree = new TreeModel();
+        circuitview->setModel(tree);
 
+        tree->rootItem->appendChild(new TreeItem({"gay", "fay", "way"}, tree->rootItem));
 
 //        QTreeWidgetItem *item = new QTreeWidgetItem({"Unassigned", "None", "None"});
 //        item->setFlags(item->flags() & ~Qt::ItemIsDragEnabled);
