@@ -15,27 +15,31 @@
 class TreeItem
 {
 public:
-    TreeItem(const QList<QVariant> &data, TreeItem *parent = nullptr)
+    TreeItem(const QList<QVariant> &data = {})
         : m_itemData(data)
     {
-        m_parentItem = parent;
     }
-
     ~TreeItem()
     {
-        qDeleteAll(m_childItems);
     }
 
-    void appendChild(TreeItem *child)
+    bool operator==(const TreeItem *rhs) const
     {
-        m_childItems.append(child);
+        return rhs == const_cast<TreeItem*>(this);
     }
 
+    TreeItem *appendChild(TreeItem child)
+    {
+        int idx = m_childItems.count();
+        m_childItems.append(child);
+        m_childItems[idx].m_parentItem = this;
+        return const_cast<TreeItem*>(&m_childItems[idx]);
+    }
     TreeItem *child(int row)
     {
         if (row < 0 || row >= m_childItems.size())
             return nullptr;
-        return m_childItems.at(row);
+        return const_cast<TreeItem*>(&m_childItems.at(row));
     }
     int childCount() const
     {
@@ -50,7 +54,7 @@ public:
     int row() const
     {
         if (m_parentItem)
-            return m_parentItem->m_childItems.indexOf(const_cast<TreeItem*>(this));
+            return m_parentItem->m_childItems.indexOf(this);
 
         return 0;
     }
@@ -59,10 +63,10 @@ public:
         return m_parentItem;
     }
 
-private:
-    QList<TreeItem *> m_childItems;
-    QList<QVariant> m_itemData;
     TreeItem *m_parentItem;
+private:
+    QList<TreeItem> m_childItems;
+    QList<QVariant> m_itemData;
 };
 
 class TreeModel : public QAbstractItemModel
@@ -70,15 +74,13 @@ class TreeModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
+    TreeItem rootItem;
+
     TreeModel(QObject *parent = nullptr)
-        : QAbstractItemModel(parent)
+        : QAbstractItemModel(parent), rootItem()
     {
-        rootItem = new TreeItem({tr("Title"), tr("Summary")});
     }
-    ~TreeModel()
-    {
-        delete rootItem;
-    }
+    ~TreeModel() {}
 
     QVariant data(const QModelIndex &index, int role) const override
     {
@@ -97,7 +99,7 @@ public:
         if (!index.isValid())
             return Qt::NoItemFlags;
 
-        return QAbstractItemModel::flags(index);
+        return QAbstractItemModel::flags(index) | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
     }
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override
     {
@@ -115,8 +117,9 @@ public:
 
         TreeItem *parentItem;
 
+        // TODO: why the hell is a const cast needed?
         if (!parent.isValid())
-            parentItem = rootItem;
+            parentItem = const_cast<TreeItem*>(&rootItem);
         else
             parentItem = static_cast<TreeItem*>(parent.internalPointer());
 
@@ -133,7 +136,7 @@ public:
         TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
         TreeItem *parentItem = childItem->parentItem();
 
-        if (parentItem == rootItem)
+        if (parentItem == &rootItem)
             return QModelIndex();
 
         return createIndex(parentItem->row(), 0, parentItem);
@@ -144,8 +147,9 @@ public:
         if (parent.column() > 0)
             return 0;
 
+        // TODO: why the hell is a const cast needed?
         if (!parent.isValid())
-            parentItem = rootItem;
+            parentItem = const_cast<TreeItem*>(&rootItem);
         else
             parentItem = static_cast<TreeItem*>(parent.internalPointer());
 
@@ -155,8 +159,6 @@ public:
     {
         return 3;
     }
-
-    TreeItem *rootItem;
 };
 
 class SpacecraftDesigner : public QMainWindow
@@ -194,7 +196,11 @@ public:
         TreeModel *tree = new TreeModel();
         circuitview->setModel(tree);
 
-        tree->rootItem->appendChild(new TreeItem({"gay", "fay", "way"}, tree->rootItem));
+        TreeItem *item0 = tree->rootItem.appendChild(TreeItem({"gay", "fay", "way"}));
+        TreeItem *item1 = item0->appendChild(TreeItem({"chay", "stay", "dead"}));
+        item0->appendChild(TreeItem({"a", "b", "c"}));
+        TreeItem *item2 = tree->rootItem.appendChild(TreeItem({"shit", "fit", "crit"}));
+        item2->appendChild(TreeItem({"trigger", "wigger", "n"}));
 
 //        QTreeWidgetItem *item = new QTreeWidgetItem({"Unassigned", "None", "None"});
 //        item->setFlags(item->flags() & ~Qt::ItemIsDragEnabled);
