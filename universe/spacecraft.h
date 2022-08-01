@@ -15,6 +15,11 @@ class SpacecraftDesign
 public:
     SpacecraftDesign();
 
+    bool operator==(const SpacecraftDesign *rhs) const
+    {
+        return rhs == const_cast<SpacecraftDesign*>(this);
+    }
+
     // to be initialized
     // TODO: this gets inherited by the Spacecraft class, retrofits should probably update this
     QString class_name = "Spacecraft Design";
@@ -50,6 +55,11 @@ class Spacecraft
 public:
     Spacecraft();
     ~Spacecraft();
+
+    bool operator==(const Spacecraft *rhs) const
+    {
+        return rhs == const_cast<Spacecraft*>(this);
+    }
     
     // design that the spacecraft was most recently specced to
     SpacecraftDesign design;

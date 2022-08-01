@@ -12,7 +12,17 @@ class Spacecraft;
 class ComponentDesign
 {
 public:
-    QString name;
+    bool operator==(const ComponentDesign *rhs) const
+    {
+        return rhs == const_cast<ComponentDesign*>(this);
+    }
+
+    virtual QString descriptor_string()
+    {
+        return name;
+    }
+
+    QString name = "component design";
 
     CircuitDesign *circuit;
 
@@ -23,6 +33,16 @@ public:
 class Component
 {
 public:
+    bool operator==(const Component *rhs) const
+    {
+        return rhs == const_cast<Component*>(this);
+    }
+
+    virtual QString descriptor_string()
+    {
+        return name;
+    }
+
     QString name;
     // where does the component currently live
     Spacecraft *parent;
@@ -62,7 +82,7 @@ public:
 };
 
 // propulsion component
-class EngineDesign : ComponentDesign
+class EngineDesign : public ComponentDesign
 {
 
 };
@@ -76,7 +96,7 @@ public:
 // power generation component
 // TODO: per calculating loads, we could store a max load in terms of resistance to toggle between regular operation and voltage drop modes
 // eh note that should probably be at the circuit level, the reactor should just have a wattage and voltage rating, and then be notified of its current voltage
-class ReactorDesign : ComponentDesign
+class ReactorDesign : public ComponentDesign
 {
     static const bool produces_power = true;
 };
@@ -88,12 +108,12 @@ public:
     int64_t max_power_generation;
 };
 
-class DirectedweaponDesign : ComponentDesign
+class DirectedweaponDesign : public ComponentDesign
 {
     static const bool uses_power = true;
 };
 
-class Directedweapon : Component
+class Directedweapon : public Component
 {
 protected:
     int64_t radius; // mm of radius of emitted firepower

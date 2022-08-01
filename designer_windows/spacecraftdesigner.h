@@ -6,79 +6,17 @@
 #include <QMainWindow>
 #include <QTreeView>
 
-//typedef enum circuitview_type_e
-//{
-//    circuit_type   = QTreeWidgetItem::UserType,
-//    component_type = QTreeWidgetItem::UserType + 1,
-//} circuitview_type_t;
-
-class TreeItem
-{
-public:
-    TreeItem(const QList<QVariant> &data = {})
-        : m_itemData(data)
-    {
-    }
-    ~TreeItem()
-    {
-    }
-
-    bool operator==(const TreeItem *rhs) const
-    {
-        return rhs == const_cast<TreeItem*>(this);
-    }
-
-    TreeItem *appendChild(TreeItem child)
-    {
-        int idx = m_childItems.count();
-        m_childItems.append(child);
-        m_childItems[idx].m_parentItem = this;
-        return const_cast<TreeItem*>(&m_childItems[idx]);
-    }
-    TreeItem *child(int row)
-    {
-        if (row < 0 || row >= m_childItems.size())
-            return nullptr;
-        return const_cast<TreeItem*>(&m_childItems.at(row));
-    }
-    int childCount() const
-    {
-        return m_childItems.count();
-    }
-    QVariant data(int column) const
-    {
-        if (column < 0 || column >= m_itemData.size())
-            return QVariant();
-        return m_itemData.at(column);
-    }
-    int row() const
-    {
-        if (m_parentItem)
-            return m_parentItem->m_childItems.indexOf(this);
-
-        return 0;
-    }
-    TreeItem *parentItem()
-    {
-        return m_parentItem;
-    }
-
-    TreeItem *m_parentItem;
-private:
-    QList<TreeItem> m_childItems;
-    QList<QVariant> m_itemData;
-};
-
 class TreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 
 public:
-    TreeItem rootItem;
+    SpacecraftDesign *design;
 
-    TreeModel(QObject *parent = nullptr)
-        : QAbstractItemModel(parent), rootItem()
+    TreeModel(SpacecraftDesign *d, QObject *parent = nullptr)
+        : QAbstractItemModel(parent)
     {
+        design = d;
     }
     ~TreeModel() {}
 
@@ -90,9 +28,37 @@ public:
         if (role != Qt::DisplayRole)
             return QVariant();
 
-        TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
+        if (design->circuits.contains((CircuitDesign *)index.internalPointer()))
+        {
+            CircuitDesign *circuit = (CircuitDesign *)index.internalPointer();
+            switch (index.column())
+            {
+            case 0:
+                return circuit->descriptor_string();
+            case 1:
+                return circuit->rated_amperage;
+            case 2:
+                return circuit->rated_voltage;
+            default:
+                return QVariant();
+            }
+        }
 
-        return item->data(index.column());
+        ComponentDesign *component = (ComponentDesign *)index.internalPointer();
+
+        switch(index.column())
+        {
+        case 0:
+            return component->descriptor_string();
+        case 1:
+            return QVariant();
+        case 2:
+            return QVariant();
+        default:
+            return QVariant();
+        }
+
+        return QVariant();
     }
     Qt::ItemFlags flags(const QModelIndex &index) const override
     {
@@ -104,7 +70,7 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override
     {
         // TODO: feels jank, no need to range check?
-        static QString poop[] = {"Head1", "head2", "poop"};
+        static QString poop[] = {"Name", "Spec Current", "Spec Voltage"};
         if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
             return poop[section];
 
@@ -115,17 +81,20 @@ public:
         if (!hasIndex(row, column, parent))
             return QModelIndex();
 
-        TreeItem *parentItem;
-
-        // TODO: why the hell is a const cast needed?
+        // handle circuits
         if (!parent.isValid())
-            parentItem = const_cast<TreeItem*>(&rootItem);
-        else
-            parentItem = static_cast<TreeItem*>(parent.internalPointer());
+        {
+            CircuitDesign *circuit = &design->circuits[row];
+            return createIndex(row, column, circuit);
+        }
 
-        TreeItem *childItem = parentItem->child(row);
-        if (childItem)
-            return createIndex(row, column, childItem);
+        if (design->circuits.contains((CircuitDesign *)parent.internalPointer()))
+        {
+            CircuitDesign *parent_circuit = (CircuitDesign *)parent.internalPointer();
+            ComponentDesign *component = parent_circuit->components[row];
+            return createIndex(row, column, component);
+        }
+
         return QModelIndex();
     }
     QModelIndex parent(const QModelIndex &index) const override
@@ -133,27 +102,32 @@ public:
         if (!index.isValid())
             return QModelIndex();
 
-        TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
-        TreeItem *parentItem = childItem->parentItem();
-
-        if (parentItem == &rootItem)
+        // TODO: verify we need to produce a parent index and that isnt handled above
+        if (design->circuits.contains((CircuitDesign *)index.internalPointer()))
             return QModelIndex();
 
-        return createIndex(parentItem->row(), 0, parentItem);
+        // else case, we are in a component
+        ComponentDesign *component = (ComponentDesign *)index.internalPointer();
+        CircuitDesign *parent_circuit = component->circuit;
+        int row = design->circuits.indexOf(parent_circuit);
+
+        return createIndex(row, 0, parent_circuit);
     }
     int rowCount(const QModelIndex &parent = QModelIndex()) const override
     {
-        TreeItem *parentItem;
         if (parent.column() > 0)
             return 0;
 
-        // TODO: why the hell is a const cast needed?
         if (!parent.isValid())
-            parentItem = const_cast<TreeItem*>(&rootItem);
-        else
-            parentItem = static_cast<TreeItem*>(parent.internalPointer());
+            return design->circuits.count();
 
-        return parentItem->childCount();
+        if (design->circuits.contains((CircuitDesign *)parent.internalPointer()))
+        {
+            CircuitDesign *parent_circuit = (CircuitDesign *)parent.internalPointer();
+            return parent_circuit->components.count();
+        }
+
+        return 0;
     }
     int columnCount(const QModelIndex &parent = QModelIndex()) const override
     {
@@ -193,14 +167,41 @@ public:
         circuitadd    = this->findChild<QPushButton*>("circuitadd");
         circuitremove = this->findChild<QPushButton*>("circuitremove");
 
-        TreeModel *tree = new TreeModel();
+        TreeModel *tree = new TreeModel(&design);
         circuitview->setModel(tree);
 
-        TreeItem *item0 = tree->rootItem.appendChild(TreeItem({"gay", "fay", "way"}));
-        TreeItem *item1 = item0->appendChild(TreeItem({"chay", "stay", "dead"}));
-        item0->appendChild(TreeItem({"a", "b", "c"}));
-        TreeItem *item2 = tree->rootItem.appendChild(TreeItem({"shit", "fit", "crit"}));
-        item2->appendChild(TreeItem({"trigger", "wigger", "n"}));
+        design.circuits.append(CircuitDesign());
+        design.circuits.append(CircuitDesign());
+
+        CircuitDesign *circuit0 = &design.circuits[0];
+        CircuitDesign *circuit1 = &design.circuits[1];
+
+        ReactorDesign *r1 = new ReactorDesign();
+        ReactorDesign *r2 = new ReactorDesign();
+        ReactorDesign *r3 = new ReactorDesign();
+        ReactorDesign *r4 = new ReactorDesign();
+        CapacitorDesign *c1 = new CapacitorDesign();
+        CapacitorDesign *c2 = new CapacitorDesign();
+        CapacitorDesign *c3 = new CapacitorDesign();
+        CapacitorDesign *c4 = new CapacitorDesign();
+
+        circuit0->components.append(r1);
+        r1->circuit = circuit0;
+        circuit0->components.append(r2);
+        r2->circuit = circuit0;
+        circuit0->components.append(c1);
+        c1->circuit = circuit0;
+        circuit0->components.append(c2);
+        c2->circuit = circuit0;
+
+        circuit1->components.append(r3);
+        r3->circuit = circuit1;
+        circuit1->components.append(r4);
+        r4->circuit = circuit1;
+        circuit1->components.append(c3);
+        c3->circuit = circuit1;
+        circuit1->components.append(c4);
+        c4->circuit = circuit1;
 
 //        QTreeWidgetItem *item = new QTreeWidgetItem({"Unassigned", "None", "None"});
 //        item->setFlags(item->flags() & ~Qt::ItemIsDragEnabled);

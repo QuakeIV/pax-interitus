@@ -13,7 +13,16 @@ class Component;
 class CircuitDesign
 {
 public:
-    QString name;
+    bool operator==(const CircuitDesign *rhs) const
+    {
+        return rhs == const_cast<CircuitDesign*>(this);
+    }
+    virtual QString descriptor_string()
+    {
+        return name;
+    }
+
+    QString name = "circuit design";
     Insulator *insulator;
     Conductor *conductor;
 
@@ -33,6 +42,15 @@ public:
 class Circuit
 {
 public:
+    bool operator==(const Circuit *rhs) const
+    {
+        return rhs == const_cast<Circuit*>(this);
+    }
+    virtual QString descriptor_string()
+    {
+        return design.name;
+    }
+
     CircuitDesign design;
 
     // TODO: jury rigs would go into this list but not the design?
