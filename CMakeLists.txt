@@ -13,9 +13,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_PREFIX_PATH "$ENV{HOME}/Qt/6.2.4/gcc_64") #we are Qt 6.2.4 for now
-find_package(QT NAMES Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
 find_package(Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
-find_package(Python COMPONENTS Development)
 
 #TODO: prolly update project sources to be named something else (application core?)
 file(GLOB PROJECT_SOURCES "*.ui" "*.cpp" "*.h")

@@ -20,6 +20,14 @@ public:
     }
     ~TreeModel() {}
 
+    Qt::DropActions supportedDragActions() const override {
+        return Qt::MoveAction;
+    }
+
+    Qt::DropActions supportedDropActions() const override {
+        return Qt::MoveAction;
+    }
+
     QVariant data(const QModelIndex &index, int role) const override
     {
         if (!index.isValid())
@@ -51,9 +59,9 @@ public:
         case 0:
             return component->descriptor_string();
         case 1:
-            return QVariant();
+            return "TODO1";
         case 2:
-            return QVariant();
+            return "TODO2";
         default:
             return QVariant();
         }
@@ -65,7 +73,7 @@ public:
         if (!index.isValid())
             return Qt::NoItemFlags;
 
-        return QAbstractItemModel::flags(index) | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+        return QAbstractItemModel::flags(index) | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable;
     }
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override
     {
@@ -112,6 +120,17 @@ public:
         int row = design->circuits.indexOf(parent_circuit);
 
         return createIndex(row, 0, parent_circuit);
+    }
+    bool dropMimeData(QMimeData const* data, Qt::DropAction action, int insert_row, int insert_column, QModelIndex const& replace_index) override
+    {
+        if (!data || action != Qt::MoveAction)
+            return false;
+    }
+    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override
+    {
+        qDebug() << "SET" << index << value;
+        emit dataChanged(QModelIndex(index), QModelIndex(index));
+        return true;
     }
     int rowCount(const QModelIndex &parent = QModelIndex()) const override
     {

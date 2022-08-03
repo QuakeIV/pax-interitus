@@ -64,9 +64,15 @@
     <property name="selectionMode">
      <enum>QAbstractItemView::ContiguousSelection</enum>
     </property>
+    <property name="indentation">
+     <number>10</number>
+    </property>
     <property name="expandsOnDoubleClick">
      <bool>false</bool>
     </property>
+    <attribute name="headerDefaultSectionSize">
+     <number>200</number>
+    </attribute>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
