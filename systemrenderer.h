@@ -48,7 +48,8 @@ private:
 
     // renderer functions
     void render_scale(void); //TODO: is this needed in light of yardstick?
-    void render_planet_recurse(CelestialType *cel);
+    void render_planet_body_recurse(CelestialType *cel);
+    void render_planet_trajectory_recurse(CelestialType *cel);
     void render_yardstick(void);
     void render_fleets(void);
     QPointF position_to_screen_coordinates(FixedV2D pos);

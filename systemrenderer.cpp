@@ -6,7 +6,7 @@
 #include <QMenu>
 #include "celestialwindow.h"
 #include "utilities.h"
-#include "fleettype.h"
+#include "spacecraft/fleettype.h"
 
 extern QApplication *qapp;
 
@@ -66,7 +66,8 @@ void SystemRenderer::paintEvent(QPaintEvent *event)
     glClear(GL_COLOR_BUFFER_BIT);
     painter.endNativePainting();
 
-    render_planet_recurse(&focus_system->root);
+    render_planet_trajectory_recurse(&focus_system->root);
+    render_planet_body_recurse(&focus_system->root);
 
     render_scale();
 
@@ -187,9 +188,28 @@ QPointF SystemRenderer::position_to_screen_coordinates(FixedV2D pos)
     return QPointF((float)a.x + rem_xf, (float)a.y + rem_yf) + center;
 }
 
-void SystemRenderer::render_planet_recurse(CelestialType *cel)
+void SystemRenderer::render_planet_body_recurse(CelestialType *cel)
 {
-    // render orbits first (if it exists)
+    foreach(CelestialType *child, cel->children)
+        render_planet_body_recurse(child);
+
+    // render planet body (but only if more center point is more than 5 pixels from parent)
+    // if hypothetically both are still minimum size, this would amount to half-overlapping circles
+    // if there is no parent body, draw it then as well (sun case)
+    if ((cel->trajectory.orbital_radius >> currentZoom) >= 5 || !cel->trajectory.parent)
+    {
+        float rad = cel->radius >> currentZoom;
+        if (rad < 5.0f)
+            rad = 5.0f;
+        painter.setPen(QColor(0,0,0,0));
+        painter.setBrush(cel->color);
+        QPointF pos = position_to_screen_coordinates(cel->trajectory.position);
+        painter.drawEllipse(pos, rad, rad);
+    }
+}
+
+void SystemRenderer::render_planet_trajectory_recurse(CelestialType *cel)
+{
     // only render orbit if it exists (if parent is set) and if it would be more than 10 pixels wide (otherwise dont bother drawing it its too small)
     if (cel->trajectory.parent && (cel->trajectory.orbital_radius >> currentZoom) >= 10)
     {
@@ -207,21 +227,7 @@ void SystemRenderer::render_planet_recurse(CelestialType *cel)
     }
 
     foreach(CelestialType *child, cel->children)
-        render_planet_recurse(child);
-
-    // render planet body (but only if more center point is more than 5 pixels from parent)
-    // if hypothetically both are still minimum size, this would amount to half-overlapping circles
-    // if there is no parent body, then draw it then as well (sun case)
-    if ((cel->trajectory.orbital_radius >> currentZoom) >= 5 || !cel->trajectory.parent)
-    {
-        float rad = cel->radius >> currentZoom;
-        if (rad < 5.0f)
-            rad = 5.0f;
-        painter.setPen(QColor(0,0,0,0));
-        painter.setBrush(cel->color);
-        QPointF pos = position_to_screen_coordinates(cel->trajectory.position);
-        painter.drawEllipse(pos, rad, rad);
-    }
+        render_planet_trajectory_recurse(child);
 }
 
 void SystemRenderer::animate()
