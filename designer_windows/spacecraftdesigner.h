@@ -2,157 +2,9 @@
 #define SPACECRAFTDESIGNER_H
 
 #include "ui_spacecraftdesigner.h"
-#include "spacecraft.h"
+#include "spacecraft/spacecraft.h"
 #include <QMainWindow>
-#include <QTreeView>
-
-class TreeModel : public QAbstractItemModel
-{
-    Q_OBJECT
-
-public:
-    SpacecraftDesign *design;
-
-    TreeModel(SpacecraftDesign *d, QObject *parent = nullptr)
-        : QAbstractItemModel(parent)
-    {
-        design = d;
-    }
-    ~TreeModel() {}
-
-    Qt::DropActions supportedDragActions() const override {
-        return Qt::MoveAction;
-    }
-
-    Qt::DropActions supportedDropActions() const override {
-        return Qt::MoveAction;
-    }
-
-    QVariant data(const QModelIndex &index, int role) const override
-    {
-        if (!index.isValid())
-            return QVariant();
-
-        if (role != Qt::DisplayRole)
-            return QVariant();
-
-        if (design->circuits.contains((CircuitDesign *)index.internalPointer()))
-        {
-            CircuitDesign *circuit = (CircuitDesign *)index.internalPointer();
-            switch (index.column())
-            {
-            case 0:
-                return circuit->descriptor_string();
-            case 1:
-                return circuit->rated_amperage;
-            case 2:
-                return circuit->rated_voltage;
-            default:
-                return QVariant();
-            }
-        }
-
-        ComponentDesign *component = (ComponentDesign *)index.internalPointer();
-
-        switch(index.column())
-        {
-        case 0:
-            return component->descriptor_string();
-        case 1:
-            return "TODO1";
-        case 2:
-            return "TODO2";
-        default:
-            return QVariant();
-        }
-
-        return QVariant();
-    }
-    Qt::ItemFlags flags(const QModelIndex &index) const override
-    {
-        if (!index.isValid())
-            return Qt::NoItemFlags;
-
-        return QAbstractItemModel::flags(index) | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable;
-    }
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override
-    {
-        // TODO: feels jank, no need to range check?
-        static QString poop[] = {"Name", "Spec Current", "Spec Voltage"};
-        if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-            return poop[section];
-
-        return QVariant();
-    }
-    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override
-    {
-        if (!hasIndex(row, column, parent))
-            return QModelIndex();
-
-        // handle circuits
-        if (!parent.isValid())
-        {
-            CircuitDesign *circuit = &design->circuits[row];
-            return createIndex(row, column, circuit);
-        }
-
-        if (design->circuits.contains((CircuitDesign *)parent.internalPointer()))
-        {
-            CircuitDesign *parent_circuit = (CircuitDesign *)parent.internalPointer();
-            ComponentDesign *component = parent_circuit->components[row];
-            return createIndex(row, column, component);
-        }
-
-        return QModelIndex();
-    }
-    QModelIndex parent(const QModelIndex &index) const override
-    {
-        if (!index.isValid())
-            return QModelIndex();
-
-        // TODO: verify we need to produce a parent index and that isnt handled above
-        if (design->circuits.contains((CircuitDesign *)index.internalPointer()))
-            return QModelIndex();
-
-        // else case, we are in a component
-        ComponentDesign *component = (ComponentDesign *)index.internalPointer();
-        CircuitDesign *parent_circuit = component->circuit;
-        int row = design->circuits.indexOf(parent_circuit);
-
-        return createIndex(row, 0, parent_circuit);
-    }
-    bool dropMimeData(QMimeData const* data, Qt::DropAction action, int insert_row, int insert_column, QModelIndex const& replace_index) override
-    {
-        if (!data || action != Qt::MoveAction)
-            return false;
-    }
-    bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override
-    {
-        qDebug() << "SET" << index << value;
-        emit dataChanged(QModelIndex(index), QModelIndex(index));
-        return true;
-    }
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override
-    {
-        if (parent.column() > 0)
-            return 0;
-
-        if (!parent.isValid())
-            return design->circuits.count();
-
-        if (design->circuits.contains((CircuitDesign *)parent.internalPointer()))
-        {
-            CircuitDesign *parent_circuit = (CircuitDesign *)parent.internalPointer();
-            return parent_circuit->components.count();
-        }
-
-        return 0;
-    }
-    int columnCount(const QModelIndex &parent = QModelIndex()) const override
-    {
-        return 3;
-    }
-};
+#include <QInputDialog>
 
 class SpacecraftDesigner : public QMainWindow
 {
@@ -160,18 +12,28 @@ class SpacecraftDesigner : public QMainWindow
 
     SpacecraftDesign design;
 
-    QTreeView   *circuitview;
     QPushButton *circuitadd;
     QPushButton *circuitremove;
+    QTextEdit   *designtext;
+    QPushButton *designname;
 
     void enterEvent(QEnterEvent *event) override
     {
         update();
     }
 
-    // update everything to reflect new world state or other updates
+    QString design_description(void)
+    {
+        QString str = design.class_name + " Class";
+        return str;
+    }
+
+    // update everything to reflect any new state in the window or the world
     void update(void)
     {
+        designtext->setText(design_description());
+        if (design.class_name != "Spacecraft Design")
+            setWindowTitle("Spacecraft Designer (" + design.class_name + " Class)");
     }
 
 public:
@@ -182,45 +44,10 @@ public:
         ui->setupUi(this);
 
         // capture pointers for UI elements
-        circuitview   = this->findChild<QTreeView*>("circuitview");
         circuitadd    = this->findChild<QPushButton*>("circuitadd");
         circuitremove = this->findChild<QPushButton*>("circuitremove");
-
-        TreeModel *tree = new TreeModel(&design);
-        circuitview->setModel(tree);
-
-        design.circuits.append(CircuitDesign());
-        design.circuits.append(CircuitDesign());
-
-        CircuitDesign *circuit0 = &design.circuits[0];
-        CircuitDesign *circuit1 = &design.circuits[1];
-
-        ReactorDesign *r1 = new ReactorDesign();
-        ReactorDesign *r2 = new ReactorDesign();
-        ReactorDesign *r3 = new ReactorDesign();
-        ReactorDesign *r4 = new ReactorDesign();
-        CapacitorDesign *c1 = new CapacitorDesign();
-        CapacitorDesign *c2 = new CapacitorDesign();
-        CapacitorDesign *c3 = new CapacitorDesign();
-        CapacitorDesign *c4 = new CapacitorDesign();
-
-        circuit0->components.append(r1);
-        r1->circuit = circuit0;
-        circuit0->components.append(r2);
-        r2->circuit = circuit0;
-        circuit0->components.append(c1);
-        c1->circuit = circuit0;
-        circuit0->components.append(c2);
-        c2->circuit = circuit0;
-
-        circuit1->components.append(r3);
-        r3->circuit = circuit1;
-        circuit1->components.append(r4);
-        r4->circuit = circuit1;
-        circuit1->components.append(c3);
-        c3->circuit = circuit1;
-        circuit1->components.append(c4);
-        c4->circuit = circuit1;
+        designtext    = this->findChild<QTextEdit*>("designtext");
+        designname    = this->findChild<QPushButton*>("designname");
 
 //        QTreeWidgetItem *item = new QTreeWidgetItem({"Unassigned", "None", "None"});
 //        item->setFlags(item->flags() & ~Qt::ItemIsDragEnabled);
@@ -237,12 +64,10 @@ public:
 //        circuitview->setDefaultDropAction(Qt::MoveAction);
 
         // TODO: maybe assert on the pointers to the widgets, the below segfaults if the above findChild calls fail
-        // capture circuit view changes
-        connect(circuitview, QOverload<const QModelIndex &>::of(&QTreeView::activated),
-            [=](const QModelIndex &index)
-        { this->update(); });
-
-        circuitview->expandAll();
+        // updoot
+//        connect(circuitview, QOverload<const QModelIndex &>::of(&QTreeView::activated),
+//            [=](const QModelIndex &index)
+//        { this->update(); });
 
         update();
     }
@@ -254,12 +79,23 @@ public:
 private slots:
     void on_circuitadd_clicked()
     {
-
+        update();
     }
 
     void on_circuitremove_clicked()
     {
+        update();
+    }
 
+    void on_designname_clicked()
+    {
+        bool ok;
+        QString text = QInputDialog::getText(this, "Design Name", "Name", QLineEdit::Normal, design.class_name, &ok);
+        if (ok && !text.isEmpty())
+        {
+            design.class_name = text;
+            update();
+        }
     }
 
 private:

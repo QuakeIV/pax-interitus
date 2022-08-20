@@ -148,6 +148,15 @@ public:
         charge_time = universe_time + (int64_t)((current_max_energy - initial_energy) / current_charge_rate);
     }
 
+    // true = charged
+    bool charged(void)
+    {
+        int64_t energy = get_stored_energy();
+        if (energy >= discharge_energy)
+            return true;
+        return false;
+    }
+
     // for now this is simply an instantaneous action
     // TODO: there may one day be a need to have this take some amount of time, if small
     // might be a thing tech can effect
@@ -157,9 +166,11 @@ public:
     {
         int64_t energy = get_stored_energy();
 
-        if (energy > discharge_energy)
+        if (energy >= discharge_energy)
         {
-
+            initial_energy -= discharge_energy;
+            initial_time = universe_time;
+            charge_time = universe_time + (int64_t)((current_max_energy - initial_energy) / current_charge_rate);
             return true;
         }
         return false;

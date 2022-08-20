@@ -4,6 +4,8 @@
 #include "components/jumpdrive.h"
 #include "universe.h"
 
+// NOTE: current data model holds that you should not make pointers of items in the spacecraft, as if the list re-allocates the addresses will change
+
 SpacecraftDesign::SpacecraftDesign()
 {
 
@@ -31,7 +33,7 @@ Spacecraft::~Spacecraft()
 }
 bool Spacecraft::ready_to_jump(void)
 {
-    if (!selected_jump_drive)
+    if (!jump_drives.length())
         return false;
 
     return true;
@@ -42,14 +44,6 @@ bool Spacecraft::jump(OrbitType* tgt)
         return false;
 
     //TODO: spawn jump effects that then render?
-    return true;
-}
-bool Spacecraft::select_jump_drive(uint drive)
-{
-    if (drive >= jump_drives.count())
-        return false;
-
-    selected_jump_drive = &jump_drives[drive];
     return true;
 }
 // max acceleration (mm/sec/sec)
@@ -64,9 +58,4 @@ void Spacecraft::take_damage(uint64_t damage)
 // drive regular operating of the craft
 void Spacecraft::update(int64_t delta_t)
 {
-    // update components before trying to use them
-    foreach( Component *c, components)
-        c->update(this);
-
-    // do other stuff
 }

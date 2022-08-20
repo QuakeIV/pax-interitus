@@ -66,14 +66,14 @@ QPushButton:checked {
 QMenu::item:selected {
   background-color: rgb(105, 156, 232);
 }
-QPlainTextEdit {
+QTextEdit {
   background-color: rgb(38, 44, 59);
   border-width: 1px;
   border-style: solid;
   border-radius: 0px;
   border-color: rgb(26,29,40);
 }
-QPlainTextEdit:focus  {
+QTextEdit:focus  {
   border-color: rgb(105, 156, 232);
 }
 QLineEdit {

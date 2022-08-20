@@ -1,6 +1,6 @@
 #include "circuit.h"
 #include "component.h"
-#include "spacecraft.h"
+#include "spacecraft/spacecraft.h"
 #include "materials.h"
 #include "universe.h"
 

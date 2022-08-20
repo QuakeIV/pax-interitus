@@ -31,7 +31,7 @@ public:
         // TODO: fiddle with update rate, make configurable with refresh/frame rate?
         timer->start(50);
 
-        text = this->findChild<QPlainTextEdit*>("textview");
+        text = this->findChild<QTextEdit*>("textview");
 
         setWindowTitle(celestial->name);
     }
@@ -43,7 +43,7 @@ public:
 
     CelestialType *celestial;
 
-    QPlainTextEdit *text;
+    QTextEdit *text;
 
 public slots:
     void refresh(void)

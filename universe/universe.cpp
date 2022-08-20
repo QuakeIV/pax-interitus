@@ -1,9 +1,9 @@
 #include "universe.h"
 #include "transform.h"
 #include "celestialtype.h"
-#include "fleettype.h"
+#include "spacecraft/fleettype.h"
 #include "solarsystemtype.h"
-#include "spacecraft.h"
+#include "spacecraft/spacecraft.h"
 #include "units.h"
 #include <QTimer>
 

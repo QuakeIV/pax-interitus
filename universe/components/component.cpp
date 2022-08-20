@@ -1,6 +1,6 @@
 
 #include "component.h"
-#include "spacecraft.h"
+#include "spacecraft/spacecraft.h"
 
 
 Directedweapon::Directedweapon(Transform *pos)

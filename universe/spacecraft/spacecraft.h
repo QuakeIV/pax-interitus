@@ -66,10 +66,7 @@ public:
 
     bool ready_to_jump(void);
     bool jump(OrbitType* tgt);
-    // notionally this would be used with an index from a dropdown
-    bool select_jump_drive(uint drive);
 
-    QList<Component*> components;
     QList<Engine> engines;
     QList<Reactor> reactors;
     QList<Directedweapon> directed_weapons;
@@ -78,7 +75,6 @@ public:
     // aught to be possible to have multiples, however i reckon there
     // should be engineering problems to overcome before multiples are practical
     QList<Jumpdrive> jump_drives;
-    Jumpdrive *selected_jump_drive; // you can only jump with one drive at a time, this tracks the currently selected drive you can attempt to jump with
 
     // meant to drive the display of spacecraft status
     SpacecraftStatus status;
