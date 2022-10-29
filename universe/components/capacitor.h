@@ -5,6 +5,8 @@
 #include "materials.h"
 #include "universe.h"
 
+// TODO: should have a passive discharge rate that also drives a continual power load when not charging
+
 // what is edited in the designer window
 // probably all components will have a special design type, i cant forsee any actual overlap there (unlike the components themselves)
 class CapacitorDesign : public ComponentDesign

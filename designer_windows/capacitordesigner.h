@@ -34,8 +34,8 @@ class CapacitorDesigner : public QDialog
         // update dialectric display
         insulator_combobox->clear();
         // TODO: this should iterate on an empire's knowledge of dialectrics instead
-        foreach(Insulator i, insulator_materials)
-            insulator_combobox->addItem(i.descriptor_string());
+        foreach(Insulator *i, insulator_materials)
+            insulator_combobox->addItem(i->descriptor_string());
 
         // NOTE: annoyingly this has to match one of the existing items exactly
         insulator_combobox->setCurrentText(selected_insulator->descriptor_string());
@@ -84,7 +84,7 @@ public:
         // in addition to this polling known materials rather than
         // all materials ever, and also respecting hidden/obsolete
         // materials)
-        selected_insulator = &insulator_materials[0];
+        selected_insulator = insulator_materials[0];
 
         // capture pointers for UI elements
         insulator_combobox  = this->findChild<QComboBox*>("insulator");
@@ -104,7 +104,7 @@ public:
             [=](int index)
         {
             if (index >= 0 && index < insulator_materials.length())
-                this->selected_insulator = &insulator_materials[index];
+                this->selected_insulator = insulator_materials[index];
             this->update();
         });
 

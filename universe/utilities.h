@@ -285,5 +285,4 @@ static inline QString get_volume_str(double volume)
     return QString("%1%2L").arg(QString::number(volume, 'f', 1), si_scale[i]);
 }
 
-
 #endif // UTILITIES_H

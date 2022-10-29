@@ -6,6 +6,7 @@
 #include "components/jumpdrive.h"
 #include "components/circuit.h"
 #include "universe.h"
+#include <QList>
 
 class Component;
 
@@ -14,21 +15,26 @@ class SpacecraftDesign
 {
 public:
     SpacecraftDesign();
+    ~SpacecraftDesign()
+    {
+
+    }
 
     bool operator==(const SpacecraftDesign *rhs) const
     {
         return rhs == const_cast<SpacecraftDesign*>(this);
     }
 
-    // to be initialized
-    // TODO: this gets inherited by the Spacecraft class, retrofits should probably update this
-    QString class_name = "Spacecraft Design";
+    // IE Cv for corvette
+    // TODO: might be worth expanding on that a bit so both Cv and Corvette are know info for different contexts
+    QString type = "";
+    QString class_name = "";
 
-    QList<EngineDesign> engines;
-    QList<ReactorDesign> reactors;
-    QList<DirectedweaponDesign> directed_weapons;
-    QList<JumpdriveDesign> jump_drives;
-    QList<CircuitDesign> circuits;
+    QList<EngineDesign*> engines;
+    QList<ReactorDesign*> reactors;
+    QList<DirectedweaponDesign*> directed_weapons;
+    QList<JumpdriveDesign*> jump_drives;
+    QList<CircuitDesign*> circuits;
 
     // max acceleration (mm/sec/sec)
     int64_t max_acceleration(void);
@@ -40,6 +46,19 @@ public:
     // TODO: use this for display purposes to make relative ship size within a formation evident?
     int64_t radius;
 };
+
+// produce full name of a spacecraft design
+// ie Cv Deimos Class
+// TODO: incorporate empire specific info
+inline QString get_spacecraft_design_name(SpacecraftDesign *d)
+{
+    if (!d)
+        return "No Design";
+    if (d->class_name.isEmpty())
+        return "New Class";
+    else
+        return d->class_name + " Class";
+}
 
 // indicates spacecraft status (non reciprocating)
 class SpacecraftStatus
@@ -67,14 +86,14 @@ public:
     bool ready_to_jump(void);
     bool jump(OrbitType* tgt);
 
-    QList<Engine> engines;
-    QList<Reactor> reactors;
-    QList<Directedweapon> directed_weapons;
+    QList<Engine*> engines;
+    QList<Reactor*> reactors;
+    QList<Directedweapon*> directed_weapons;
     //TODO: missile launchers
 
     // aught to be possible to have multiples, however i reckon there
     // should be engineering problems to overcome before multiples are practical
-    QList<Jumpdrive> jump_drives;
+    QList<Jumpdrive*> jump_drives;
 
     // meant to drive the display of spacecraft status
     SpacecraftStatus status;
@@ -83,8 +102,8 @@ public:
     // TODO: need some way to approach a target point and produce an ETA to that point (ideally closed form)
     OrbitType trajectory;
 
-    // to be overidden
-    QString name = "Spacecraft";
+    QString name = "";
+    int hull_number;
 
     // max acceleration (mm/sec/sec)
     int64_t max_acceleration(void);

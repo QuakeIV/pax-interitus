@@ -8,6 +8,7 @@ class Transform;
 class CelestialType;
 class SolarSystemType;
 class Spacecraft;
+class SpacecraftDesign;
 
 extern int64_t universe_time; // microseconds now
 // universe time for next event (drives update scheduling)
@@ -19,9 +20,11 @@ const int64_t universe_max_warp =  26;
 extern QList<Transform*> transforms;
 extern QList<SolarSystemType*> systems;
 extern QList<Spacecraft*> spacecraft;
+// TODO: this should most definitively be stored as part of an empire
+extern QList<SpacecraftDesign*> spacecraft_designs;
 
 // master list of extant dialectric materials
-extern QList<Insulator> insulator_materials;
+extern QList<Insulator*> insulator_materials;
 
 //TODO: temporary
 #include "empire.h"

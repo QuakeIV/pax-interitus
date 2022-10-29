@@ -14,7 +14,7 @@ Empire player_empire;
 QApplication *qapp;
 
 // master list of extant dialectric materials
-QList<Insulator> insulator_materials;
+QList<Insulator*> insulator_materials;
 
 bool universe_paused = false;
 int64_t universe_time_warp = 0; //this is a power applied to 2
@@ -37,6 +37,8 @@ QList<SolarSystemType*> systems;
 
 // track all spacecraft in existence
 QList<Spacecraft*> spacecraft;
+// TODO: this should most definitively be stored as part of an empire
+QList<SpacecraftDesign*> spacecraft_designs;
 
 // put the fleet type auto increment in the universe because it has to live in some compile unit
 uint64_t FleetType::fleet_id = 0;
@@ -45,59 +47,71 @@ void universe_init(void)
 {
     // TODO: temporary
     // add some dialectric materials
-    Insulator i;
+    Insulator *i;
     // now featuring wikipedia capacitor materials
     // (most optimistic figures)
     // TODO: it might be better to go the aurora route and just have 'conventional' followed by mainly fanciful materials
-    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(40);
-    i.strength = VOLT_UM_TO_VOLT_M(100);
-    i.name = "Ceramic Class 1";
+    i = new Insulator();
+    i->permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(40);
+    i->strength = VOLT_UM_TO_VOLT_M(100);
+    i->name = "Ceramic Class 1";
     insulator_materials.append(i);
-    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(14000);
-    i.strength = VOLT_UM_TO_VOLT_M(35);
-    i.name = "Ceramic Class 2";
+    i = new Insulator();
+    i->permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(14000);
+    i->strength = VOLT_UM_TO_VOLT_M(35);
+    i->name = "Ceramic Class 2";
     insulator_materials.append(i);
-    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(3.3);
-    i.strength = VOLT_UM_TO_VOLT_M(580);
-    i.name = "Film (PET)";
+    i = new Insulator();
+    i->permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(3.3);
+    i->strength = VOLT_UM_TO_VOLT_M(580);
+    i->name = "Film (PET)";
     insulator_materials.append(i);
-    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(9.6);
-    i.strength = VOLT_UM_TO_VOLT_M(710);
-    i.name = "Aluminum electrolytic";
+    i = new Insulator();
+    i->permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(9.6);
+    i->strength = VOLT_UM_TO_VOLT_M(710);
+    i->name = "Aluminum electrolytic";
     insulator_materials.append(i);
-    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(26);
-    i.strength = VOLT_UM_TO_VOLT_M(625);
-    i.name = "Tantalum electrolytic";
+    i = new Insulator();
+    i->permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(26);
+    i->strength = VOLT_UM_TO_VOLT_M(625);
+    i->name = "Tantalum electrolytic";
     insulator_materials.append(i);
-    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(42);
-    i.strength = VOLT_UM_TO_VOLT_M(455);
-    i.name = "Niobium electrolytic";
+    i = new Insulator();
+    i->permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(42);
+    i->strength = VOLT_UM_TO_VOLT_M(455);
+    i->name = "Niobium electrolytic";
     insulator_materials.append(i);
-    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(10);
-    i.strength = VOLT_UM_TO_VOLT_M(450);
-    i.name = "Glass";
+    i = new Insulator();
+    i->permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(10);
+    i->strength = VOLT_UM_TO_VOLT_M(450);
+    i->name = "Glass";
     insulator_materials.append(i);
-    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(8);
-    i.strength = VOLT_UM_TO_VOLT_M(118);
-    i.name = "Mica";
+    i = new Insulator();
+    i->permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(8);
+    i->strength = VOLT_UM_TO_VOLT_M(118);
+    i->name = "Mica";
     insulator_materials.append(i);
 
     // regular insulators (dunno the permittivity but presumably poor)
-    i.permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(10);
-    i.strength = VOLT_UM_TO_VOLT_M(2000);
-    i.name = "Diamond";
+    i = new Insulator();
+    i->permittivity = RELATIVE_DIALECTRIC_TO_ABSOLUTE(10);
+    i->strength = VOLT_UM_TO_VOLT_M(2000);
+    i->name = "Diamond";
     insulator_materials.append(i);
-    i.permittivity = 0;// TODO: placeholder for not-known permittivity
-    i.strength = VOLT_UM_TO_VOLT_M(670);
-    i.name = "Fused Silica";
+    i = new Insulator();
+    i->permittivity = 0;// TODO: placeholder for not-known permittivity
+    i->strength = VOLT_UM_TO_VOLT_M(670);
+    i->name = "Fused Silica";
     insulator_materials.append(i);
-    i.permittivity = 0;
-    i.strength = VOLT_UM_TO_VOLT_M(160);
-    i.name = "Polyethylene";
+    i = new Insulator();
+    i->permittivity = 0;
+    i->strength = VOLT_UM_TO_VOLT_M(160);
+    i->name = "Polyethylene";
     insulator_materials.append(i);
-    i.permittivity = 0;
-    i.strength = VOLT_UM_TO_VOLT_M(170);
-    i.name = "Teflon Film";
+    i = new Insulator();
+    i->permittivity = 0;
+    i->strength = VOLT_UM_TO_VOLT_M(170);
+    i->name = "Teflon Film";
     insulator_materials.append(i);
 
     // for now hard code the solar system because to heck with it i tell you
@@ -255,10 +269,15 @@ void universe_init(void)
     static CelestialType pluto = CelestialType(1188300000, 13030000, 5906380000000000, &sol.root);
     pluto.name = "Pluto";
     static CelestialType charon = CelestialType(606000000, 1587000, 17536000000, &pluto); // pluto moons by mass (because eh)
+    charon.name = "Charon";
     static CelestialType nix = CelestialType(45000000, 50, 48694000000, &pluto);
+    nix.name = "Nix";
     static CelestialType hydra = CelestialType(45000000, 50, 64738000000, &pluto);
+    hydra.name = "Hydra";
     static CelestialType kerberos = CelestialType(15000000, 16, 57783000000, &pluto);
+    kerberos.name = "Kerberos";
     static CelestialType styx = CelestialType(12000000, 8, 42656000000, &pluto);
+    styx.name = "Styx";
 
     static FleetType testfleet1 = FleetType(&earth, 400000000 + earth.radius);
     static FleetType testfleet2 = FleetType(&earth, 400000000 + earth.radius);

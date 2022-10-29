@@ -49,6 +49,28 @@ QPushButton {
   border-color: rgb(46, 53, 71);
 /*  alternate-background-color: blue;*/
 }
+QComboBox {
+  background-color: rgb(46, 53, 71);
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 0px;
+  border-color: rgb(46, 53, 71);
+}
+QCheckBox:indicator:unchecked  {
+  background-color: rgb(46, 53, 71);
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 0px;
+  border-color: rgb(26,29,40);
+}
+QCheckBox:indicator:checked {
+  background-color: rgb(105, 156, 232);
+  color:white;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 0px;
+  border-color: rgb(26,29,40);
+}
 QPushButton:pressed {
   background-color: rgb(26, 30, 38);
   border-width: 1px;

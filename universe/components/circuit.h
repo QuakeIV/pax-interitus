@@ -22,7 +22,7 @@ public:
         return name;
     }
 
-    QString name = "circuit design";
+    QString name = "Circuit Design";
     Insulator *insulator;
     Conductor *conductor;
 

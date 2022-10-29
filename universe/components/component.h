@@ -65,7 +65,7 @@ public:
     // TODO: default HP system?
     // TODO: absorption of some sort (maybe temperature and pressure tolerance thing)
     // TODO: it turns out vtables are a bit gay should probably discontinue the use thereof as much as possible
-    virtual int64_t apply_damage(int64_t dmg) { return 0; };
+    virtual int64_t apply_damage(int64_t dmg) { return 0; }
 
     double resistive_load = 0;
 
