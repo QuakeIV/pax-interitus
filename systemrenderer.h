@@ -11,7 +11,7 @@
 #include "universe/celestialtype.h"
 #include <QMenu>
 
-class FleetType;
+class Spacecraft;
 
 class SystemRenderer : public QOpenGLWidget
 {
@@ -58,7 +58,7 @@ private:
     CelestialType *planet_click_recurse(CelestialType *cel, QPointF p);
     // recursively search fleets to see if a click landed on them
     // (runs after planet click, that way if you click a big pile of crap you get the planet preferentially)
-    FleetType *fleet_click(QPointF p);
+    Spacecraft *spacecraft_click(QPointF p);
 
     bool mouse_pressed;
     QTimer clickTimer;

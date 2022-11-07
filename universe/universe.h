@@ -12,7 +12,7 @@ class SpacecraftDesign;
 
 extern int64_t universe_time; // microseconds now
 // universe time for next event (drives update scheduling)
-extern uint64_t universe_next_event;
+extern int64_t universe_next_event;
 extern bool universe_paused;
 extern int64_t universe_time_warp;
 const int64_t universe_min_warp = -20;

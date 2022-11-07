@@ -3,10 +3,12 @@
 
 #include "orbittype.h"
 #include "components/component.h"
-#include "components/jumpdrive.h"
 #include "components/circuit.h"
 #include "universe.h"
 #include <QList>
+
+class JumpdriveDesign;
+class Jumpdrive;
 
 class Component;
 
@@ -74,17 +76,12 @@ class Spacecraft
 public:
     Spacecraft();
     ~Spacecraft();
-
-    bool operator==(const Spacecraft *rhs) const
-    {
-        return rhs == const_cast<Spacecraft*>(this);
-    }
     
     // design that the spacecraft was most recently specced to
     SpacecraftDesign design;
 
     bool ready_to_jump(void);
-    bool jump(OrbitType* tgt);
+    bool jump(Transform* tgt, int selected_drive);
 
     QList<Engine*> engines;
     QList<Reactor*> reactors;
@@ -100,7 +97,7 @@ public:
 
     // TODO: kinematic trajectory that can either ride a fixed orbit or be in a dynamic maneuvering mode
     // TODO: need some way to approach a target point and produce an ETA to that point (ideally closed form)
-    OrbitType trajectory;
+    Transform *trajectory;
 
     QString name = "";
     int hull_number;

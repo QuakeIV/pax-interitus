@@ -6,7 +6,6 @@
 #include <QMenu>
 #include "celestialwindow.h"
 #include "utilities.h"
-#include "spacecraft/fleettype.h"
 
 extern QApplication *qapp;
 
@@ -28,7 +27,7 @@ SystemRenderer::SystemRenderer(QWidget *parent) :
     //test = QPen(Qt::white, 12, Qt::DashDotLine, Qt::RoundCap);
 
     // TODO: this is temporary, this is not long-term the suitable place to set initial focus i think
-    focus_system = systems[0]; //TODO: default to zeroeth system for now (later track home system?)
+    focus_system = systems[0]; //TODO: default to zeroeth system for now (later track home system? maybe last viewed system?)
     focus = &focus_system->root.trajectory;
 
     orbit = QPen(Qt::green);//, 1, Qt::SolidLine, Qt::SquareCap);
@@ -82,7 +81,7 @@ void SystemRenderer::paintEvent(QPaintEvent *event)
 void SystemRenderer::render_fleets(void)
 {
     // copy the list
-    QList<FleetType*> list = focus_system->fleets;
+    QList<Spacecraft*> list = focus_system->spacecraft;
 
     // sort by y axis to promote displaying text in the right order
     // this did not help readability at all and seemed to impact it negatively but may as well leave this here since i came back to it twice
@@ -100,32 +99,32 @@ void SystemRenderer::render_fleets(void)
 //            continue;
         //TODO: draw trail line?
 
-        FleetType *fleet = list.takeLast();
-        QPointF pos = position_to_screen_coordinates(fleet->trajectory.position);
+        Spacecraft *sc = list.takeLast();
+        QPointF pos = position_to_screen_coordinates(sc->trajectory->position);
         QPointF offset = QPointF(5,-5); //offset for text display
         //TODO: de-hardcode radius
         painter.drawEllipse(pos, 5.0, 5.0);
 
         // name
-        painter.drawText(pos + offset, fleet->name);
+        painter.drawText(pos + offset, sc->name);
 
         // find colocated fleets
         int64_t i = list.length() - 1;
         while (i >= 0)
         {
             // TODO: would be nice to pre-calculate fleet screen coordinates for the frame
-            QPointF copos = position_to_screen_coordinates(list[i]->trajectory.position);
+            QPointF copos = position_to_screen_coordinates(list[i]->trajectory->position);
             QPointF d = copos - pos;
 
             // TODO: needs work to eliminate vertical jitter, shouldnt exist at long range zoom
             // TODO: dont hard code horizontal space?
             if ((abs(d.y()) < font_size) && (abs(d.x()) < 50.0))
             {
-                FleetType *co_fleet = list.takeAt(i);
+                Spacecraft *co_sc = list.takeAt(i);
 
                 offset.ry() -= font_size;
 
-                painter.drawText(pos + offset, co_fleet->name);
+                painter.drawText(pos + offset, co_sc->name);
 
                 // draw circle
                 //TODO: de-hardcode radius
@@ -247,10 +246,11 @@ void SystemRenderer::singleClick(QPoint location)
         return;
     }
 
-    FleetType *fleet = fleet_click(location);
-    if (fleet)
+    // renaming to task group, probably, its functionally likely to be more fitting
+    Spacecraft *spacecraft = spacecraft_click(location);
+    if (spacecraft)
     {
-        focus = &fleet->trajectory;
+        focus = spacecraft->trajectory;
         offset.x = 0;
         offset.y = 0;
         return;
@@ -286,12 +286,12 @@ void SystemRenderer::rightClick(QPoint location)
     }
 
     // TODO: track current selected solar system instead of hardcoding sol
-    QList<FleetType*> fleets;
-    foreach (FleetType *f, focus_system->fleets)
+    QList<Spacecraft*> spacecraft;
+    foreach (Spacecraft *s, focus_system->spacecraft)
     {
         //TODO: would be nice to pre-compute fleet screen position every frame
         // can track screen corners in fixedv2d form and then calculate which things are displayed, and only update those coords? maybe needless complexity
-        QPointF l = position_to_screen_coordinates(f->trajectory.position);
+        QPointF l = position_to_screen_coordinates(s->trajectory->position);
 
         float x = l.x() - location.x();
         float y = l.y() - location.y();
@@ -299,7 +299,7 @@ void SystemRenderer::rightClick(QPoint location)
         // TODO: maybe at some point fleet display radius will be configurable, definitely call a function for this one
         // TODO: configurable click radius margins?
         if (d < 10.0)  // right click margins are more generous
-            fleets.append(f);
+            spacecraft.append(s);
     }
 
     // TODO: mess with scrolling to make it work better
@@ -329,17 +329,17 @@ void SystemRenderer::rightClick(QPoint location)
         });
     }
 
-    if (cels.length() && fleets.length())
+    if (cels.length() && spacecraft.length())
         m->addSeparator();
 
-    foreach(FleetType *f, fleets)
+    foreach(Spacecraft *s, spacecraft)
     {
-        QMenu *submenu = m->addMenu(f->name);
-        submenu->addAction("Focus", [this, f]()
+        QMenu *submenu = m->addMenu(s->name);
+        submenu->addAction("Focus", [this, s]()
         {
             this->offset.x = 0;
             this->offset.y = 0;
-            this->focus = &f->trajectory;
+            this->focus = s->trajectory;
         });
     }
     m->popup(mapToGlobal(location));
@@ -370,20 +370,20 @@ void SystemRenderer::scrollDown(void)
         currentZoom++;
 }
 
-FleetType * SystemRenderer::fleet_click(QPointF p)
+Spacecraft * SystemRenderer::spacecraft_click(QPointF p)
 {
     // TODO: track 'current solar system', check that things fleets instead
-    foreach (FleetType *fleet, focus_system->fleets)
+    foreach (Spacecraft *s, focus_system->spacecraft)
     {
         //TODO: would be nice to pre-compute fleet screen position every frame
-        QPointF l = position_to_screen_coordinates(fleet->trajectory.position);
+        QPointF l = position_to_screen_coordinates(s->trajectory->position);
 
         float x = l.x() - p.x();
         float y = l.y() - p.y();
         float d = sqrt(x*x + y*y);
         // TODO: maybe at some point fleet display radius will be configurable, definitely call a function for this one
         if (d < 6.0)
-            return fleet;
+            return s;
     }
     return NULL;
 }

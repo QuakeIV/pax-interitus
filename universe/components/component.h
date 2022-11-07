@@ -12,11 +12,6 @@ class Spacecraft;
 class ComponentDesign
 {
 public:
-    bool operator==(const ComponentDesign *rhs) const
-    {
-        return rhs == const_cast<ComponentDesign*>(this);
-    }
-
     virtual QString descriptor_string()
     {
         return name;
@@ -33,11 +28,6 @@ public:
 class Component
 {
 public:
-    bool operator==(const Component *rhs) const
-    {
-        return rhs == const_cast<Component*>(this);
-    }
-
     virtual QString descriptor_string()
     {
         return name;
@@ -56,9 +46,6 @@ public:
     int64_t damage;
 
     Component() {}
-
-    // component mass is in grams (this function lets the component factor its current state into the mass result)
-    virtual int64_t get_mass(void) { return mass; }
 
     // damage in joules for now
     // returns damage absorbed so it can fall through to other components

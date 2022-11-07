@@ -3,8 +3,9 @@
 
 #include <QList>
 #include "celestialtype.h"
+#include "spacecraft/spacecraft.h"
 
-class FleetType;
+class Taskgroup;
 class SolarSystemType;
 extern QList<SolarSystemType*> systems;
 
@@ -13,7 +14,7 @@ class SolarSystemType
 public:
     CelestialType root; //root celestial body (this might possibly change later)
 
-    QList<FleetType*> fleets;
+    QList<Spacecraft*> spacecraft;
     QList<CelestialType*> celestials;
 
     static uint64_t system_id; //currently just a counter used to initialize 'name'

@@ -129,7 +129,6 @@ public:
     int64_t current_max_energy = 0; // energy
     int64_t max_dt = 0; // time it takes to fully charge (currently no way this should change after initialization (maybe later it will degrade due to damage or other factors)
     int64_t charge_time = 0; // time at which the capacitor will be fully charged
-    int64_t discharge_energy = 0; // amount of energy consumed per discharge (defined by containing component generally)
 
     //NOTE: this will cope very poorly with rapidly fluctuating voltage
     void update_voltage(double voltage) override
@@ -150,8 +149,9 @@ public:
         charge_time = universe_time + (int64_t)((current_max_energy - initial_energy) / current_charge_rate);
     }
 
+    // discharge_energy = amount of energy consumed per discharge
     // true = charged
-    bool charged(void)
+    bool charged(int64_t discharge_energy)
     {
         int64_t energy = get_stored_energy();
         if (energy >= discharge_energy)
@@ -162,12 +162,14 @@ public:
     // for now this is simply an instantaneous action
     // TODO: there may one day be a need to have this take some amount of time, if small
     // might be a thing tech can effect
+    // notably the load should probably be a big factor in that
     // TODO: could probably save cycles by having the containing LRU schedule events if it wants to fire
     // in that case might be able to avoid the check? probably still need to recalculate to subtract out energy that was used
-    bool discharge(void)
+    // returns discharge success (ideally that wouldnt actually get used much? it might be useful though to guard button clicks for instance)
+    // discharge_energy = amount of energy consumed per discharge
+    bool discharge(int64_t discharge_energy)
     {
         int64_t energy = get_stored_energy();
-
         if (energy >= discharge_energy)
         {
             initial_energy -= discharge_energy;

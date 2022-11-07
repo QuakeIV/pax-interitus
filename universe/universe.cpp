@@ -1,7 +1,7 @@
 #include "universe.h"
 #include "transform.h"
 #include "celestialtype.h"
-#include "spacecraft/fleettype.h"
+#include "spacecraft/taskgroup.h"
 #include "solarsystemtype.h"
 #include "spacecraft/spacecraft.h"
 #include "units.h"
@@ -25,7 +25,7 @@ int64_t universe_time;
 
 // universe time for next event (drives update scheduling)
 // TODO: we really need to be careful with how this gets set
-uint64_t universe_next_event = LLONG_MAX;
+int64_t universe_next_event = INT64_MAX;
 
 //TODO: it might be better to only update the transforms we are currently looking at (cull by current system if nothing else)
 // at that point the transforms can just be handed whatever the current universe time is when they come into view
@@ -41,7 +41,7 @@ QList<Spacecraft*> spacecraft;
 QList<SpacecraftDesign*> spacecraft_designs;
 
 // put the fleet type auto increment in the universe because it has to live in some compile unit
-uint64_t FleetType::fleet_id = 0;
+uint64_t Taskgroup::group_id = 0;
 
 void universe_init(void)
 {
@@ -225,6 +225,7 @@ void universe_init(void)
     static CelestialType miranda   = CelestialType(235800000, 64000,   129390000000, &uranus);
     static CelestialType puck      = CelestialType(81000000,  2900,    86010000000, &uranus);
     static CelestialType sycorax   = CelestialType(78500000,  2300,    12179400000000, &uranus);
+    sycorax.name = "Sycorax";
     static CelestialType portia    = CelestialType(67500000,  1700,    69090000000, &uranus);
     static CelestialType juliet    = CelestialType(47000000,  560,     64350000000, &uranus);
     static CelestialType belinda   = CelestialType(45000000,  490,     75260000000, &uranus);
@@ -235,6 +236,7 @@ void universe_init(void)
     static CelestialType bianca    = CelestialType(25500000,  92,      59170000000, &uranus);
     static CelestialType prospero  = CelestialType(25000000,  85,      16276800000000, &uranus);
     static CelestialType setebos   = CelestialType(24000000,  75,      17420400000000, &uranus);
+    setebos.name = "Setebos";
     static CelestialType ophelia   = CelestialType(21500000,  53,      53790000000, &uranus);
     static CelestialType cordelia  = CelestialType(20000000,  44,      49770000000, &uranus);
     static CelestialType stephano  = CelestialType(16000000,  22,      8007400000000, &uranus);
@@ -245,6 +247,7 @@ void universe_init(void)
     static CelestialType ferdinand = CelestialType(10000000,  5,       20430000000000, &uranus);
     static CelestialType trinculo  = CelestialType(9000000,   4,       8505200000000, &uranus);
     static CelestialType cupid     = CelestialType(9000000,   4,       74800000000, &uranus);
+    cupid.name = "Cupid";
 
     static CelestialType neptune = CelestialType(24622000000, 102413000000, 4500000000000000, &sol.root);
     neptune.name = "Neptune";
@@ -261,8 +264,10 @@ void universe_init(void)
     static CelestialType halimede  = CelestialType(31000000,   160,      16681000000000, &neptune);
     static CelestialType neso      = CelestialType(30000000,   150,      50258000000000, &neptune);
     static CelestialType sao       = CelestialType(22000000,   60,       22619000000000, &neptune);
+    sao.name = "Sao";
     static CelestialType laomedeia = CelestialType(21000000,   50,       22613000000000, &neptune);
     static CelestialType psamthe   = CelestialType(20000000,   40,       46705000000000, &neptune);
+    psamthe.name = "Psamthe";
     static CelestialType hippocamp = CelestialType(17400000,   30,       105283000000, &neptune);
 
     //TODO: pluto is actually significantly barycentric with charon
@@ -279,12 +284,28 @@ void universe_init(void)
     static CelestialType styx = CelestialType(12000000, 8, 42656000000, &pluto);
     styx.name = "Styx";
 
-    static FleetType testfleet1 = FleetType(&earth, 400000000 + earth.radius);
-    static FleetType testfleet2 = FleetType(&earth, 400000000 + earth.radius);
-    static FleetType testfleet3 = FleetType(&earth, 400000000 + earth.radius);
-
-    static Spacecraft testcraft = Spacecraft();
-    testfleet1.ships.append(&testcraft);
+    static Spacecraft testcraft1 = Spacecraft();
+    testcraft1.name = "SS Test 1";
+    static Transform epic_static_position = Transform();
+    epic_static_position.position.x = -105684699015963;
+    epic_static_position.position.y = -27305789478705;
+    testcraft1.trajectory = &epic_static_position;
+    sol.spacecraft.append(&testcraft1);
+    static Spacecraft testcraft2 = Spacecraft();
+    static OrbitType t1 = OrbitType(&earth, earth.radius + 400000000);
+    testcraft2.trajectory = &t1;
+    testcraft2.name = "SS Test 2";
+    sol.spacecraft.append(&testcraft2);
+    static Spacecraft testcraft3 = Spacecraft();
+    static OrbitType t2 = OrbitType(&earth, earth.radius + 400000000);
+    testcraft3.trajectory = &t2;
+    testcraft3.name = "SS Test 3";
+    sol.spacecraft.append(&testcraft3);
+    static Spacecraft testcraft4 = Spacecraft();
+    static OrbitType t3 = OrbitType(&earth, earth.radius + 400000000);
+    testcraft4.trajectory = &t3;
+    testcraft4.name = "SS Test 4";
+    sol.spacecraft.append(&testcraft4);
 }
 
 // delta t in time units
@@ -316,7 +337,7 @@ void universe_update(int64_t delta_t)
     else
         universe_time += delta_t;
     // reset next event to the end of time, and then let the following update functions set 'next event' accordingly if they indeed have anything to say on the matter
-    universe_next_event = LLONG_MAX;
+    universe_next_event = INT64_MAX;
 
     // TODO: respect orbit heirarchy instead of just blindly traversing list
     foreach (Transform *t, transforms)

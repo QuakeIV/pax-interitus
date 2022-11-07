@@ -31,20 +31,13 @@ Spacecraft::~Spacecraft()
 {
     spacecraft.removeOne(this);
 }
-bool Spacecraft::ready_to_jump(void)
+bool Spacecraft::jump(Transform* tgt, int selected_drive)
 {
-    if (!jump_drives.length())
+    // TODO: would be nice to not have to check this
+    if (selected_drive < 0 || selected_drive >= jump_drives.length())
         return false;
 
-    return true;
-}
-bool Spacecraft::jump(OrbitType* tgt)
-{
-    if (!ready_to_jump())
-        return false;
-
-    //TODO: spawn jump effects that then render?
-    return true;
+    return jump_drives[selected_drive]->jump(this, tgt);
 }
 // max acceleration (mm/sec/sec)
 int64_t Spacecraft::max_acceleration(void)
