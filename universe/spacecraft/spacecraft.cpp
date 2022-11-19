@@ -10,6 +10,10 @@ SpacecraftDesign::SpacecraftDesign()
 {
 
 }
+SpacecraftDesign::~SpacecraftDesign()
+{
+
+}
 // max acceleration (mm/sec/sec)
 int64_t SpacecraftDesign::max_acceleration(void)
 {

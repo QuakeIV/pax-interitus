@@ -17,15 +17,7 @@ class SpacecraftDesign
 {
 public:
     SpacecraftDesign();
-    ~SpacecraftDesign()
-    {
-
-    }
-
-    bool operator==(const SpacecraftDesign *rhs) const
-    {
-        return rhs == const_cast<SpacecraftDesign*>(this);
-    }
+    ~SpacecraftDesign();
 
     // IE Cv for corvette
     // TODO: might be worth expanding on that a bit so both Cv and Corvette are know info for different contexts
@@ -62,13 +54,7 @@ inline QString get_spacecraft_design_name(SpacecraftDesign *d)
         return d->class_name + " Class";
 }
 
-// indicates spacecraft status (non reciprocating)
-class SpacecraftStatus
-{
-    // ship currently preparing for or undergoing subspace transit
-    bool jumping = false;
-};
-
+// TODO: one thing that would be really cool is the ship getting blow'd up and spraying debris that actually show up on the screen flying off at various angles with their own trajectories
 // TODO: parent class for spacecraft vs installations or other such things
 // TODO: some concept of orientation and perhaps maneuvering thrusters?
 class Spacecraft
@@ -91,9 +77,6 @@ public:
     // aught to be possible to have multiples, however i reckon there
     // should be engineering problems to overcome before multiples are practical
     QList<Jumpdrive*> jump_drives;
-
-    // meant to drive the display of spacecraft status
-    SpacecraftStatus status;
 
     // TODO: kinematic trajectory that can either ride a fixed orbit or be in a dynamic maneuvering mode
     // TODO: need some way to approach a target point and produce an ETA to that point (ideally closed form)
