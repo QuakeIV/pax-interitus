@@ -1,0 +1,394 @@
+#include "pysystemrenderer.h"
+#include "fixedv2d.h"
+#include "universe.h"
+#include <QApplication>
+#include "solarsystemtype.h"
+#include <QMenu>
+#include "utilities.h"
+
+extern QApplication *qapp;
+
+PySystemRenderer::PySystemRenderer(QWidget *parent) :
+  QOpenGLWidget(parent)
+{
+    //TODO: configurable frame rate, ideally track to that during runtime as well
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &PySystemRenderer::animate);
+    timer->start(1000.0/60.0); //circa 60 fps? TODO: maybe better frame time mechanism? probably not particularly vital
+
+    setAutoFillBackground(false); //TODO: does this do anything useful?
+
+    // enable anti aliasing
+    QSurfaceFormat format;
+    format.setSamples(16); // multisample sample number
+    setFormat(format);
+    //test = QPen(Qt::white, 12, Qt::DashDotLine, Qt::RoundCap);
+
+    // TODO: this is temporary, this is not long-term the suitable place to set initial focus i think
+    focus_system = systems[0]; //TODO: default to zeroeth system for now (later track home system? maybe last viewed system?)
+    focus = &focus_system->root.trajectory;
+
+    orbit = QPen(Qt::green);//, 1, Qt::SolidLine, Qt::SquareCap);
+}
+
+void PySystemRenderer::paintEvent(QPaintEvent *event)
+{
+    // calculate middle point so rendering is centered
+    // TODO: only do this on resize? may wind up not working all that well unclear
+    center = QPoint(frameGeometry().width(), frameGeometry().height()) / 2;
+
+    painter.begin(this);
+
+    // TODO: ponder more native painting in the future?
+    painter.beginNativePainting();
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_LINE_SMOOTH);
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+    painter.endNativePainting();
+
+    render_planet_trajectory_recurse(&focus_system->root);
+    render_planet_body_recurse(&focus_system->root);
+
+    render_scale();
+
+    render_yardstick();
+
+    render_fleets();
+
+    painter.end();
+}
+
+// TODO: render circles first or something this has an unpleasant degree of repetition
+void PySystemRenderer::render_fleets(void)
+{
+    // copy the list
+    QList<Spacecraft*> list = focus_system->spacecraft;
+
+    // sort by y axis to promote displaying text in the right order
+    // this did not help readability at all and seemed to impact it negatively but may as well leave this here since i came back to it twice
+//    std::sort(list.begin(), list.end(),
+//         [](FleetType *a, FleetType *b) { return a->trajectory.position.y < b->trajectory.position.y; });
+
+    // this only exists to track how much vertical room the text needs, so add some padding here
+    static float font_size = painter.fontInfo().pixelSize() + 2;
+
+    painter.setPen(Qt::yellow);
+    while (list.length())
+    {
+        // TODO: probably useful for at least guarding rendering of some stuff
+//        if (fleet->trajectory.orbital_radius >> currentZoom < 10)
+//            continue;
+        //TODO: draw trail line?
+
+        Spacecraft *sc = list.takeLast();
+        QPointF pos = position_to_screen_coordinates(sc->trajectory->position);
+        QPointF offset = QPointF(5,-5); //offset for text display
+        //TODO: de-hardcode radius
+        painter.drawEllipse(pos, 5.0, 5.0);
+
+        // name
+        painter.drawText(pos + offset, sc->name);
+
+        // find colocated fleets
+        int64_t i = list.length() - 1;
+        while (i >= 0)
+        {
+            // TODO: would be nice to pre-calculate fleet screen coordinates for the frame
+            QPointF copos = position_to_screen_coordinates(list[i]->trajectory->position);
+            QPointF d = copos - pos;
+
+            // TODO: needs work to eliminate vertical jitter, shouldnt exist at long range zoom
+            // TODO: dont hard code horizontal space?
+            if ((abs(d.y()) < font_size) && (abs(d.x()) < 50.0))
+            {
+                Spacecraft *co_sc = list.takeAt(i);
+
+                offset.ry() -= font_size;
+
+                painter.drawText(pos + offset, co_sc->name);
+
+                // draw circle
+                //TODO: de-hardcode radius
+                painter.drawEllipse(copos, 5.0, 5.0);
+            }
+
+            i--;
+        }
+    }
+}
+
+void PySystemRenderer::render_yardstick(void)
+{
+    // TODO: just making all of this white for now but not necessarily forever (maybe a milder gray so its not as harsh)
+    painter.setPen(Qt::white);
+
+    // draw the line
+    painter.drawLine(yardstick_a, yardstick_b);
+
+    //draw distance
+    QPointF d = yardstick_b - yardstick_a;
+    double dist = DISTANCE_FIXED_TO_FLOAT((double)sqrt(d.x()*d.x() + d.y()*d.y()) * (double)(1l<<currentZoom));
+    painter.drawText(yardstick_a + QPointF(0,-2), get_distance_str(dist));
+}
+
+void PySystemRenderer::render_scale()
+{
+    //draw scale marker
+    static const QPointF scale_from = QPointF(20,30);
+    static const QPointF scale_text = QPointF(20,28);
+    static const QPointF scale_to   = QPointF(120,30);
+    double dist = DISTANCE_FIXED_TO_FLOAT((100ul << currentZoom)); //assuming 100px width for now, this needs to stay in sync with the above
+
+    painter.setPen(orbit);
+    painter.drawLine(scale_from, scale_to);
+    painter.drawText(scale_text, get_distance_str(dist));
+}
+
+QPointF PySystemRenderer::position_to_screen_coordinates(FixedV2D pos)
+{
+    FixedV2D a = pos - (offset + focus->position);
+
+    // TODO: this is capturing remainders so that the anti aliased lines drawn look much nicer, look into optimizing (mainly the float division sucks)
+    int64_t mask = (1l << currentZoom) - 1l;
+    float factor = 1l<<currentZoom;
+    int64_t rem_xi = a.x&mask;
+    float rem_xf = (float)rem_xi / factor;
+    int64_t rem_yi = a.y&mask;
+    float rem_yf = (float)rem_yi / factor;
+
+    a.x >>= currentZoom;
+    a.y >>= currentZoom;
+
+    return QPointF((float)a.x + rem_xf, (float)a.y + rem_yf) + center;
+}
+
+void PySystemRenderer::render_planet_body_recurse(CelestialType *cel)
+{
+    foreach(CelestialType *child, cel->children)
+        render_planet_body_recurse(child);
+
+    // render planet body (but only if more center point is more than 5 pixels from parent)
+    // if hypothetically both are still minimum size, this would amount to half-overlapping circles
+    // if there is no parent body, draw it then as well (sun case)
+    if ((cel->trajectory.orbital_radius >> currentZoom) >= 5 || !cel->trajectory.parent)
+    {
+        float rad = cel->radius >> currentZoom;
+        if (rad < 5.0f)
+            rad = 5.0f;
+        painter.setPen(QColor(0,0,0,0));
+        painter.setBrush(cel->color);
+        QPointF pos = position_to_screen_coordinates(cel->trajectory.position);
+        painter.drawEllipse(pos, rad, rad);
+    }
+}
+
+void PySystemRenderer::render_planet_trajectory_recurse(CelestialType *cel)
+{
+    // only render orbit if it exists (if parent is set) and if it would be more than 10 pixels wide (otherwise dont bother drawing it its too small)
+    if (cel->trajectory.parent && (cel->trajectory.orbital_radius >> currentZoom) >= 10)
+    {
+        painter.setPen(orbit);
+        int64_t pts = cel->trajectory.racetrack_points;
+        FixedV2D parent_pos = cel->trajectory.parent->trajectory.position;
+        QPointF start = position_to_screen_coordinates(cel->trajectory.rel_racetrack[pts-1] + parent_pos);
+
+        for (int i = 0; i < pts; i++)
+        {
+            QPointF next = position_to_screen_coordinates(cel->trajectory.rel_racetrack[i] + parent_pos);
+            painter.drawLine(start, next);
+            start = next;
+        }
+    }
+
+    foreach(CelestialType *child, cel->children)
+        render_planet_trajectory_recurse(child);
+}
+
+void PySystemRenderer::animate()
+{
+    update();
+}
+
+void PySystemRenderer::singleClick(QPoint location)
+{
+    // TODO: might be nice to keep a root celestial pointer on hand to reduce derefences? possibly over factoring
+    CelestialType *cel = planet_click_recurse(&focus_system->root, QPointF(location));
+    if (cel)
+    {
+        focus = &cel->trajectory;
+        offset.x = 0;
+        offset.y = 0;
+        return;
+    }
+
+    // renaming to task group, probably, its functionally likely to be more fitting
+    Spacecraft *spacecraft = spacecraft_click(location);
+    if (spacecraft)
+    {
+        focus = spacecraft->trajectory;
+        offset.x = 0;
+        offset.y = 0;
+        return;
+    }
+
+    //TODO: search for other focusable objects (missiles perhaps i guess?)
+
+    // if the click misses, focus onto star and incorporate position of last focused object into offset
+    offset += focus->position;
+    focus = &focus_system->root.trajectory;
+}
+
+void PySystemRenderer::rightClick(QPoint location)
+{
+    // TODO: track current selected solar system instead of hardcoding sol
+    QList<CelestialType*> cels;
+    foreach (CelestialType* c, focus_system->celestials)
+    {
+        //TODO: it would be nice to calculate display radii and coordinates at render time and then re-use them here, rather than re-calculating
+        //TODO: this should be functionalized as its identical to other code
+        //TODO: all this rendering crap should probably migrate into a new layer of objects to keep the backend properly divorced from the rendering
+        // maybe this frontend layer actually keeps references to the celestials that arent even aware of its existence
+        QPointF l = position_to_screen_coordinates(c->trajectory.position);
+
+        float x = l.x() - location.x();
+        float y = l.y() - location.y();
+        float d = sqrt(x*x + y*y);
+        // be a bit generous with click detection for the min-size planets (so 6.0 radius instead of 5.0)
+        // TODO: maybe at some point planet display radius will be configurable, definitely call a function for this one
+        // TODO: configurable click radius margins?
+        if (d < 10 || d < (c->radius >> currentZoom)) // right click margins are more generous
+            cels.append(c);
+    }
+
+    // TODO: track current selected solar system instead of hardcoding sol
+    QList<Spacecraft*> spacecraft;
+    foreach (Spacecraft *s, focus_system->spacecraft)
+    {
+        //TODO: would be nice to pre-compute fleet screen position every frame
+        // can track screen corners in fixedv2d form and then calculate which things are displayed, and only update those coords? maybe needless complexity
+        QPointF l = position_to_screen_coordinates(s->trajectory->position);
+
+        float x = l.x() - location.x();
+        float y = l.y() - location.y();
+        float d = sqrt(x*x + y*y);
+        // TODO: maybe at some point fleet display radius will be configurable, definitely call a function for this one
+        // TODO: configurable click radius margins?
+        if (d < 10.0)  // right click margins are more generous
+            spacecraft.append(s);
+    }
+
+    // TODO: mess with scrolling to make it work better
+    QMenu *m = new QMenu("derp", this);
+    m->setAttribute(Qt::WA_DeleteOnClose); //this was tested with the below code to garbage collect the menu
+//    connect(m, &QMenu::destroyed,
+//            this, [m]() { qDebug() << "deleted" << (qintptr)m; });
+
+    foreach(CelestialType *c, cels)
+    {
+//        QMenu *submenu = m->addMenu(c->name);
+//        submenu->addAction("Focus", [this, c]()
+//        {
+//            this->offset.x = 0;
+//            this->offset.y = 0;
+//            this->focus = &c->trajectory;
+//        });
+
+//        submenu->addAction("Info",  [this, c]()
+//        {
+//            CelestialWindow *w = new CelestialWindow(c,this); // all new windows should root on the main window, not self, so they persist as one might expect
+//            w->setAttribute(Qt::WA_DeleteOnClose);
+//            w->move(qapp->activeWindow()->mapToGlobal(QPoint(40,20)));
+//            w->show();
+////            connect(w, &CelestialWindow::destroyed,
+////                    this, [w]() { qDebug() << "deleted" << (qintptr)w; });
+//        });
+    }
+
+    if (cels.length() && spacecraft.length())
+        m->addSeparator();
+
+    foreach(Spacecraft *s, spacecraft)
+    {
+        QMenu *submenu = m->addMenu(s->name);
+        submenu->addAction("Focus", [this, s]()
+        {
+            this->offset.x = 0;
+            this->offset.y = 0;
+            this->focus = s->trajectory;
+        });
+    }
+    m->popup(mapToGlobal(location));
+}
+
+void PySystemRenderer::doubleClick(QPoint location)
+{
+    printf("doubleclick\n");
+}
+
+void PySystemRenderer::clickDrag(QPoint delta)
+{
+    FixedV2D d;
+    d.x = ((int64_t)delta.x()) << currentZoom;
+    d.y = ((int64_t)delta.y()) << currentZoom;
+    offset -= d;
+}
+
+void PySystemRenderer::scrollUp(void)
+{
+    if (currentZoom > 1)
+        currentZoom--;
+}
+
+void PySystemRenderer::scrollDown(void)
+{
+    if (currentZoom < 60) //63) //just peg at 60 for now rather than some more theoretical limit
+        currentZoom++;
+}
+
+Spacecraft * PySystemRenderer::spacecraft_click(QPointF p)
+{
+    // TODO: track 'current solar system', check that things fleets instead
+    foreach (Spacecraft *s, focus_system->spacecraft)
+    {
+        //TODO: would be nice to pre-compute fleet screen position every frame
+        QPointF l = position_to_screen_coordinates(s->trajectory->position);
+
+        float x = l.x() - p.x();
+        float y = l.y() - p.y();
+        float d = sqrt(x*x + y*y);
+        // TODO: maybe at some point fleet display radius will be configurable, definitely call a function for this one
+        if (d < 6.0)
+            return s;
+    }
+    return NULL;
+}
+
+// return true if a click landed on a planet (this can be used for any type of click)
+CelestialType * PySystemRenderer::planet_click_recurse(CelestialType *cel, QPointF p)
+{
+    //TODO: it would be nice to calculate display radii and coordinates at render time and then re-use them here, rather than re-calculating
+    QPointF l = position_to_screen_coordinates(cel->trajectory.position);
+
+    float x = l.x() - p.x();
+    float y = l.y() - p.y();
+    float d = sqrt(x*x + y*y);
+    // be a bit generous with click detection for the min-size planets (so 6.0 radius instead of 5.0)
+    // TODO: maybe at some point planet display radius will be configurable, definitely call a function for this one
+    if (d < 6.0 || d < (cel->radius >> currentZoom))
+        return cel;
+
+    foreach (CelestialType *child, cel->children)
+    {
+        // only allow clicks on planets that are actually rendering
+        // (this is to match the condition in render_planet_recurse that culls planet rendering)
+        if ((child->trajectory.orbital_radius >> currentZoom) >= 5)
+        {
+            //recurse into children
+            CelestialType *f = planet_click_recurse(child, p);
+            if (f)
+                return f;
+        }
+    }
+    return NULL;
+}

@@ -13,7 +13,7 @@
 
 class Spacecraft;
 
-class SystemRenderer : public QOpenGLWidget
+class PySystemRenderer : public QOpenGLWidget
 {
     Q_OBJECT
 
@@ -21,31 +21,27 @@ public slots:
     void animate();
 
 public:
-    SystemRenderer(QWidget *parent = nullptr);
+    PySystemRenderer(QWidget *parent = nullptr);
 
-    void set_focus_system(SolarSystemType *s);
-    SolarSystemType * get_focus_system(void);
+    // you can focus on transforms and follow them
+    Transform *focus;
+    SolarSystemType *focus_system;
 
-protected:
-    void paintEvent(QPaintEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override; //mouse backend crap
-    void mouseReleaseEvent(QMouseEvent *event) override; //mouse backend crap
-    void mouseDoubleClickEvent(QMouseEvent *event) override; //mouse backend crap
-    void mouseMoveEvent(QMouseEvent *event) override; //mouse backend crap
-    void wheelEvent(QWheelEvent* event) override; //mouse backend crap
-
-private slots:
-    void singleClickHelper(void); //mouse backend crap
-
-private:
-    // mouse activity callbacks (to flatten out the interface to not be ugly)
+    // mouse activity
     void singleClick(QPoint location);
     void rightClick(QPoint location);
     void doubleClick(QPoint location);
     void clickDrag(QPoint delta);
     void scrollUp(void);
     void scrollDown(void);
+    // add yardstick
+    void add_yardstick(QPoint a, QPoint b);
+    void clear_yardstick(void);
 
+protected:
+    void paintEvent(QPaintEvent *event) override;
+
+private:
     // renderer functions
     void render_scale(void); //TODO: is this needed in light of yardstick?
     void render_planet_body_recurse(CelestialType *cel);
@@ -60,20 +56,14 @@ private:
     // (runs after planet click, that way if you click a big pile of crap you get the planet preferentially)
     Spacecraft *spacecraft_click(QPointF p);
 
-    bool mouse_pressed;
-    QTimer clickTimer;
+    // yardstick points
+    QPoint yardstick_a, yardstick_b;
 
     // for handling click drag
     FixedV2D offset; //this offset is relative to the 'focus' point
     //TODO: bracket zooming
     int64_t currentZoom = 40; //zoom factor (exponent of 2)
-    QPoint mousedrag_position; // mouse backend crap
-    QPoint singleclick_position;
     QPoint center; // center point of screen in pixels
-
-    // you can focus on transforms and follow them
-    Transform *focus;
-    SolarSystemType *focus_system;
 
     // render
     QPainter painter;

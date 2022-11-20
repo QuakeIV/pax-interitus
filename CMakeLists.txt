@@ -4,7 +4,7 @@ project(freespace-aurora VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-cmake_policy(VERSION 3.12) #shutting up policy warnings
+cmake_policy(VERSION 3.12) #shutting up annoying policy warnings, only reason this is here
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -19,6 +19,7 @@ find_package(Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
 file(GLOB PROJECT_SOURCES "*.ui" "*.cpp" "*.h")
 add_subdirectory(universe)
 add_subdirectory(designer_windows)
+add_subdirectory(python) # cpython/future UI stuff
 
 qt_add_executable(freespace-aurora
     ${PROJECT_SOURCES}
@@ -36,5 +37,3 @@ set_target_properties(freespace-aurora PROPERTIES
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
 )
-
-
