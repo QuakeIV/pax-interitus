@@ -13,6 +13,7 @@
 
 //TODO: poor effeciency given current use case in universe
 #define MILLISECONDS_TO_TIME(x) ((int64_t)(((double)x)*(1048576.0/1000.0)))
+#define MICROSECONDS_TO_TIME(x) ((int64_t)(((double)x)*(1048576.0/1000000.0)))
 
 #define RELATIVE_DIALECTRIC_TO_ABSOLUTE(x) (0.000000000008854*((double)x))
 #define VOLT_UM_TO_VOLT_M(x) (1000000.0*((double)x))

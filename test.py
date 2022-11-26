@@ -25,6 +25,7 @@ class MainWindow(QMainWindow):
     
     #sizing
     #self.setFixedSize(QSize(400,300))
+    self.resize(QSize(400,300))
     
     menu = self.menuBar()
     file_menu = menu.addMenu("File") #leading with & will underline the first letter
@@ -40,12 +41,6 @@ class MainWindow(QMainWindow):
     widget = QWidget()
     widget.setLayout(layout)
     self.setCentralWidget(widget)
-    
-    #libpaxpython.test(shiboken6.getCppPointer(self)[0])
-    
-#    libpaxpython.addSystemRenderer(shiboken6.getCppPointer(opengl)[0])
-
-    #self.setCentralWidget(opengl)
   #
   
   def test_action(self):

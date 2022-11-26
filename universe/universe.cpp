@@ -5,7 +5,8 @@
 #include "solarsystemtype.h"
 #include "spacecraft/spacecraft.h"
 #include "units.h"
-#include <QTimer>
+#include <thread>
+#include <chrono>
 
 // TODO: temporary
 Empire player_empire;
@@ -43,8 +44,33 @@ QList<SpacecraftDesign*> spacecraft_designs;
 // put the fleet type auto increment in the universe because it has to live in some compile unit
 uint64_t Taskgroup::group_id = 0;
 
+// this will exist to separate the timing logic from the actual universe update logic,
+// as this will probably change periodically, for instance if we escape C++
+static std::thread *universe_updater;
+const int frame_time_us = 16667;
+void universe_timing_loop(void)
+{
+    while (true)
+    {
+        std::chrono::time_point start = std::chrono::system_clock::now();
+        universe_update(MICROSECONDS_TO_TIME(frame_time_us));
+        std::chrono::time_point end = std::chrono::system_clock::now();
+        std::this_thread::sleep_for(std::chrono::microseconds(frame_time_us) - (end-start));
+
+        // lazy diagnosis of frame overrun
+        // TODO: (wow this chrono library seems horrible and vastly overweight)
+        // not that vital to gun for accurate time, minding (stolen from mainwindow.cpp which now longer handles this)
+        //end = std::chrono::system_clock::now();
+        //printf("woden %ld\n", std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
+    }
+}
+
 void universe_init(void)
 {
+    // set up timing
+    universe_updater = new std::thread(universe_timing_loop);
+    universe_updater->detach();
+
     // TODO: temporary
     // add some dialectric materials
     Insulator *i;

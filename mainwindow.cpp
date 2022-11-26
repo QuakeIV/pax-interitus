@@ -26,13 +26,6 @@ MainWindow::MainWindow(QWidget *parent)
     // TODO: configurable framerate (although this is just updating the status bar)
     timer->start(50);
 
-    // main timer driving the universe sim (should roughly match frame rate)
-    // TODO: this is kindof sloppy but should mostly work fine
-    timer = new QTimer(this);
-    QObject::connect(timer, &QTimer::timeout,  [timer]() {universe_update(MILLISECONDS_TO_TIME(timer->interval()));});
-    //circa 60 fps? TODO: maybe better frame time mechanism? probably not particularly vital to gun for accurate times
-    timer->start(1000.0/60.0);
-
     //Qt::WindowStaysOnBottomHint Qt::X11BypassWindowManagerHint
     //setWindowFlags(Qt::WindowStaysOnBottomHint);
 }
