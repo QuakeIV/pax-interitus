@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from PySide6.QtCore import QSize, Qt
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QToolBar
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QToolBar, QVBoxLayout, QWidget
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtGui import QAction, QIcon
 import shiboken6
@@ -13,13 +13,15 @@ app = QApplication()
 import signal
 signal.signal(signal.SIGINT, signal.SIG_DFL) # apparently thats sig_default and it causes the 'default action' to be taken by the OS
 
+
+
 class MainWindow(QMainWindow):
   def __init__(self):
     super().__init__()
 
     self.setWindowTitle("Pax Test")
 
-    opengl = QOpenGLWidget()
+    #opengl = QOpenGLWidget()
     
     #sizing
     #self.setFixedSize(QSize(400,300))
@@ -31,11 +33,19 @@ class MainWindow(QMainWindow):
     test_action.triggered.connect(self.test_action)
     file_menu.addAction(test_action)
     
+    layout = QVBoxLayout()
+    self.renderer = libpaxpython.SystemRenderer(shiboken6.getCppPointer(layout)[0])
+    self.renderer.right_click_callback = self.test_action
+
+    widget = QWidget()
+    widget.setLayout(layout)
+    self.setCentralWidget(widget)
+    
     #libpaxpython.test(shiboken6.getCppPointer(self)[0])
     
 #    libpaxpython.addSystemRenderer(shiboken6.getCppPointer(opengl)[0])
 
-    self.setCentralWidget(opengl)
+    #self.setCentralWidget(opengl)
   #
   
   def test_action(self):

@@ -1,3 +1,4 @@
+#include <Python.h>
 #include "pysystemrenderer.h"
 #include "fixedv2d.h"
 #include "universe.h"
@@ -5,16 +6,18 @@
 #include "solarsystemtype.h"
 #include <QMenu>
 #include "utilities.h"
+#include <QLayout>
 
-extern QApplication *qapp;
-
-PySystemRenderer::PySystemRenderer(QWidget *parent) :
+PySystemRenderer::PySystemRenderer(QWidget *parent):
   QOpenGLWidget(parent)
 {
     //TODO: configurable frame rate, ideally track to that during runtime as well
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &PySystemRenderer::animate);
     timer->start(1000.0/60.0); //circa 60 fps? TODO: maybe better frame time mechanism? probably not particularly vital
+
+    clickTimer.setSingleShot(true);
+
 
     setAutoFillBackground(false); //TODO: does this do anything useful?
 
@@ -57,6 +60,10 @@ void PySystemRenderer::paintEvent(QPaintEvent *event)
     render_fleets();
 
     painter.end();
+}
+void PySystemRenderer::animate()
+{
+    update();
 }
 
 // TODO: render circles first or something this has an unpleasant degree of repetition
@@ -120,16 +127,22 @@ void PySystemRenderer::render_fleets(void)
 
 void PySystemRenderer::render_yardstick(void)
 {
+    if (!mouse_pressed)
+        return;
+
+    if (QApplication::keyboardModifiers() != Qt::ControlModifier)
+        return;
+
     // TODO: just making all of this white for now but not necessarily forever (maybe a milder gray so its not as harsh)
     painter.setPen(Qt::white);
 
     // draw the line
-    painter.drawLine(yardstick_a, yardstick_b);
+    painter.drawLine(singleclick_position, mousedrag_position);
 
     //draw distance
-    QPointF d = yardstick_b - yardstick_a;
+    QPointF d = mousedrag_position - singleclick_position;
     double dist = DISTANCE_FIXED_TO_FLOAT((double)sqrt(d.x()*d.x() + d.y()*d.y()) * (double)(1l<<currentZoom));
-    painter.drawText(yardstick_a + QPointF(0,-2), get_distance_str(dist));
+    painter.drawText(mousedrag_position + QPointF(0,-2), get_distance_str(dist));
 }
 
 void PySystemRenderer::render_scale()
@@ -205,11 +218,6 @@ void PySystemRenderer::render_planet_trajectory_recurse(CelestialType *cel)
         render_planet_trajectory_recurse(child);
 }
 
-void PySystemRenderer::animate()
-{
-    update();
-}
-
 void PySystemRenderer::singleClick(QPoint location)
 {
     // TODO: might be nice to keep a root celestial pointer on hand to reduce derefences? possibly over factoring
@@ -241,6 +249,22 @@ void PySystemRenderer::singleClick(QPoint location)
 
 void PySystemRenderer::rightClick(QPoint location)
 {
+    // if we dont have a py_obj, dont try to do callback stuff with an object that does not exist
+    if (!py_obj)
+        return;
+
+    // obtain GIL to safely mess with python objects
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+
+    if (!PyCallable_Check(py_obj->rightClickCallback))
+    {
+        // no function to call, release GIL
+        PyGILState_Release(gstate);
+        return;
+    }
+
+
     // TODO: track current selected solar system instead of hardcoding sol
     QList<CelestialType*> cels;
     foreach (CelestialType* c, focus_system->celestials)
@@ -278,9 +302,11 @@ void PySystemRenderer::rightClick(QPoint location)
             spacecraft.append(s);
     }
 
+
+
     // TODO: mess with scrolling to make it work better
-    QMenu *m = new QMenu("derp", this);
-    m->setAttribute(Qt::WA_DeleteOnClose); //this was tested with the below code to garbage collect the menu
+    //QMenu *m = new QMenu("derp", this);
+    //m->setAttribute(Qt::WA_DeleteOnClose); //this was tested with the below code to garbage collect the menu
 //    connect(m, &QMenu::destroyed,
 //            this, [m]() { qDebug() << "deleted" << (qintptr)m; });
 
@@ -305,20 +331,26 @@ void PySystemRenderer::rightClick(QPoint location)
 //        });
     }
 
-    if (cels.length() && spacecraft.length())
-        m->addSeparator();
+    //if (cels.length() && spacecraft.length())
+    //    m->addSeparator();
 
-    foreach(Spacecraft *s, spacecraft)
-    {
-        QMenu *submenu = m->addMenu(s->name);
-        submenu->addAction("Focus", [this, s]()
-        {
-            this->offset.x = 0;
-            this->offset.y = 0;
-            this->focus = s->trajectory;
-        });
-    }
-    m->popup(mapToGlobal(location));
+    //foreach(Spacecraft *s, spacecraft)
+    //{
+    //    QMenu *submenu = m->addMenu(s->name);
+    //    submenu->addAction("Focus", [this, s]()
+    //    {
+    //        this->offset.x = 0;
+    //        this->offset.y = 0;
+    //        this->focus = s->trajectory;
+    //    });
+    //}
+    //m->popup(mapToGlobal(location));
+
+    PyObject_CallFunctionObjArgs(py_obj->rightClickCallback);
+
+
+    // release GIL
+    PyGILState_Release(gstate);
 }
 
 void PySystemRenderer::doubleClick(QPoint location)

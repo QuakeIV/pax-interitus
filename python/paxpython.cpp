@@ -1,5 +1,6 @@
 
 #include <Python.h>
+#include <structmember.h>
 #include "universe.h"
 #include "pysystemrenderer.h"
 #include <QLayout>
@@ -23,19 +24,67 @@
 //    }
 //}
 
-// TODO: set parent?
-static PyObject *method_add_systemrenderer_widget(PyObject *self, PyObject *args)
+// Python Type
+//static PyMethodDef Custom_methods[] = {
+//    {"name", (PyCFunction) Custom_name, METH_NOARGS,
+//     "Return the name, combining the first and last name"
+//    },
+//    {NULL}  /* terminate */
+//};
+static PyMemberDef SystemRendererPyType_members[] = {
+    // for now, singleclick is basically only for refocusing, so we wont call back into python for it
+    //{"single_click_callback", T_OBJECT, offsetof(PySystemRendererObject, singleClickCallback), 0,
+    // "If set to a callable, is called whenever the system renderer registers a left click.  Effected game objects passed."},
+    {"right_click_callback", T_OBJECT, offsetof(PySystemRendererObject, rightClickCallback), 0,
+     "If set to a callable, is called whenever the system renderer registers a right click.  Effected game objects passed"},
+    {"double_click_callback", T_OBJECT, offsetof(PySystemRendererObject, doubleClickCallback), 0,
+     "If set to a callable, is called whenever the system renderer registers a right click.  Effected game objects passed"},
+    {NULL}  /* terminate */
+};
+static void SystemRendererPyType_dealloc(PySystemRendererObject *self)
+{
+    Py_XDECREF(self->singleClickCallback);
+    Py_XDECREF(self->rightClickCallback);
+    Py_XDECREF(self->doubleClickCallback);
+    delete self->renderer;
+    Py_TYPE(self)->tp_free((PyObject *) self);
+}
+static PyObject *SystemRendererPyType_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     uint64_t ptr = 0;
     // Parse arguments
     if(!PyArg_ParseTuple(args, "K", &ptr))
-        return Py_False;
-    
-    QLayout *layout = (QLayout *)ptr;
-    PySystemRenderer *renderer = new PySystemRenderer();
-    layout->addWidget(renderer);
-    return Py_True;
+        return NULL;
+
+    PySystemRendererObject *self;
+    self = (PySystemRendererObject *) type->tp_alloc(type, 0);
+    if (self != NULL)
+    {
+        self->singleClickCallback = NULL;
+        self->rightClickCallback  = NULL;
+        self->doubleClickCallback = NULL;
+
+        QLayout *layout = (QLayout *)ptr;
+        PySystemRenderer *renderer = new PySystemRenderer(layout->parentWidget());
+        layout->addWidget(renderer);
+        renderer->py_obj = self;
+        self->renderer = renderer;
+    }
+    return (PyObject *) self;
 }
+static PyTypeObject SystemRendererPyType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "paxpython.SystemRenderer",
+    .tp_basicsize = sizeof(PySystemRendererObject),
+    .tp_itemsize = 0,
+    .tp_dealloc = (destructor) SystemRendererPyType_dealloc,
+    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+    .tp_doc = PyDoc_STR("PaxPython Solar System Renderer"),
+    //.tp_methods = Custom_methods,
+    .tp_members = SystemRendererPyType_members,
+    //.tp_init = (initproc) Custom_init,
+    .tp_new = SystemRendererPyType_new,
+};
 
 // currently does nothing
 static PyObject *method_test(PyObject *self, PyObject *args)
@@ -80,7 +129,6 @@ static PyObject *method_fputs(PyObject *self, PyObject *args)
 }*/
 
 static PyMethodDef libpaxpythonMethods[] = {
-    {"addSystemRenderer", method_add_systemrenderer_widget, METH_VARARGS, "Takes layout as argument, adds system renderer widget to the layout."},
     {"test", method_test, METH_VARARGS, "generic function to play around with"},
     {NULL, NULL, 0, NULL} // i think this just terminates the list
 };
@@ -96,6 +144,21 @@ static struct PyModuleDef libpaxpythonmodule = {
 
 PyMODINIT_FUNC PyInit_libpaxpython(void)
 {
+    // NOTE: this appears to be absolutely not optional, the type will not be properly initialized without this
+    if (PyType_Ready(&SystemRendererPyType) < 0)
+        return NULL;
+
+    PyObject *m = PyModule_Create(&libpaxpythonmodule);
+
+    Py_INCREF(&SystemRendererPyType);
+    if (PyModule_AddObject(m, "SystemRenderer", (PyObject *)&SystemRendererPyType) < 0)
+    {
+        Py_DECREF(&SystemRendererPyType);
+        Py_DECREF(m);
+        return NULL;
+    }
+
     universe_init();
-    return PyModule_Create(&libpaxpythonmodule);
+
+    return m;
 }
