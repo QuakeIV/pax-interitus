@@ -44,13 +44,12 @@ class MainWindow(QMainWindow):
   #
   
   def test_action(self, poop):
-    m = QMenu("derp", self)
+    m = QMenu(self)
     m.setAttribute(Qt.WA_DeleteOnClose)
     for p in poop:
       # p=p needed to capture copy of planet instead of everyone sharing last value that was iterated over
-      m.addAction(p.name, lambda p=p: print(f"fart " + p.name))
+      m.addAction(p.name, lambda p=p: self.renderer.set_focus(p))
     m.popup(QCursor.pos())
-    print("poop")
   #
 #
 

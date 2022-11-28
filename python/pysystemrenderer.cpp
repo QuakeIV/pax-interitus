@@ -11,13 +11,32 @@
 #include "pywrappers.h"
 
 // Python Type
-//static PyMethodDef Custom_methods[] = {
-//    {"name", (PyCFunction) Custom_name, METH_NOARGS,
-//     "Return the name, combining the first and last name"
-//    },
-//    {NULL}  /* terminate */
-//};
-static PyMemberDef PySystemRendererType_members[] = {
+static PyObject *set_focus(PySystemRendererObject *self, PyObject *args)
+{
+    PyObject *obj = 0;
+    // Parse arguments
+    if(!PyArg_ParseTuple(args, "O", &obj))
+        Py_RETURN_NONE;
+
+    if (PyObject_IsInstance(obj, (PyObject *)&PyCelestialType))
+    {
+        PyCelestialObject *cel = (PyCelestialObject *)obj;
+        self->renderer->focus = &cel->ref->trajectory;
+        self->renderer->offset.x = 0;
+        self->renderer->offset.y = 0;
+    }
+
+    // TODO: spacecraft as well? other things?
+
+    Py_RETURN_NONE;
+}
+static PyMethodDef methods[] = {
+    {"set_focus", (PyCFunction)set_focus, METH_VARARGS,
+     "Re-focuses the system renderer."
+    },
+    {NULL}  /* terminate */
+};
+static PyMemberDef members[] = {
     // for now, singleclick is basically only for refocusing, so we wont call back into python for it
     //{"single_click_callback", T_OBJECT, offsetof(PySystemRendererObject, singleClickCallback), 0,
     // "If set to a callable, is called whenever the system renderer registers a left click.  Effected game objects passed."},
@@ -27,7 +46,7 @@ static PyMemberDef PySystemRendererType_members[] = {
      "If set to a callable, is called whenever the system renderer registers a right click.  Effected game objects passed"},
     {NULL}  /* terminate */
 };
-static void PySystemRendererType_dealloc(PySystemRendererObject *self)
+static void type_dealloc(PySystemRendererObject *self)
 {
     Py_XDECREF(self->singleClickCallback);
     Py_XDECREF(self->rightClickCallback);
@@ -35,7 +54,7 @@ static void PySystemRendererType_dealloc(PySystemRendererObject *self)
     delete self->renderer;
     Py_TYPE(self)->tp_free((PyObject *) self);
 }
-static PyObject *PySystemRendererType_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     uint64_t ptr = 0;
     // Parse arguments
@@ -56,20 +75,20 @@ static PyObject *PySystemRendererType_new(PyTypeObject *type, PyObject *args, Py
         renderer->py_obj = self;
         self->renderer = renderer;
     }
-    return (PyObject *) self;
+    return (PyObject *)self;
 }
 PyTypeObject PySystemRendererType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "paxpython.SystemRenderer",
     .tp_basicsize = sizeof(PySystemRendererObject),
     .tp_itemsize = 0,
-    .tp_dealloc = (destructor)PySystemRendererType_dealloc,
+    .tp_dealloc = (destructor)type_dealloc,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
     .tp_doc = PyDoc_STR("PaxPython Solar System Renderer"),
-    //.tp_methods = Custom_methods,
-    .tp_members = PySystemRendererType_members,
+    .tp_methods = methods,
+    .tp_members = members,
     //.tp_init = (initproc)Custom_init,
-    .tp_new = PySystemRendererType_new,
+    .tp_new = type_new,
 };
 
 
@@ -419,7 +438,11 @@ void PySystemRenderer::rightClick(QPoint location)
     //}
     //m->popup(mapToGlobal(location));
 
-    PyObject_CallFunctionObjArgs(py_obj->rightClickCallback, celestial_list, NULL);
+    if (!PyObject_CallFunctionObjArgs(py_obj->rightClickCallback, celestial_list, NULL))
+    {
+        PyErr_Print();
+        printf("This may have happened because a SystemRenderer had an argument mismatch with its right-click handler.\n");
+    }
     //PyObject *args_tuple = PyTuple_Pack(1, celestial_list);
     //PyObject_CallObject(py_obj->rightClickCallback, args_tuple);
 

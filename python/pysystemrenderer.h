@@ -41,6 +41,7 @@ public:
     // you can focus on transforms and follow them
     Transform *focus;
     SolarSystemType *focus_system;
+    FixedV2D offset; //this offset is relative to the 'focus' point
 
     // mouse activity
     void singleClick(QPoint location);
@@ -79,8 +80,6 @@ private:
     // (runs after planet click, that way if you click a big pile of crap you get the planet preferentially)
     Spacecraft *spacecraft_click(QPointF p);
 
-    // for handling click drag
-    FixedV2D offset; //this offset is relative to the 'focus' point
     //TODO: bracket zooming
     int64_t currentZoom = 40; //zoom factor (exponent of 2)
     QPoint center; // center point of screen in pixels
