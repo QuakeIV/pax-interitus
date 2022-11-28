@@ -1,4 +1,5 @@
 #include <Python.h>
+#include <structmember.h>
 #include "pysystemrenderer.h"
 #include "fixedv2d.h"
 #include "universe.h"
@@ -7,7 +8,73 @@
 #include <QMenu>
 #include "utilities.h"
 #include <QLayout>
+#include "pywrappers.h"
 
+// Python Type
+//static PyMethodDef Custom_methods[] = {
+//    {"name", (PyCFunction) Custom_name, METH_NOARGS,
+//     "Return the name, combining the first and last name"
+//    },
+//    {NULL}  /* terminate */
+//};
+static PyMemberDef PySystemRendererType_members[] = {
+    // for now, singleclick is basically only for refocusing, so we wont call back into python for it
+    //{"single_click_callback", T_OBJECT, offsetof(PySystemRendererObject, singleClickCallback), 0,
+    // "If set to a callable, is called whenever the system renderer registers a left click.  Effected game objects passed."},
+    {"right_click_callback", T_OBJECT, offsetof(PySystemRendererObject, rightClickCallback), 0,
+     "If set to a callable, is called whenever the system renderer registers a right click.  Effected game objects passed"},
+    {"double_click_callback", T_OBJECT, offsetof(PySystemRendererObject, doubleClickCallback), 0,
+     "If set to a callable, is called whenever the system renderer registers a right click.  Effected game objects passed"},
+    {NULL}  /* terminate */
+};
+static void PySystemRendererType_dealloc(PySystemRendererObject *self)
+{
+    Py_XDECREF(self->singleClickCallback);
+    Py_XDECREF(self->rightClickCallback);
+    Py_XDECREF(self->doubleClickCallback);
+    delete self->renderer;
+    Py_TYPE(self)->tp_free((PyObject *) self);
+}
+static PyObject *PySystemRendererType_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+    uint64_t ptr = 0;
+    // Parse arguments
+    if(!PyArg_ParseTuple(args, "K", &ptr))
+        return NULL;
+
+    PySystemRendererObject *self;
+    self = (PySystemRendererObject *) type->tp_alloc(type, 0);
+    if (self != NULL)
+    {
+        self->singleClickCallback = NULL;
+        self->rightClickCallback  = NULL;
+        self->doubleClickCallback = NULL;
+
+        QLayout *layout = (QLayout *)ptr;
+        PySystemRenderer *renderer = new PySystemRenderer(layout->parentWidget());
+        layout->addWidget(renderer);
+        renderer->py_obj = self;
+        self->renderer = renderer;
+    }
+    return (PyObject *) self;
+}
+PyTypeObject PySystemRendererType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "paxpython.SystemRenderer",
+    .tp_basicsize = sizeof(PySystemRendererObject),
+    .tp_itemsize = 0,
+    .tp_dealloc = (destructor)PySystemRendererType_dealloc,
+    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+    .tp_doc = PyDoc_STR("PaxPython Solar System Renderer"),
+    //.tp_methods = Custom_methods,
+    .tp_members = PySystemRendererType_members,
+    //.tp_init = (initproc)Custom_init,
+    .tp_new = PySystemRendererType_new,
+};
+
+
+
+// Qt Type
 PySystemRenderer::PySystemRenderer(QWidget *parent):
   QOpenGLWidget(parent)
 {
@@ -247,6 +314,7 @@ void PySystemRenderer::singleClick(QPoint location)
     focus = &focus_system->root.trajectory;
 }
 
+// TODO: work out why this has weird timing constraints, there is no double right click so who cares
 void PySystemRenderer::rightClick(QPoint location)
 {
     // if we dont have a py_obj, dont try to do callback stuff with an object that does not exist
@@ -266,7 +334,7 @@ void PySystemRenderer::rightClick(QPoint location)
 
 
     // TODO: track current selected solar system instead of hardcoding sol
-    QList<CelestialType*> cels;
+    PyObject *celestial_list = PyList_New(0);
     foreach (CelestialType* c, focus_system->celestials)
     {
         //TODO: it would be nice to calculate display radii and coordinates at render time and then re-use them here, rather than re-calculating
@@ -282,7 +350,12 @@ void PySystemRenderer::rightClick(QPoint location)
         // TODO: maybe at some point planet display radius will be configurable, definitely call a function for this one
         // TODO: configurable click radius margins?
         if (d < 10 || d < (c->radius >> currentZoom)) // right click margins are more generous
-            cels.append(c);
+        {
+            PyCelestialObject *new_cel = (PyCelestialObject*)PyObject_Call((PyObject *)&PyCelestialType,PyTuple_New(0),NULL);
+            new_cel->ref = c;
+            PyList_Append(celestial_list, (PyObject*)new_cel);
+            Py_DECREF(new_cel); // decref to undo incref from append
+        }
     }
 
     // TODO: track current selected solar system instead of hardcoding sol
@@ -310,8 +383,8 @@ void PySystemRenderer::rightClick(QPoint location)
 //    connect(m, &QMenu::destroyed,
 //            this, [m]() { qDebug() << "deleted" << (qintptr)m; });
 
-    foreach(CelestialType *c, cels)
-    {
+//    foreach(CelestialType *c, cels)
+//    {
 //        QMenu *submenu = m->addMenu(c->name);
 //        submenu->addAction("Focus", [this, c]()
 //        {
@@ -329,7 +402,7 @@ void PySystemRenderer::rightClick(QPoint location)
 ////            connect(w, &CelestialWindow::destroyed,
 ////                    this, [w]() { qDebug() << "deleted" << (qintptr)w; });
 //        });
-    }
+//    }
 
     //if (cels.length() && spacecraft.length())
     //    m->addSeparator();
@@ -346,8 +419,9 @@ void PySystemRenderer::rightClick(QPoint location)
     //}
     //m->popup(mapToGlobal(location));
 
-    PyObject_CallFunctionObjArgs(py_obj->rightClickCallback);
-
+    PyObject_CallFunctionObjArgs(py_obj->rightClickCallback, celestial_list, NULL);
+    //PyObject *args_tuple = PyTuple_Pack(1, celestial_list);
+    //PyObject_CallObject(py_obj->rightClickCallback, args_tuple);
 
     // release GIL
     PyGILState_Release(gstate);

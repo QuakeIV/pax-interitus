@@ -1,9 +1,7 @@
-message("${UNIVERSE_SOURCES}")
 file(GLOB UNIVERSE_SOURCES "*.cpp" "*.h"
     "components/*.cpp" "components/*.h"
     "spacecraft/*.cpp" "spacecraft/*.h"
 )
-
 
 # =============================== CMake target - libuniverse ===============================
 

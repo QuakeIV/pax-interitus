@@ -67,10 +67,6 @@ void universe_timing_loop(void)
 
 void universe_init(void)
 {
-    // set up timing
-    universe_updater = new std::thread(universe_timing_loop);
-    universe_updater->detach();
-
     // TODO: temporary
     // add some dialectric materials
     Insulator *i;
@@ -332,6 +328,10 @@ void universe_init(void)
     testcraft4.trajectory = &t3;
     testcraft4.name = "SS Test 4";
     sol.spacecraft.append(&testcraft4);
+
+    // set up timing
+    universe_updater = new std::thread(universe_timing_loop);
+    universe_updater->detach();
 }
 
 // delta t in time units

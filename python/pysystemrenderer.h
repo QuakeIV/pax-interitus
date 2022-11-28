@@ -1,5 +1,5 @@
-#ifndef SYSTEMRENDERER_H
-#define SYSTEMRENDERER_H
+#ifndef PYSYSTEMRENDERER_H
+#define PYSYSTEMRENDERER_H
 
 #include <Python.h>
 #include <QWidget>
@@ -24,6 +24,8 @@ typedef struct
     PyObject *rightClickCallback;
     PyObject *doubleClickCallback;
 } PySystemRendererObject;
+
+extern PyTypeObject PySystemRendererType;
 
 // Qt type
 class PySystemRenderer : public QOpenGLWidget
@@ -95,4 +97,4 @@ private:
     QPoint singleclick_position;
 };
 
-#endif // SYSTEMRENDERER_H
+#endif // PYSYSTEMRENDERER_H
