@@ -43,12 +43,15 @@ class MainWindow(QMainWindow):
     self.setCentralWidget(widget)
   #
   
-  def test_action(self, poop):
+  def test_action(self, planets, ships):
     m = QMenu(self)
     m.setAttribute(Qt.WA_DeleteOnClose)
-    for p in poop:
+    for p in planets:
       # p=p needed to capture copy of planet instead of everyone sharing last value that was iterated over
       m.addAction(p.name, lambda p=p: self.renderer.set_focus(p))
+    for s in ships:
+      # s=s needed to capture copy of planet instead of everyone sharing last value that was iterated over
+      m.addAction(s.name, lambda s=s: self.renderer.set_focus(s))
     m.popup(QCursor.pos())
   #
 #

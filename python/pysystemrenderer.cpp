@@ -25,8 +25,16 @@ static PyObject *set_focus(PySystemRendererObject *self, PyObject *args)
         self->renderer->offset.x = 0;
         self->renderer->offset.y = 0;
     }
+    else if (PyObject_IsInstance(obj, (PyObject *)&PySpacecraftType))
+    {
+        PySpacecraftObject *s = (PySpacecraftObject *)obj;
+        self->renderer->focus = s->ref->trajectory;
+        self->renderer->offset.x = 0;
+        self->renderer->offset.y = 0;
+    }
 
-    // TODO: spacecraft as well? other things?
+    // TODO: other things?
+    // TODO: add else case+exception?
 
     Py_RETURN_NONE;
 }
@@ -351,10 +359,8 @@ void PySystemRenderer::rightClick(QPoint location)
         return;
     }
 
-
-    // TODO: track current selected solar system instead of hardcoding sol
     PyObject *celestial_list = PyList_New(0);
-    foreach (CelestialType* c, focus_system->celestials)
+    foreach (CelestialType *c, focus_system->celestials)
     {
         //TODO: it would be nice to calculate display radii and coordinates at render time and then re-use them here, rather than re-calculating
         //TODO: this should be functionalized as its identical to other code
@@ -370,15 +376,14 @@ void PySystemRenderer::rightClick(QPoint location)
         // TODO: configurable click radius margins?
         if (d < 10 || d < (c->radius >> currentZoom)) // right click margins are more generous
         {
-            PyCelestialObject *new_cel = (PyCelestialObject*)PyObject_Call((PyObject *)&PyCelestialType,PyTuple_New(0),NULL);
+            PyCelestialObject *new_cel = (PyCelestialObject *)PyObject_Call((PyObject *)&PyCelestialType,PyTuple_New(0),NULL);
             new_cel->ref = c;
-            PyList_Append(celestial_list, (PyObject*)new_cel);
-            Py_DECREF(new_cel); // decref to undo incref from append
+            PyList_Append(celestial_list, (PyObject *)new_cel);
+            Py_DECREF(new_cel); // decref to undo incref from the newly created object, now that list is holding onto it
         }
     }
 
-    // TODO: track current selected solar system instead of hardcoding sol
-    QList<Spacecraft*> spacecraft;
+    PyObject *spacecraft_list = PyList_New(0);
     foreach (Spacecraft *s, focus_system->spacecraft)
     {
         //TODO: would be nice to pre-compute fleet screen position every frame
@@ -390,13 +395,16 @@ void PySystemRenderer::rightClick(QPoint location)
         float d = sqrt(x*x + y*y);
         // TODO: maybe at some point fleet display radius will be configurable, definitely call a function for this one
         // TODO: configurable click radius margins?
+        // TODO: spacecraft will most likely have their own radius eventually
         if (d < 10.0)  // right click margins are more generous
-            spacecraft.append(s);
+        {
+            PySpacecraftObject *new_sc = (PySpacecraftObject *)PyObject_Call((PyObject *)&PySpacecraftType,PyTuple_New(0),NULL);
+            new_sc->ref = s;
+            PyList_Append(spacecraft_list, (PyObject *)new_sc);
+            Py_DECREF(new_sc); // decref to undo incref from the newly created object, now that list is holding onto it
+        }
     }
 
-
-
-    // TODO: mess with scrolling to make it work better
     //QMenu *m = new QMenu("derp", this);
     //m->setAttribute(Qt::WA_DeleteOnClose); //this was tested with the below code to garbage collect the menu
 //    connect(m, &QMenu::destroyed,
@@ -438,7 +446,7 @@ void PySystemRenderer::rightClick(QPoint location)
     //}
     //m->popup(mapToGlobal(location));
 
-    if (!PyObject_CallFunctionObjArgs(py_obj->rightClickCallback, celestial_list, NULL))
+    if (!PyObject_CallFunctionObjArgs(py_obj->rightClickCallback, celestial_list, spacecraft_list, NULL))
     {
         PyErr_Print();
         printf("This may have happened because a SystemRenderer had an argument mismatch with its right-click handler.\n");

@@ -69,6 +69,8 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
         return NULL;
     if (PyType_Ready(&PyCelestialType) < 0)
         return NULL;
+    if (PyType_Ready(&PySpacecraftType) < 0)
+        return NULL;
 
     PyObject *m = PyModule_Create(&libpaxpythonmodule);
 
