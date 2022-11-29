@@ -8,13 +8,15 @@ Celestial::Celestial(int64_t r, uint64_t m)
     mass = m;
     color = QColor(242,210,4); //reasonable shade of yellow (ideally this will get overridden during system gen)
     name = "Unnamed Star"; // set default name
+    parent = NULL;
 
     //just use default constructor for trajectory, which will result in a do-nothing trajectory centered at 0,0
 }
 
-Celestial::Celestial(int64_t r, uint64_t m, int64_t distance, Celestial *parent):
-    trajectory(parent, distance)
+Celestial::Celestial(int64_t r, uint64_t m, int64_t distance, Celestial *p):
+    trajectory(p, distance)
 {
+    parent = p;
     system = parent->system;
     radius = r;
     mass = m;

@@ -15,6 +15,8 @@ public:
     Celestial(int64_t r, uint64_t m);
     Celestial(int64_t r, uint64_t m, int64_t distance, Celestial *parent);
 
+    Celestial *parent;
+
     QString name;
 
     // TODO: kindof dubious that this is a member, while spacecraft are a pointer

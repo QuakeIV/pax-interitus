@@ -49,6 +49,14 @@ class MainWindow(QMainWindow):
     for p in planets:
       # p=p needed to capture copy of planet instead of everyone sharing last value that was iterated over
       m.addAction(p.name, lambda p=p: self.renderer.set_focus(p))
+      print(p.name)
+      print(p.radius)
+      if p.parent:
+        print("parent: " + p.parent.name)
+      print(p.orbital_radius)
+      print(p.children)
+      print()
+      
     for s in ships:
       # s=s needed to capture copy of planet instead of everyone sharing last value that was iterated over
       m.addAction(s.name, lambda s=s: self.renderer.set_focus(s))
