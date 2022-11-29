@@ -5,7 +5,7 @@
 #include "materials.h"
 
 class Transform;
-class CelestialType;
+class Celestial;
 class SolarSystemType;
 class Spacecraft;
 class SpacecraftDesign;

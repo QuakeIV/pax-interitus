@@ -187,9 +187,9 @@ QPointF SystemRenderer::position_to_screen_coordinates(FixedV2D pos)
     return QPointF((float)a.x + rem_xf, (float)a.y + rem_yf) + center;
 }
 
-void SystemRenderer::render_planet_body_recurse(CelestialType *cel)
+void SystemRenderer::render_planet_body_recurse(Celestial *cel)
 {
-    foreach(CelestialType *child, cel->children)
+    foreach(Celestial *child, cel->children)
         render_planet_body_recurse(child);
 
     // render planet body (but only if more center point is more than 5 pixels from parent)
@@ -207,7 +207,7 @@ void SystemRenderer::render_planet_body_recurse(CelestialType *cel)
     }
 }
 
-void SystemRenderer::render_planet_trajectory_recurse(CelestialType *cel)
+void SystemRenderer::render_planet_trajectory_recurse(Celestial *cel)
 {
     // only render orbit if it exists (if parent is set) and if it would be more than 10 pixels wide (otherwise dont bother drawing it its too small)
     if (cel->trajectory.parent && (cel->trajectory.orbital_radius >> currentZoom) >= 10)
@@ -225,7 +225,7 @@ void SystemRenderer::render_planet_trajectory_recurse(CelestialType *cel)
         }
     }
 
-    foreach(CelestialType *child, cel->children)
+    foreach(Celestial *child, cel->children)
         render_planet_trajectory_recurse(child);
 }
 
@@ -237,7 +237,7 @@ void SystemRenderer::animate()
 void SystemRenderer::singleClick(QPoint location)
 {
     // TODO: might be nice to keep a root celestial pointer on hand to reduce derefences? possibly over factoring
-    CelestialType *cel = planet_click_recurse(&focus_system->root, QPointF(location));
+    Celestial *cel = planet_click_recurse(&focus_system->root, QPointF(location));
     if (cel)
     {
         focus = &cel->trajectory;
@@ -266,8 +266,8 @@ void SystemRenderer::singleClick(QPoint location)
 void SystemRenderer::rightClick(QPoint location)
 {
     // TODO: track current selected solar system instead of hardcoding sol
-    QList<CelestialType*> cels;
-    foreach (CelestialType* c, focus_system->celestials)
+    QList<Celestial*> cels;
+    foreach (Celestial* c, focus_system->celestials)
     {
         //TODO: it would be nice to calculate display radii and coordinates at render time and then re-use them here, rather than re-calculating
         //TODO: this should be functionalized as its identical to other code
@@ -308,7 +308,7 @@ void SystemRenderer::rightClick(QPoint location)
 //    connect(m, &QMenu::destroyed,
 //            this, [m]() { qDebug() << "deleted" << (qintptr)m; });
 
-    foreach(CelestialType *c, cels)
+    foreach(Celestial *c, cels)
     {
         QMenu *submenu = m->addMenu(c->name);
         submenu->addAction("Focus", [this, c]()
@@ -389,7 +389,7 @@ Spacecraft * SystemRenderer::spacecraft_click(QPointF p)
 }
 
 // return true if a click landed on a planet (this can be used for any type of click)
-CelestialType * SystemRenderer::planet_click_recurse(CelestialType *cel, QPointF p)
+Celestial * SystemRenderer::planet_click_recurse(Celestial *cel, QPointF p)
 {
     //TODO: it would be nice to calculate display radii and coordinates at render time and then re-use them here, rather than re-calculating
     QPointF l = position_to_screen_coordinates(cel->trajectory.position);
@@ -402,14 +402,14 @@ CelestialType * SystemRenderer::planet_click_recurse(CelestialType *cel, QPointF
     if (d < 6.0 || d < (cel->radius >> currentZoom))
         return cel;
 
-    foreach (CelestialType *child, cel->children)
+    foreach (Celestial *child, cel->children)
     {
         // only allow clicks on planets that are actually rendering
         // (this is to match the condition in render_planet_recurse that culls planet rendering)
         if ((child->trajectory.orbital_radius >> currentZoom) >= 5)
         {
             //recurse into children
-            CelestialType *f = planet_click_recurse(child, p);
+            Celestial *f = planet_click_recurse(child, p);
             if (f)
                 return f;
         }

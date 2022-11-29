@@ -7,7 +7,7 @@
 
 #define PI (3.14159265358979)
 
-class CelestialType;
+class Celestial;
 
 //TODO: create a subtype 'fixed orbit' for planets and a different more expensive to compute type for fleets when they are on the move
 class OrbitType : public Transform
@@ -18,9 +18,9 @@ public:
     int64_t orbital_period     = 0; //in microseconds
     int64_t orbit_clock_offset = 0; //initial position, in microseconds
     int64_t orbital_radius     = 0; //radius in mm (this is currently only used for trajectory render culling)
-    CelestialType *parent      = NULL; //for now assume you can only really orbit a celestial TODO: improve?
+    Celestial *parent      = NULL; //for now assume you can only really orbit a celestial TODO: improve?
 
-    OrbitType(CelestialType *p, int64_t r);
+    OrbitType(Celestial *p, int64_t r);
     OrbitType();
 
     void update_position(void) override;

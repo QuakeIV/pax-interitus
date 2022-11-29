@@ -1,8 +1,8 @@
-#include "celestialtype.h"
+#include "celestial.h"
 #include "solarsystemtype.h"
 
 // for stars
-CelestialType::CelestialType(int64_t r, uint64_t m)
+Celestial::Celestial(int64_t r, uint64_t m)
 {
     radius = r;
     mass = m;
@@ -12,7 +12,7 @@ CelestialType::CelestialType(int64_t r, uint64_t m)
     //just use default constructor for trajectory, which will result in a do-nothing trajectory centered at 0,0
 }
 
-CelestialType::CelestialType(int64_t r, uint64_t m, int64_t distance, CelestialType *parent):
+Celestial::Celestial(int64_t r, uint64_t m, int64_t distance, Celestial *parent):
     trajectory(parent, distance)
 {
     system = parent->system;

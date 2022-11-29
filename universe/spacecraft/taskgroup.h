@@ -5,7 +5,7 @@
 #include <QString>
 #include <QColor>
 #include "spacecraft.h"
-#include "celestialtype.h"
+#include "celestial.h"
 #include "solarsystemtype.h"
 
 // TODO: order handling infrastructure

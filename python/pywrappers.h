@@ -2,14 +2,14 @@
 #define PYWRAPPERS_H
 
 #include <Python.h>
-#include "universe/celestialtype.h"
+#include "universe/celestial.h"
 #include "universe/spacecraft/spacecraft.h"
 
 // planets
 typedef struct
 {
     PyObject_HEAD
-    CelestialType *ref;
+    Celestial *ref;
 } PyCelestialObject;
 extern PyTypeObject PyCelestialType;
 

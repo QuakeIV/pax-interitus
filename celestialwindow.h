@@ -5,7 +5,7 @@
 #include <QPlainTextEdit>
 #include "ui_celestialwindow.h"
 #include <QTimer>
-#include "celestialtype.h"
+#include "celestial.h"
 #include <QClipboard>
 #include "utilities.h"
 
@@ -18,7 +18,7 @@ class CelestialWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit CelestialWindow(CelestialType *c, QWidget *parent = nullptr):
+    explicit CelestialWindow(Celestial *c, QWidget *parent = nullptr):
         QMainWindow(parent),
         ui(new Ui::CelestialWindow)
     {
@@ -41,7 +41,7 @@ public:
         delete ui;
     }
 
-    CelestialType *celestial;
+    Celestial *celestial;
 
     QTextEdit *text;
 

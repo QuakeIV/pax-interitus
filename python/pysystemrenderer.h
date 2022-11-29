@@ -9,7 +9,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include "fixedv2d.h"
-#include "universe/celestialtype.h"
+#include "universe/celestial.h"
 #include <QMenu>
 
 class Spacecraft;
@@ -68,14 +68,14 @@ private slots:
 private:
     // renderer functions
     void render_scale(void); //TODO: is this needed in light of yardstick?
-    void render_planet_body_recurse(CelestialType *cel);
-    void render_planet_trajectory_recurse(CelestialType *cel);
+    void render_planet_body_recurse(Celestial *cel);
+    void render_planet_trajectory_recurse(Celestial *cel);
     void render_yardstick(void);
     void render_fleets(void);
     QPointF position_to_screen_coordinates(FixedV2D pos);
 
     // recursively search planets to see if a click landed on them, return found planet if any, otherwise return null
-    CelestialType *planet_click_recurse(CelestialType *cel, QPointF p);
+    Celestial *planet_click_recurse(Celestial *cel, QPointF p);
     // recursively search fleets to see if a click landed on them
     // (runs after planet click, that way if you click a big pile of crap you get the planet preferentially)
     Spacecraft *spacecraft_click(QPointF p);

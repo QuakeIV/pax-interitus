@@ -1,6 +1,6 @@
 
 #include "orbittype.h"
-#include "celestialtype.h"
+#include "celestial.h"
 #include "universe.h"
 #include "utilities.h"
 #include "units.h"
@@ -10,7 +10,7 @@ OrbitType::OrbitType()
 }
 
 //TODO: non circular orbits (racetrack should support this, we just need to be able to take additional parameters)
-OrbitType::OrbitType(CelestialType *p, int64_t r)
+OrbitType::OrbitType(Celestial *p, int64_t r)
 {
     parent = p;
     orbital_radius = r;

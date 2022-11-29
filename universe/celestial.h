@@ -8,12 +8,12 @@
 
 class SolarSystemType;
 
-class CelestialType
+class Celestial
 {
 public:
     //for stars
-    CelestialType(int64_t r, uint64_t m);
-    CelestialType(int64_t r, uint64_t m, int64_t distance, CelestialType *parent);
+    Celestial(int64_t r, uint64_t m);
+    Celestial(int64_t r, uint64_t m, int64_t distance, Celestial *parent);
 
     QString name;
 
@@ -28,7 +28,7 @@ public:
     
     QColor color;
 
-    QList<CelestialType*> children;
+    QList<Celestial*> children;
 
     SolarSystemType *system; //what system is the celestial located in
 };
