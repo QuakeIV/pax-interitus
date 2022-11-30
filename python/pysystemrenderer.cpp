@@ -9,6 +9,7 @@
 #include "utilities.h"
 #include <QLayout>
 #include "pywrappers.h"
+#include <QSizePolicy>
 
 // Python Type
 static PyObject *set_focus(PySystemRendererObject *self, PyObject *args)
@@ -112,6 +113,9 @@ PySystemRenderer::PySystemRenderer(QWidget *parent):
 
     clickTimer.setSingleShot(true);
 
+    // make sure we dont get squashed by other widgets
+    QSizePolicy policy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setSizePolicy(policy);
 
     setAutoFillBackground(false); //TODO: does this do anything useful?
 

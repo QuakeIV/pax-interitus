@@ -170,6 +170,8 @@ static PyGetSetDef getsets[] = {
      NULL /* closure */},
     {NULL}
 };
+// TODO: maybe the actual celestial objects should keep a cache of python wrappers for themselves?
+// this also kindof relates to whether or not everything in the universe should become a python object as well
 PyTypeObject PyCelestialType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "paxpython.Celestial",
