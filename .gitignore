@@ -1,5 +1,4 @@
 build/
 freespace-aurora
 CMakeLists.txt.user
-python/ui_*.py
 __pycache__/

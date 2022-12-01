@@ -9,10 +9,9 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QToolBar, 
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtGui import QAction, QIcon, QCursor
 import shiboken6
-from build.python import libpaxpython
-from python.timewarpwidget import TimeWarpWidget
 
-from python import ui_mainwindow
+from build.python import libpaxpython
+from build.python import ui_mainwindow # pyuic autogenned .py scripts
 
 app = QApplication()
 

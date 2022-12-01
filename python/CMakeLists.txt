@@ -7,10 +7,10 @@ file(GLOB PYUIC_TARGETS "*.ui")
 foreach(UIC_TARGET ${PYUIC_TARGETS})
     get_filename_component(STRIP ${UIC_TARGET} NAME_WE)
     message("ui_${STRIP}.py")
-    list(APPEND PYWRAPPER_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/ui_${STRIP}.py")
+    list(APPEND PYWRAPPER_SOURCES "${CMAKE_BINARY_DIR}/python/ui_${STRIP}.py")
     add_custom_command(
-        OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/ui_${STRIP}.py"
-        COMMAND pyside6-uic ${UIC_TARGET} -o "${CMAKE_CURRENT_SOURCE_DIR}/ui_${STRIP}.py"
+        OUTPUT "${CMAKE_BINARY_DIR}/python/ui_${STRIP}.py"
+        COMMAND pyside6-uic ${UIC_TARGET} -o "${CMAKE_BINARY_DIR}/python/ui_${STRIP}.py"
         DEPENDS ${UIC_TARGET}
     )
 endforeach()
