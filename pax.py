@@ -11,7 +11,7 @@ from PySide6.QtGui import QAction, QIcon, QCursor
 import shiboken6
 
 from build.python import libpaxpython
-from build.python import ui_mainwindow # pyuic autogenned .py scripts
+from build.python import ui_mainwindow # pyuic autogenned .py script
 
 app = QApplication()
 
@@ -32,13 +32,6 @@ class MainWindow(QMainWindow):
     #self.setFixedSize(QSize(400,300))
     #self.resize(QSize(400,300))
     
-    #menu = self.menuBar()
-    #file_menu = menu.addMenu("File") #leading with & will underline the first letter
-    #test_action = QAction("Test action",self)
-    #test_action.setStatusTip("test tooltip") # no worky?
-    #test_action.triggered.connect(self.test_action)
-    #file_menu.addAction(test_action)
-    
     self.ui.pausebutton.clicked.connect(self.pause)
     self.ui.pluswarp.clicked.connect(self.increment_warp)
     self.ui.minuswarp.clicked.connect(self.decrement_warp)
@@ -47,53 +40,69 @@ class MainWindow(QMainWindow):
     self.ui.warp1M.clicked.connect(self.warp_1M)
     self.ui.warpmax.clicked.connect(self.warp_max)
     
-    #layout = QHBoxLayout()
-    #warpwidget = TimeWarpWidget()
-    #layout.addWidget(warpwidget)
-    #self.renderer = libpaxpython.SystemRenderer(shiboken6.getCppPointer(layout)[0])
     self.renderer = libpaxpython.SystemRenderer(shiboken6.getCppPointer(self.ui.horizontalLayout)[0])
-    self.renderer.right_click_callback = self.test_action
+    self.renderer.right_click_callback = self.rightclick
     
-    #TODO: update warp display
+    #TODO: re-set this up with time data or some such?
+    self.ui.statusbar.showMessage("Imma status bar (TODO)")
+  #
 
-    widget = QWidget()
-#    widget.setLayout(layout)
-#    self.setCentralWidget(widget)
+  def update_warp_display(self):
+    time_warp = libpaxpython.universe.time_warp
+    if   time_warp <= -20:
+      self.ui.displaywarp.setText(f"1/{1<<(-1*time_warp - 20)}Mx")
+    elif time_warp <= -10:
+      self.ui.displaywarp.setText(f"1/{1<<(-1*time_warp - 10)}kx")
+    elif time_warp < 0:
+      self.ui.displaywarp.setText(f"1/{1<<(-1*time_warp)}x")
+    elif time_warp < 10:
+      self.ui.displaywarp.setText(f"{1<<(time_warp)}x")
+    elif time_warp < 20:
+      self.ui.displaywarp.setText(f"{1<<(time_warp-10)}kx")
+    elif time_warp < 30:
+      self.ui.displaywarp.setText(f"{1<<(time_warp-20)}Mx")
   #
   
   def pause(self, checked):
     if checked:
-      print("TODO: implement pausing")
+      libpaxpython.universe.paused = True
+      self.ui.pausebutton.setText("PAUSED")
     else:
-      print("TODO: implement unpausing")
+      libpaxpython.universe.paused = False
+      self.ui.pausebutton.setText("PAUSE")
   #
   
   def increment_warp(self):
-    print("TODO: implement increasing time warp")
+    libpaxpython.universe.time_warp += 1
+    self.update_warp_display()
   #
    
   def decrement_warp(self):
-    print("TODO: implement decreasing time warp")
+    libpaxpython.universe.time_warp -= 1
+    self.update_warp_display()
   #
   
   def warp_1(self):
-    print("TODO: implement warp 1")
-    #TODO: update warp display
+    libpaxpython.universe.time_warp = 0
+    self.update_warp_display()
   #
   
   def warp_1k(self):
-    print("TODO: implement warp 1k")
+    libpaxpython.universe.time_warp = 10
+    self.update_warp_display()
   #
   
   def warp_1M(self):
-    print("TODO: implement warp 1M")
+    libpaxpython.universe.time_warp = 20
+    self.update_warp_display()
   #
   
   def warp_max(self):
-    print("TODO: implement max warp")
+    libpaxpython.universe.time_warp = libpaxpython.universe.max_warp
+    self.update_warp_display()
   #
   
-  def test_action(self, planets, ships):
+  def rightclick(self, planets, ships):
     m = QMenu(self)
     m.setAttribute(Qt.WA_DeleteOnClose)
     for p in planets:

@@ -2,8 +2,9 @@
 #define PYWRAPPERS_H
 
 #include <Python.h>
-#include "universe/celestial.h"
-#include "universe/spacecraft/spacecraft.h"
+
+class Celestial;
+class Spacecraft;
 
 // planets
 typedef struct
@@ -20,5 +21,8 @@ typedef struct
     Spacecraft *ref;
 } PySpacecraftObject;
 extern PyTypeObject PySpacecraftType;
+
+// tracking global state only, no need for pointers stored in a specialized type
+extern PyTypeObject PyUniverseType;
 
 #endif // PYWRAPPERS_H

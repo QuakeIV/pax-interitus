@@ -2,6 +2,7 @@
 #include <structmember.h>
 #include "pywrappers.h"
 #include "solarsystemtype.h"
+#include "celestial.h"
 
 static void type_dealloc(PyCelestialObject *self)
 {

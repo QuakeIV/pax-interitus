@@ -71,6 +71,8 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
         return NULL;
     if (PyType_Ready(&PySpacecraftType) < 0)
         return NULL;
+    if (PyType_Ready(&PyUniverseType) < 0)
+        return NULL;
 
     PyObject *m = PyModule_Create(&libpaxpythonmodule);
 
@@ -78,6 +80,14 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
     if (PyModule_AddObject(m, "SystemRenderer", (PyObject *)&PySystemRendererType) < 0)
     {
         Py_DECREF(&PySystemRendererType);
+        Py_DECREF(m);
+        return NULL;
+    }
+
+    PyObject *u = PyObject_Call((PyObject *)&PyUniverseType,PyTuple_New(0),NULL);
+    if (PyModule_AddObject(m, "universe", u) < 0)
+    {
+        Py_DECREF(u);
         Py_DECREF(m);
         return NULL;
     }
