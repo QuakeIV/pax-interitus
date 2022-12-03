@@ -1,0 +1,1 @@
+These icons were obtained from https://github.com/simast/SolarisTheme, released under the MIT license.  As the MIT license is fully permissive of relicensing, they have been relicenced here under the parent license at the root of this repo (Affero GPL V3).
