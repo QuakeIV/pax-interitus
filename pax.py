@@ -4,7 +4,7 @@
 import sys, os
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize, Qt, QDir
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QToolBar, QVBoxLayout, QHBoxLayout, QWidget, QMenu
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtGui import QAction, QIcon, QCursor
@@ -13,7 +13,13 @@ import shiboken6
 from build.python import libpaxpython
 from build.python import ui_mainwindow # pyuic autogenned .py script
 
+from python.techwindow import TechWindow
+from python.celestialwindow import CelestialWindow
+
 app = QApplication()
+
+# add resource search path (lazy solution) so we can find our stupid icons
+QDir.addSearchPath("icons", "python")
 
 # kill when ctrl-c is pressed (annoying when this doesnt work)
 import signal
@@ -26,7 +32,7 @@ class MainWindow(QMainWindow):
     self.ui = ui_mainwindow.Ui_MainWindow()
     self.ui.setupUi(self)
 
-    self.setWindowTitle("Pax Test")
+    #self.setWindowTitle("Pax Test")
     
     #sizing
     #self.setFixedSize(QSize(400,300))
@@ -45,6 +51,9 @@ class MainWindow(QMainWindow):
     
     #TODO: re-set this up with time data or some such?
     self.ui.statusbar.showMessage("Imma status bar (TODO)")
+    
+    self.ui.actionTechWindow.triggered.connect(lambda: TechWindow(self).show())
+    self.ui.techbutton.clicked.connect(lambda: TechWindow(self).show())
   #
 
   def update_warp_display(self):
@@ -106,19 +115,15 @@ class MainWindow(QMainWindow):
     m = QMenu(self)
     m.setAttribute(Qt.WA_DeleteOnClose)
     for p in planets:
+      submenu = m.addMenu(p.name)
       # p=p needed to capture copy of planet instead of everyone sharing last value that was iterated over
-      m.addAction(p.name, lambda p=p: self.renderer.set_focus(p))
-      print(p.name)
-      print(p.radius)
-      if p.parent:
-        print("parent: " + p.parent.name)
-      print(p.orbital_radius)
-      print(p.children)
-      print()
+      submenu.addAction("Focus", lambda p=p: self.renderer.set_focus(p))
+      submenu.addAction("Info", lambda p=p: CelestialWindow(p,self).show())
       
     for s in ships:
+      submenu = m.addMenu(s.name)
       # s=s needed to capture copy of planet instead of everyone sharing last value that was iterated over
-      m.addAction(s.name, lambda s=s: self.renderer.set_focus(s))
+      submenu.addAction("Focus", lambda s=s: self.renderer.set_focus(s))
     m.popup(QCursor.pos())
   #
 #

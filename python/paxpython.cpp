@@ -83,6 +83,20 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
         Py_DECREF(m);
         return NULL;
     }
+    Py_INCREF(&PyCelestialType);
+    if (PyModule_AddObject(m, "Celestial", (PyObject *)&PyCelestialType) < 0)
+    {
+        Py_DECREF(&PyCelestialType);
+        Py_DECREF(m);
+        return NULL;
+    }
+    Py_INCREF(&PySpacecraftType);
+    if (PyModule_AddObject(m, "Spacecraft", (PyObject *)&PySpacecraftType) < 0)
+    {
+        Py_DECREF(&PySpacecraftType);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     PyObject *u = PyObject_Call((PyObject *)&PyUniverseType,PyTuple_New(0),NULL);
     if (PyModule_AddObject(m, "universe", u) < 0)
