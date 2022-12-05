@@ -18,8 +18,13 @@
 #define RELATIVE_DIALECTRIC_TO_ABSOLUTE(x) (0.000000000008854*((double)x))
 #define VOLT_UM_TO_VOLT_M(x) (1000000.0*((double)x))
 
+// TODO: actual fancy int->double conversion bitfield?
 #define DISTANCE_FIXED_TO_FLOAT(x) ((x)/1024.0)
+#define DISTANCE_FLOAT_TO_FIXED(x) ((x)*1024.0)
 
 #define CUBIC_METER_TO_LITER(x) ((x)*1000)
+
+#define CELESTIALMASS_TO_GRAMS(x) (((double)x) * 1000000000000000000.0)
+
 
 #endif // UNITS_H

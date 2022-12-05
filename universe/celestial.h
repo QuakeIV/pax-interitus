@@ -11,9 +11,12 @@ class SolarSystemType;
 class Celestial
 {
 public:
+    // TODO: is it really suitable to use radius? this is convenient for now to take KMs but may not always be the case
+    // r = radius in kms, m = mass in whatever the mass ref frame was
     //for stars
-    Celestial(int64_t r, uint64_t m);
-    Celestial(int64_t r, uint64_t m, int64_t distance, Celestial *parent);
+    Celestial(double r, uint64_t m);
+    //planets/moons/etc
+    Celestial(double r, uint64_t m, int64_t distance, Celestial *parent);
 
     Celestial *parent;
 
@@ -26,7 +29,7 @@ public:
     OrbitType trajectory;
 
     uint64_t mass; //in exagrams (10^18 grams) (quadrillions (10^15) of kgs), ideally later replaced with more parameters later
-    int64_t radius; //in mm, radius of the object itself
+    int64_t radius; // radius of object itself, in 2^10ths of meters (per distance reference frame in units.h)
     
     QColor color;
 

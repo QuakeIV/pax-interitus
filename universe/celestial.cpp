@@ -2,9 +2,9 @@
 #include "solarsystemtype.h"
 
 // for stars
-Celestial::Celestial(int64_t r, uint64_t m)
+Celestial::Celestial(double r, uint64_t m)
 {
-    radius = r;
+    radius = DISTANCE_FLOAT_TO_FIXED(r);
     mass = m;
     color = QColor(242,210,4); //reasonable shade of yellow (ideally this will get overridden during system gen)
     name = "Unnamed Star"; // set default name
@@ -13,12 +13,12 @@ Celestial::Celestial(int64_t r, uint64_t m)
     //just use default constructor for trajectory, which will result in a do-nothing trajectory centered at 0,0
 }
 
-Celestial::Celestial(int64_t r, uint64_t m, int64_t distance, Celestial *p):
+Celestial::Celestial(double r, uint64_t m, int64_t distance, Celestial *p):
     trajectory(p, distance)
 {
     parent = p;
     system = parent->system;
-    radius = r;
+    radius = DISTANCE_FLOAT_TO_FIXED(r);
     mass = m;
     
     color = QColor(180,180,180); //assume gray dusty moon until overridden

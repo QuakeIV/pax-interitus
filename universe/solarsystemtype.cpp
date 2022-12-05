@@ -3,7 +3,7 @@
 
 uint64_t SolarSystemType::system_id = 0;
 
-SolarSystemType::SolarSystemType(int64_t r, uint64_t m):
+SolarSystemType::SolarSystemType(double r, uint64_t m):
   root(r,m) //TODO: not optimal way to initialize the child type, maybe just have a default constructor for celestials?
 {
     root.system = this;
