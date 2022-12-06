@@ -13,8 +13,8 @@ Celestial::Celestial(double r, uint64_t m)
     //just use default constructor for trajectory, which will result in a do-nothing trajectory centered at 0,0
 }
 
-Celestial::Celestial(double r, uint64_t m, int64_t distance, Celestial *p):
-    trajectory(p, distance)
+Celestial::Celestial(double r, uint64_t m, double distance, Celestial *p):
+    trajectory(p, DISTANCE_FLOAT_TO_FIXED(distance))
 {
     parent = p;
     system = parent->system;

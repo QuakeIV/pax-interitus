@@ -12,11 +12,12 @@ class Celestial
 {
 public:
     // TODO: is it really suitable to use radius? this is convenient for now to take KMs but may not always be the case
-    // r = radius in kms, m = mass in whatever the mass ref frame was
+    // r = radius in meters, m = mass in whatever the mass ref frame was
+    // distance = meters
     //for stars
     Celestial(double r, uint64_t m);
     //planets/moons/etc
-    Celestial(double r, uint64_t m, int64_t distance, Celestial *parent);
+    Celestial(double r, uint64_t m, double distance, Celestial *parent);
 
     Celestial *parent;
 
