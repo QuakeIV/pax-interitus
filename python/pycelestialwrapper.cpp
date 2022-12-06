@@ -39,23 +39,28 @@ static PyObject* mytype_get_mass(PyCelestialObject* self, void* closure)
     if (!self->ref)
         PyErr_SetString(PyExc_ValueError, "ref not initialized, error in construction of celestial type wrapper");
 
-    return PyLong_FromLongLong(self->ref->mass);
+    return PyFloat_FromDouble(CELESTIALMASS_TO_GRAMS(self->ref->mass));
 }
 static PyObject* mytype_get_radius(PyCelestialObject* self, void* closure)
 {
     if (!self->ref)
         PyErr_SetString(PyExc_ValueError, "ref not initialized, error in construction of celestial type wrapper");
 
-    // cheeky manual divide by 1000 to get to meters
-    // TODO: actual units.h defines for that
-    return PyFloat_FromDouble(DISTANCE_FIXED_TO_FLOAT(self->ref->radius / 1000.0));
+    return PyFloat_FromDouble(DISTANCE_FIXED_TO_FLOAT(self->ref->radius));
+}
+static PyObject* mytype_get_surface_gravity(PyCelestialObject* self, void* closure)
+{
+    if (!self->ref)
+        PyErr_SetString(PyExc_ValueError, "ref not initialized, error in construction of celestial type wrapper");
+
+    return PyFloat_FromDouble(self->ref->surface_gravity);
 }
 static PyObject* mytype_get_orbital_radius(PyCelestialObject* self, void* closure)
 {
     if (!self->ref)
         PyErr_SetString(PyExc_ValueError, "ref not initialized, error in construction of celestial type wrapper");
 
-    return PyFloat_FromDouble(self->ref->trajectory.orbital_radius);
+    return PyFloat_FromDouble(DISTANCE_FIXED_TO_FLOAT(self->ref->trajectory.orbital_radius));
 }
 static PyObject* mytype_get_orbital_period(PyCelestialObject* self, void* closure)
 {
@@ -142,12 +147,17 @@ static PyGetSetDef getsets[] = {
     {"mass",
      (getter)mytype_get_mass,
      NULL, //(setter) mytype_set_field
-     "mass of celestial",  /* doc */
+     "mass of celestial (grams as floating point)",  /* doc */
      NULL /* closure */},
     {"radius",
      (getter)mytype_get_radius,
      NULL, //(setter) mytype_set_field
      "radius of celestial",  /* doc */
+     NULL /* closure */},
+    {"surface_gravity",
+     (getter)mytype_get_surface_gravity,
+     NULL, //(setter) mytype_set_field
+     "surface gravity of celestial",  /* doc */
      NULL /* closure */},
     {"orbital_radius",
      (getter)mytype_get_orbital_radius,

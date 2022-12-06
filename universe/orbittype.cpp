@@ -30,10 +30,9 @@ OrbitType::OrbitType(Celestial *p, int64_t r)
         }
 
         //period in milliseconds (doing calculation in double land, and then converting back to the integral reference frame)
-        const double G = 66743000; //gravitational constant, in cubic mm per exagram millisecond squared
+        const double G = 0.000000000066743; //gravitational constant (standard SI)
         //did some algebra, assuming newtonian gravity, newtonian motion this should yield orbital period
-        //TODO: 1 << TIME_SHIFT factor is to compensate for microsecond time
-        double period_d = (radius_d*1000.0*PI*2.0*sqrt(((radius_d * 1000.0 * (double)TIME_FACTOR) / (p->mass * G))));
+        double period_d = (radius_d*PI*2.0*sqrt((radius_d / (CELESTIALMASS_TO_KG(p->mass) * G)))) * (double)TIME_FACTOR;
         orbital_period = (int64_t)period_d;
         //worst case roundoff error here is I think racetrack_points - 1 milliseconds (this is the true reference for orbital period in terms of calculating position)
         racetrack_delta_time = orbital_period/racetrack_points;

@@ -31,6 +31,7 @@ public:
 
     uint64_t mass; //in exagrams (10^18 grams) (quadrillions (10^15) of kgs), ideally later replaced with more parameters later
     int64_t radius; // radius of object itself, in 2^10ths of meters (per distance reference frame in units.h)
+    double surface_gravity; // informational, m/s^2
     
     QColor color;
 

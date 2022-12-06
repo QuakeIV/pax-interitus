@@ -25,6 +25,9 @@
 #define CUBIC_METER_TO_LITER(x) ((x)*1000)
 
 #define CELESTIALMASS_TO_GRAMS(x) (((double)x) * 1000000000000000000.0)
+#define CELESTIALMASS_TO_KG(x) (((double)x) * 1000000000000000.0)
+
+const double G = 0.000000000066743; //gravitational constant (standard SI)
 
 
 #endif // UNITS_H
