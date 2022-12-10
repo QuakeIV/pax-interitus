@@ -10,13 +10,13 @@ OrbitType::OrbitType()
 }
 
 //TODO: non circular orbits (racetrack should support this, we just need to be able to take additional parameters)
-OrbitType::OrbitType(Celestial *p, int64_t r)
+OrbitType::OrbitType(Celestial *p, double r)
 {
     parent = p;
-    orbital_radius = r;
+    orbital_radius = DISTANCE_M_TO_FIXED(r);
     //doing sine/cosine math in double land, and then converting back to the fixed reference frame
     //TODO: figure out how to do this right with integers
-    double radius_d = DISTANCE_FIXED_TO_FLOAT(r); //radius in 1024ths of meters
+    double radius_d = r; //radius in meters
 
     // only define an orbit if there is a parent object
     if (parent != NULL)
@@ -25,14 +25,14 @@ OrbitType::OrbitType(Celestial *p, int64_t r)
         {
             // TODO: stick with clockwise or flip?
             double angle = (2.0*PI*i)/racetrack_points;
-            rel_racetrack[i].x = DISTANCE_FLOAT_TO_FIXED(radius_d*cos(angle));
-            rel_racetrack[i].y = DISTANCE_FLOAT_TO_FIXED(radius_d*sin(angle));
+            rel_racetrack[i].x = DISTANCE_M_TO_FIXED(radius_d*cos(angle));
+            rel_racetrack[i].y = DISTANCE_M_TO_FIXED(radius_d*sin(angle));
         }
 
         //period in milliseconds (doing calculation in double land, and then converting back to the integral reference frame)
-        const double G = 0.000000000066743; //gravitational constant (standard SI)
+        const double G = 0.0000000000667408; //gravitational constant (standard SI unit frame)
         //did some algebra, assuming newtonian gravity, newtonian motion this should yield orbital period
-        double period_d = (radius_d*PI*2.0*sqrt((radius_d / (CELESTIALMASS_TO_KG(p->mass) * G)))) * (double)TIME_FACTOR;
+        double period_d = (radius_d*PI*2.0/sqrt((CELESTIALMASS_TO_KG(p->mass) * G)/radius_d)) * (double)TIME_FACTOR;
         orbital_period = (int64_t)period_d;
         //worst case roundoff error here is I think racetrack_points - 1 milliseconds (this is the true reference for orbital period in terms of calculating position)
         racetrack_delta_time = orbital_period/racetrack_points;

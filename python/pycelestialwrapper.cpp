@@ -25,14 +25,14 @@ static PyObject* mytype_get_x(PyCelestialObject* self, void* closure)
     if (!self->ref)
         PyErr_SetString(PyExc_ValueError, "ref not initialized, error in construction of celestial type wrapper");
 
-    return PyFloat_FromDouble(DISTANCE_FIXED_TO_FLOAT(self->ref->trajectory.position.x));
+    return PyFloat_FromDouble(DISTANCE_FIXED_TO_M(self->ref->trajectory.position.x));
 }
 static PyObject* mytype_get_y(PyCelestialObject* self, void* closure)
 {
     if (!self->ref)
         PyErr_SetString(PyExc_ValueError, "ref not initialized, error in construction of celestial type wrapper");
 
-    return PyFloat_FromDouble(DISTANCE_FIXED_TO_FLOAT(self->ref->trajectory.position.y));
+    return PyFloat_FromDouble(DISTANCE_FIXED_TO_M(self->ref->trajectory.position.y));
 }
 static PyObject* mytype_get_mass(PyCelestialObject* self, void* closure)
 {
@@ -46,7 +46,7 @@ static PyObject* mytype_get_radius(PyCelestialObject* self, void* closure)
     if (!self->ref)
         PyErr_SetString(PyExc_ValueError, "ref not initialized, error in construction of celestial type wrapper");
 
-    return PyFloat_FromDouble(DISTANCE_FIXED_TO_FLOAT(self->ref->radius));
+    return PyFloat_FromDouble(DISTANCE_FIXED_TO_M(self->ref->radius));
 }
 static PyObject* mytype_get_surface_gravity(PyCelestialObject* self, void* closure)
 {
@@ -60,7 +60,7 @@ static PyObject* mytype_get_orbital_radius(PyCelestialObject* self, void* closur
     if (!self->ref)
         PyErr_SetString(PyExc_ValueError, "ref not initialized, error in construction of celestial type wrapper");
 
-    return PyFloat_FromDouble(DISTANCE_FIXED_TO_FLOAT(self->ref->trajectory.orbital_radius));
+    return PyFloat_FromDouble(DISTANCE_FIXED_TO_M(self->ref->trajectory.orbital_radius));
 }
 static PyObject* mytype_get_orbital_period(PyCelestialObject* self, void* closure)
 {

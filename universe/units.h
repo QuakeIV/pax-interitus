@@ -19,8 +19,8 @@
 #define VOLT_UM_TO_VOLT_M(x) (1000000.0*((double)x))
 
 // TODO: actual fancy int->double conversion bitfield?
-#define DISTANCE_FIXED_TO_FLOAT(x) ((x)/1024.0)
-#define DISTANCE_FLOAT_TO_FIXED(x) ((x)*1024.0)
+#define DISTANCE_FIXED_TO_M(x) (((double)x)/1024.0)
+#define DISTANCE_M_TO_FIXED(x) ((int64_t)((x)*1024.0))
 
 #define CUBIC_METER_TO_LITER(x) ((x)*1000)
 

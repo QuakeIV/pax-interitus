@@ -1,3 +1,4 @@
+import math
 
 # TODO: reevaluate, feels this is kindof lazy and retarded it just felt good to express it this way at the time
 base_scale = {}
@@ -22,6 +23,10 @@ def _find_scale_match(qty, scale_dict, target=1):
   return scale, unit
 #
 
+def sigfig(val, fig=6):
+  dec = max(0,fig-int(math.log10(val)+1))
+  return round(val, dec)
+
 # mass-specific scales
 mass_scale = {k:(v+"g") for k, v in base_scale.items()}
 # astronomical units of mass
@@ -29,11 +34,12 @@ mass_scale[5.9722e27] = "M⊕" # mass of earth
 mass_scale[1.9885e33] = "M☉" # mass of sun TODO: consider using ⨀, seems to look better since bigger, easier to tell from earth mass
 def mass_str(qty):
   scale, unit = _find_scale_match(qty, mass_scale, 10.0)
-  return f"{qty/scale:.6g} {unit}"
+  return f"{sigfig(qty/scale, 6)} {unit}"
 #
 
 dist_scale = {k:(v+"m") for k, v in base_scale.items()}
+dist_scale[9.4607e15] = "Ly"
 def distance_str(qty):
   scale, unit = _find_scale_match(qty, dist_scale, 1000.0)
-  return f"{qty/scale:.6g} {unit}"
+  return f"{sigfig(qty/scale, 6)} {unit}"
 #

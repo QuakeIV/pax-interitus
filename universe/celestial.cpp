@@ -4,7 +4,7 @@
 // for stars
 Celestial::Celestial(double r, uint64_t m)
 {
-    radius = DISTANCE_FLOAT_TO_FIXED(r);
+    radius = DISTANCE_M_TO_FIXED(r);
     mass = m;
     color = QColor(242,210,4); //reasonable shade of yellow (ideally this will get overridden during system gen)
     name = "Unnamed Star"; // set default name
@@ -16,11 +16,11 @@ Celestial::Celestial(double r, uint64_t m)
 }
 
 Celestial::Celestial(double r, uint64_t m, double distance, Celestial *p):
-    trajectory(p, DISTANCE_FLOAT_TO_FIXED(distance))
+    trajectory(p, distance)
 {
     parent = p;
     system = parent->system;
-    radius = DISTANCE_FLOAT_TO_FIXED(r);
+    radius = DISTANCE_M_TO_FIXED(r);
     mass = m;
 
     surface_gravity = G * CELESTIALMASS_TO_KG(m) / (r*r);

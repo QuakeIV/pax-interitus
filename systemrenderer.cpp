@@ -152,7 +152,7 @@ void SystemRenderer::render_yardstick(void)
 
     //draw distance
     QPointF d = mousedrag_position - singleclick_position;
-    double dist = DISTANCE_FIXED_TO_FLOAT((double)sqrt(d.x()*d.x() + d.y()*d.y()) * (double)(1l<<currentZoom));
+    double dist = DISTANCE_FIXED_TO_M((double)sqrt(d.x()*d.x() + d.y()*d.y()) * (double)(1l<<currentZoom));
     painter.drawText(mousedrag_position + QPointF(0,-2), get_distance_str(dist));
 }
 
@@ -162,7 +162,7 @@ void SystemRenderer::render_scale()
     static const QPointF scale_from = QPointF(20,30);
     static const QPointF scale_text = QPointF(20,28);
     static const QPointF scale_to   = QPointF(120,30);
-    double dist = DISTANCE_FIXED_TO_FLOAT((100ul << currentZoom)); //assuming 100px width for now, this needs to stay in sync with the above
+    double dist = DISTANCE_FIXED_TO_M((100ul << currentZoom)); //assuming 100px width for now, this needs to stay in sync with the above
 
     painter.setPen(orbit);
     painter.drawLine(scale_from, scale_to);

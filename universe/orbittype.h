@@ -20,7 +20,7 @@ public:
     int64_t orbital_radius     = 0; //radius in fixed distance reference frame (this is currently only used for trajectory render culling)
     Celestial *parent      = NULL; //for now assume you can only really orbit a celestial TODO: improve?
 
-    OrbitType(Celestial *p, int64_t r);
+    OrbitType(Celestial *p, double r);
     OrbitType();
 
     void update_position(void) override;

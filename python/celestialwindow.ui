@@ -115,7 +115,7 @@
          <rect>
           <x>10</x>
           <y>50</y>
-          <width>261</width>
+          <width>171</width>
           <height>21</height>
          </rect>
         </property>
@@ -314,19 +314,6 @@
          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
         </property>
        </widget>
-       <widget class="Line" name="line">
-        <property name="geometry">
-         <rect>
-          <x>330</x>
-          <y>50</y>
-          <width>20</width>
-          <height>81</height>
-         </rect>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
        <widget class="QLabel" name="name">
         <property name="geometry">
          <rect>
@@ -396,6 +383,19 @@
          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
         </property>
        </widget>
+       <widget class="Line" name="line">
+        <property name="geometry">
+         <rect>
+          <x>330</x>
+          <y>50</y>
+          <width>20</width>
+          <height>81</height>
+         </rect>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
        <zorder>label_1</zorder>
        <zorder>label_0</zorder>
        <zorder>label_3</zorder>
@@ -406,10 +406,10 @@
        <zorder>orbital_radius</zorder>
        <zorder>orbital_period</zorder>
        <zorder>label_2</zorder>
-       <zorder>line</zorder>
        <zorder>name</zorder>
        <zorder>label_6</zorder>
        <zorder>surface_gravity</zorder>
+       <zorder>line</zorder>
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
