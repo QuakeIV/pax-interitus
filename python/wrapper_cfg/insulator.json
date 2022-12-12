@@ -1,0 +1,27 @@
+{
+    "type":"Insulator",
+    "header_override":"materials.h",
+    "attrs":
+    [
+        {
+            "name":"name",
+            "type":"QString",
+        },
+        {
+            "name":"density",
+            "type":"double",
+        },
+        {
+            "name":"specific_heat",
+            "type":"double",
+        },
+        {
+            "name":"permittivity",
+            "type":"double",
+        },
+        {
+            "name":"strength",
+            "type":"double",
+        },
+    ],
+}

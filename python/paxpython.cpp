@@ -97,6 +97,13 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
         Py_DECREF(m);
         return NULL;
     }
+    Py_INCREF(&PyInsulatorType);
+    if (PyModule_AddObject(m, "Insulator", (PyObject *)&PyInsulatorType) < 0)
+    {
+        Py_DECREF(&PyInsulatorType);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     PyObject *u = PyObject_Call((PyObject *)&PyUniverseType,PyTuple_New(0),NULL);
     if (PyModule_AddObject(m, "universe", u) < 0)

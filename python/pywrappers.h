@@ -3,6 +3,8 @@
 
 #include <Python.h>
 
+#include "pyinsulatorwrapper.h"
+
 class Celestial;
 class Spacecraft;
 
