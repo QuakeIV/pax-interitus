@@ -160,7 +160,7 @@ source.write(".tp_itemsize = 0,")
 source.write(".tp_dealloc = (destructor)type_dealloc,")
 # .tp_repr __repr__ function would live here
 source.write(".tp_flags = Py_TPFLAGS_DEFAULT,")
-source.write(f".tp_doc = PyDoc_STR(\"PaxPython {object_type} Type Wrapper\"),")
+source.write(f".tp_doc = PyDoc_STR(\"PaxPython {object_type} Type Wrapper.  Do not instantiate from python unless you like segfaults.\"),")
 source.write(".tp_richcompare = (richcmpfunc)&__eq__,")
 source.write(".tp_getset = getsets,")
 source.write(".tp_new = type_new,")

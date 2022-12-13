@@ -18,5 +18,6 @@ class Template(QMainWindow):
     
     self.ui = ui_template.Ui_Template()
     self.ui.setupUi(self)
+    self.setAttribute(Qt.WA_DeleteOnClose, True)
   #
 #
