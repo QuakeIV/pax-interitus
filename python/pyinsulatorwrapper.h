@@ -8,6 +8,7 @@ typedef struct
 {
     PyObject_HEAD
     Insulator *ref;
+    bool tracked;
 } PyInsulatorObject;
 
 extern PyTypeObject PyInsulatorType;

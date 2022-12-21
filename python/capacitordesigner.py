@@ -10,7 +10,7 @@ from build.python import ui_capacitordesigner # pyuic autogenned .py script
 
 # kill when ctrl-c is pressed (annoying when this doesnt work)
 import signal
-signal.signal(signal.SIGINT, signal.SIG_DFL) # apparently thats sig_default and it causes the 'default action' to be taken by the OS
+signal.signal(signal.SIGINT, signal.SIG_DFL) # apparently thats sig_default and it causes the 'default action' to be taken by the OS which kills the process
 
 class CapacitorDesigner(QDialog):
   def __init__(self, parent=None):

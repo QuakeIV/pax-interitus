@@ -13,10 +13,12 @@ static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 }
 static PyObject* get_min_warp(PySpacecraftObject* self, void* closure)
 {
+    // TODO: this is effectively const, we could hold this number and then incref/return it instead of constructing a new one repeatedly
     return PyLong_FromLongLong(universe_min_warp);
 }
 static PyObject* get_max_warp(PySpacecraftObject* self, void* closure)
 {
+    // TODO: this is effectively const, we could hold this number and then incref/return it instead of constructing a new one repeatedly
     return PyLong_FromLongLong(universe_max_warp);
 }
 static PyObject* get_time_warp(PySpacecraftObject* self, void* closure)

@@ -8,6 +8,9 @@
 #include <thread>
 #include <chrono>
 
+// this is supposed to prevent the UI/python interface from screwing up datastructures while the universe loop is working on them
+std::mutex universe_lock;
+
 // TODO: temporary
 Empire player_empire;
 
@@ -340,6 +343,8 @@ void universe_update(int64_t delta_t)
     if (universe_paused)
         return;
 
+    universe_lock.lock();
+
     static int64_t remainder_microseconds = 0;
 
     if (universe_time_warp < 0)
@@ -377,4 +382,6 @@ void universe_update(int64_t delta_t)
     }
 
     //TODO: ?
+
+    universe_lock.unlock();
 }

@@ -30,18 +30,28 @@ class FileWriter:
 
 def unknown_attr_check(thing):
   if thing:
-    raise KeyError(f"unrecognized keys for file ({sys.argv[1]}): {list(thing.keys())}")
+    raise KeyError(f"unrecognized keys for file ({args.i}): {list(thing.keys())}")
 #
   
 
 
 # json5 allows trailing commas
-import sys, json5, os
+import sys, json5, os, argparse
+
+parser = argparse.ArgumentParser(
+  prog = "Paxpython Type Wrapper Generator",
+  description= "Generates python objects wrapping pax interitus types.  Will instantiate the type, and then track a pointer to it.  Autogenned python wrapper will deallocate the type on destruction if it was not tracked by the game state in some way.",
+  epilog = "Bottom text lol"
+)
+parser.add_argument("-o", metavar="output directory", default=".")
+required = parser.add_argument_group('required arguments')
+required.add_argument("-i", metavar="input config json path",  required=True)
+args = parser.parse_args()
 
 # set default values, leave out non-optional values so there are errors downstream
 cfg = {}
 
-with open(sys.argv[1]) as f:
+with open(args.i) as f:
   cfg = json5.load(f)
 
 object_type = cfg.pop("type")
@@ -66,7 +76,8 @@ if "header_override" in cfg:
 # error on unrecognized keys
 unknown_attr_check(cfg)
 
-header = FileWriter("py" + os.path.splitext(os.path.basename(sys.argv[1]))[0] + "wrapper.h")
+header = FileWriter(os.path.join(args.o, f"py{object_type.lower()}wrapper.h"))
+
 header.write(f"#ifndef PYWRAPPER_{object_type.upper()}_H")
 header.write(f"#define PYWRAPPER_{object_type.upper()}_H")
 header.write()
@@ -78,6 +89,7 @@ header.write("{")
 header.indent()
 header.write("PyObject_HEAD")
 header.write(f"{object_type} *ref;")
+header.write("bool tracked;")
 header.dedent()
 header.write(f"}} Py{object_type}Object;")
 header.write()
@@ -86,7 +98,7 @@ header.write()
 header.write(f"#endif // PYWRAPPER_{object_type.upper()}_H")
 header.close()
 
-source = FileWriter("py" + os.path.splitext(os.path.basename(sys.argv[1]))[0] + "wrapper.cpp")
+source = FileWriter(os.path.join(args.o, f"py{object_type.lower()}wrapper.cpp"))
 
 source.write("#include <Python.h>")
 source.write("#include <structmember.h> // additional python context (forgot what exactly)")
@@ -96,12 +108,19 @@ source.write()
 source.write(f"static void type_dealloc(Py{object_type}Object *self)")
 source.write("{")
 source.indent()
+source.write("if (!self->tracked)")
+source.indent()
+source.write("delete self->ref;")
+source.dedent()
 source.write("Py_TYPE(self)->tp_free((PyObject *) self);")
 source.dedent()
 source.write("}")
 source.write("static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)")
 source.write("{")
 source.indent()
+source.write(f"Py{object_type}Object *object = (Py{object_type}Object *)type->tp_alloc(type, 0);")
+source.write(f"object->ref = new {object_type}();")
+source.write("object->tracked = false;")
 source.write("return type->tp_alloc(type, 0);")
 source.dedent()
 source.write("}")
@@ -111,6 +130,7 @@ for r in attrs:
   source.write(f"static PyObject* get_{name}(Py{object_type}Object *self, void *closure)")
   source.write("{")
   source.indent()
+  # TODO: types for things like 'fixedmass' and 'fixeddistance' would be the way to deal with unit system translation issues
   if   attr_type == "QString":
     source.write(f"return PyUnicode_FromString(self->ref->{name}.toStdString().c_str());")
   elif attr_type == "double":

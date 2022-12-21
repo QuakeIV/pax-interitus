@@ -3,12 +3,16 @@
 
 #include <QList>
 #include "materials.h"
+#include <mutex>
 
 class Transform;
 class Celestial;
 class SolarSystemType;
 class Spacecraft;
 class SpacecraftDesign;
+
+// this is supposed to prevent the UI/python interface from screwing up datastructures while the universe loop is working on them
+extern std::mutex universe_lock;
 
 extern int64_t universe_time; // microseconds now
 // universe time for next event (drives update scheduling)
