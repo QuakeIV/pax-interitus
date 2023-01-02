@@ -134,6 +134,11 @@ PySystemRenderer::PySystemRenderer(QWidget *parent):
 
 void PySystemRenderer::paintEvent(QPaintEvent *event)
 {
+    universe_lock.lock_shared(); // dont render until we are sure global data isnt being messed with
+    // TODO: rendering as a whole needs a lock on universe state, not each renderer instance serially, this could be decongested a lot via redesign
+    // maybe a 'readonly' lock and you just check if its set before you go
+    // this should probably stay for now though, because it seems to fix the weird drawing jitter that was seen periodically
+
     // calculate middle point so rendering is centered
     // TODO: only do this on resize? may wind up not working all that well unclear
     center = QPoint(frameGeometry().width(), frameGeometry().height()) / 2;
@@ -158,6 +163,8 @@ void PySystemRenderer::paintEvent(QPaintEvent *event)
     render_fleets();
 
     painter.end();
+
+    universe_lock.unlock_shared();
 }
 void PySystemRenderer::animate()
 {

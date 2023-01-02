@@ -37,12 +37,12 @@ class CapacitorDesigner(QDialog):
   #
   
   def update(self):
-    # TODO: globally maintained lists that are called on periodic update loop by main app
-    new_insuls = libpaxpython.test()
+    new_insuls = libpaxpython.universe.insulators
     self.ui.insulator.clear()
     for i in new_insuls:
       self.ui.insulator.addItem(f"{i.name}", i)
     if self.selected_insulator:
       self.ui.insulator.setCurrentText(self.selected_insulator.name)
     #
+  #
 #

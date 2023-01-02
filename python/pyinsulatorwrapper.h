@@ -11,6 +11,9 @@ typedef struct
     bool tracked;
 } PyInsulatorObject;
 
+// Takes pointer to object, returns python wrapper for object with ref count of 1
+PyInsulatorObject *pyobjectize_insulator(Insulator *obj);
+
 extern PyTypeObject PyInsulatorType;
 
 #endif // PYWRAPPER_INSULATOR_H

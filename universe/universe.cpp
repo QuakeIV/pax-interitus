@@ -9,7 +9,8 @@
 #include <chrono>
 
 // this is supposed to prevent the UI/python interface from screwing up datastructures while the universe loop is working on them
-std::mutex universe_lock;
+// lock_shared and unlock_shared for readonly-lock
+std::shared_mutex universe_lock;
 
 // TODO: temporary
 Empire player_empire;

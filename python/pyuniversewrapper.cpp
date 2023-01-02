@@ -50,6 +50,24 @@ static int set_paused(PySpacecraftObject* self, PyObject *value, void *closure)
     universe_paused = PyObject_IsTrue(value);
     return 0;
 }
+// TODO: for this functionality, would i think be more performant to keep a running list that can be referenced, rather than re-generating every time
+// can have a function that is called every frame or something that is just update_universe and it coherency-izes all the universe data structures in one big pass
+// maybe a callback infrastructure to track changes to the primary lists, i think we were adding stuff to lists in their constructor, so that could potentially
+// serve as a place to put a callback (if we dont drop the idea of C++ ultimately altogether)
+static PyObject* get_insulators(PySpacecraftObject* self, void* closure)
+{
+    // TODO: might not technically need this
+    universe_lock.lock_shared();
+    PyObject *insulator_list = PyList_New(0);
+    foreach (Insulator *i, insulator_materials)
+    {
+        PyInsulatorObject *insulator = pyobjectize_insulator(i);
+        PyList_Append(insulator_list, (PyObject *)insulator);
+        Py_DECREF(insulator); // decref to undo incref from the newly created object, now that list is holding onto it
+    }
+    universe_lock.unlock_shared();
+    return insulator_list;
+}
 static PyGetSetDef getsets[] = {
     {"time_warp",
      (getter)get_time_warp,
@@ -70,6 +88,11 @@ static PyGetSetDef getsets[] = {
      (getter)get_paused,
      (setter)set_paused,
      "whether universe is paused or not",  /* doc */
+     NULL /* closure */},
+    {"insulators",
+     (getter)get_insulators,
+     NULL,
+     "list of all insulators in the universe",  /* doc */
      NULL /* closure */},
     {NULL}
 };

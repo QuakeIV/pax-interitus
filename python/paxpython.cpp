@@ -25,22 +25,9 @@
 //    }
 //}
 
-// TODO: for this functionality, would i think be more performant to keep a running list that can be referenced, rather than re-generating every time
-// can have a function that is called every frame or something that is just update_universe and it coherency-izes all the universe data structures in one big pass
 static PyObject *method_test(PyObject *self, PyObject *args)
 {
-    PyObject *insulator_list = PyList_New(0);
-    foreach (Insulator *i, insulator_materials)
-    {
-        PyInsulatorObject *insulator = (PyInsulatorObject *)PyObject_Call((PyObject *)&PyInsulatorType,PyTuple_New(0),NULL);
-        insulator->ref = i;
-        PyList_Append(insulator_list, (PyObject *)insulator);
-        Py_DECREF(insulator); // decref to undo incref from the newly created object, now that list is holding onto it
-    }
-
-    return insulator_list;
-
-    //Py_RETURN_TRUE;
+    Py_RETURN_TRUE;
 }
 
 /*

@@ -9,12 +9,15 @@ static void type_dealloc(PyInsulatorObject *self)
         delete self->ref;
     Py_TYPE(self)->tp_free((PyObject *) self);
 }
+
+static bool wrapper_newup = true;
 static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     PyInsulatorObject *object = (PyInsulatorObject *)type->tp_alloc(type, 0);
-    object->ref = new Insulator();
+    if (wrapper_newup)
+        object->ref = new Insulator();
     object->tracked = false;
-    return type->tp_alloc(type, 0);
+    return (PyObject*)object;
 }
 static PyObject* get_name(PyInsulatorObject *self, void *closure)
 {
@@ -90,8 +93,19 @@ PyTypeObject PyInsulatorType = {
     .tp_itemsize = 0,
     .tp_dealloc = (destructor)type_dealloc,
     .tp_flags = Py_TPFLAGS_DEFAULT,
-    .tp_doc = PyDoc_STR("PaxPython Insulator Type Wrapper.  Do not instantiate from python unless you like segfaults."),
+    .tp_doc = PyDoc_STR("PaxPython Insulator Type Wrapper."),
     .tp_richcompare = (richcmpfunc)&__eq__,
     .tp_getset = getsets,
     .tp_new = type_new,
 };
+
+// Takes pointer to object, returns python wrapper for object with ref count of 1
+PyInsulatorObject *pyobjectize_insulator(Insulator *obj)
+{
+    wrapper_newup = false;
+    PyInsulatorObject *pyobj = (PyInsulatorObject *)PyObject_Call((PyObject *)&PyInsulatorType,PyTuple_New(0),NULL);
+    pyobj->ref = obj;
+    pyobj->tracked = true;
+    wrapper_newup = true;
+    return pyobj;
+}
