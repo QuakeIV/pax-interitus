@@ -3,14 +3,7 @@
 
 #include <Python.h>
 
-#include "pyinsulatorwrapper.h"
-
-// helper for autogenned wrapers
-// TODO: instantiate type as well here? doesnt seem possible need typing data
-#define INITIALIZE_WRAPPER(wrapper, r) \
-    if (!wrapper->tracked && wrapper->ref) \
-        delete wrapper->ref; \
-    wrapper->ref = r;
+#include "autowrappers/pyinsulatorwrapper.h"
 
 class Celestial;
 class Spacecraft;
