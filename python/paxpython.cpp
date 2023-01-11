@@ -72,6 +72,10 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
         return NULL;
     if (PyType_Ready(&PyInsulatorType) < 0)
         return NULL;
+    if (PyType_Ready(&PyCapacitorDesignType) < 0)
+        return NULL;
+    if (PyType_Ready(&PyCapacitorType) < 0)
+        return NULL;
 
     PyObject *m = PyModule_Create(&libpaxpythonmodule);
 
@@ -100,6 +104,20 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
     if (PyModule_AddObject(m, "Insulator", (PyObject *)&PyInsulatorType) < 0)
     {
         Py_DECREF(&PyInsulatorType);
+        Py_DECREF(m);
+        return NULL;
+    }
+    Py_INCREF(&PyCapacitorDesignType);
+    if (PyModule_AddObject(m, "CapacitorDesign", (PyObject *)&PyCapacitorDesignType) < 0)
+    {
+        Py_DECREF(&PyCapacitorDesignType);
+        Py_DECREF(m);
+        return NULL;
+    }
+    Py_INCREF(&PyCapacitorType);
+    if (PyModule_AddObject(m, "Capacitor", (PyObject *)&PyCapacitorType) < 0)
+    {
+        Py_DECREF(&PyCapacitorType);
         Py_DECREF(m);
         return NULL;
     }

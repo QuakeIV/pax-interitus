@@ -65,7 +65,7 @@ public:
     }
 
     // kilograms
-    // TODO: ships should use mass with perfect efficiency
+    // TODO: ships should not use mass with perfect efficiency
     // TODO: move to component parent class
     double mass(void)
     {
@@ -80,20 +80,20 @@ public:
         return (5.0 * resistance * capacitance() * TIME_FACTOR);
     }
 
+    static const bool uses_power = true;
+
     //TODO: weight, volume
 };
 
 // power storage component (stores charge for devices that require the sudden release of energy)
-class Capacitor : Component
+class Capacitor : public Component
 {
+public:
     CapacitorDesign design;
 
-public:
     Capacitor(void)
     {
     }
-
-    static const bool uses_power = true;
 
     // returns joules per second instead of joules per 'time unit'
     double get_current_wattage()

@@ -1,0 +1,29 @@
+{
+    "type":"Capacitor",
+    "header_override":"components/capacitor.h",
+    "subtypes":["CapacitorDesign",],
+    "attrs":
+    [
+        {
+            "name":"name",
+            "type":"QString",
+        },
+        {
+            "name":"design",
+            "type":"CapacitorDesign",
+        },
+    ],
+    "funcs":
+    [
+        {
+            "name":"get_current_wattage",
+            "type":"double",
+            "args":[],
+        },
+        {
+            "name":"get_stored_energy",
+            "type":"fixedenergy",
+            "args":[],
+        },
+    ],
+}

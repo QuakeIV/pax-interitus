@@ -4,6 +4,8 @@
 #include <Python.h>
 
 #include "autowrappers/pyinsulatorwrapper.h"
+#include "autowrappers/pycapacitordesignwrapper.h"
+#include "autowrappers/pycapacitorwrapper.h"
 
 class Celestial;
 class Spacecraft;

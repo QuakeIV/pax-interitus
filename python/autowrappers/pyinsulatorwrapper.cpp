@@ -1,5 +1,6 @@
 #include <Python.h>
 #include <structmember.h> // additional python context (forgot what exactly)
+#include "units.h" // conversion factors and so on
 #include "pyinsulatorwrapper.h"
 #include "materials.h"
 
@@ -7,7 +8,7 @@ static void type_dealloc(PyInsulatorObject *self)
 {
     if (!self->tracked)
         delete self->ref;
-    Py_TYPE(self)->tp_free((PyObject *) self);
+    Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
 static bool wrapper_newup = true;
@@ -19,26 +20,135 @@ static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     object->tracked = false;
     return (PyObject*)object;
 }
+
+// attribute functions
 static PyObject* get_name(PyInsulatorObject *self, void *closure)
 {
     return PyUnicode_FromString(self->ref->name.toStdString().c_str());
+}
+static int set_name(PyInsulatorObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    PyErr_SetString(PyExc_NotImplementedError, "Setter for QString type not implemented.");
+    return -1;
+    return 0;
 }
 static PyObject* get_density(PyInsulatorObject *self, void *closure)
 {
     return PyFloat_FromDouble(self->ref->density);
 }
+static int set_density(PyInsulatorObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    double v = PyFloat_AsDouble(value);
+    PyObject *exception = PyErr_Occurred();
+    if (exception)
+        return -1;
+    self->ref->density = v;
+    return 0;
+}
 static PyObject* get_specific_heat(PyInsulatorObject *self, void *closure)
 {
     return PyFloat_FromDouble(self->ref->specific_heat);
+}
+static int set_specific_heat(PyInsulatorObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    double v = PyFloat_AsDouble(value);
+    PyObject *exception = PyErr_Occurred();
+    if (exception)
+        return -1;
+    self->ref->specific_heat = v;
+    return 0;
 }
 static PyObject* get_permittivity(PyInsulatorObject *self, void *closure)
 {
     return PyFloat_FromDouble(self->ref->permittivity);
 }
+static int set_permittivity(PyInsulatorObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    double v = PyFloat_AsDouble(value);
+    PyObject *exception = PyErr_Occurred();
+    if (exception)
+        return -1;
+    self->ref->permittivity = v;
+    return 0;
+}
 static PyObject* get_strength(PyInsulatorObject *self, void *closure)
 {
     return PyFloat_FromDouble(self->ref->strength);
 }
+static int set_strength(PyInsulatorObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    double v = PyFloat_AsDouble(value);
+    PyObject *exception = PyErr_Occurred();
+    if (exception)
+        return -1;
+    self->ref->strength = v;
+    return 0;
+}
+static PyGetSetDef getsets[] = {
+    {
+    "name",
+    (getter)get_name,
+    (setter)set_name,
+    NULL, // documentation string
+    NULL, // closure
+    },
+    {
+    "density",
+    (getter)get_density,
+    (setter)set_density,
+    NULL, // documentation string
+    NULL, // closure
+    },
+    {
+    "specific_heat",
+    (getter)get_specific_heat,
+    (setter)set_specific_heat,
+    NULL, // documentation string
+    NULL, // closure
+    },
+    {
+    "permittivity",
+    (getter)get_permittivity,
+    (setter)set_permittivity,
+    NULL, // documentation string
+    NULL, // closure
+    },
+    {
+    "strength",
+    (getter)get_strength,
+    (setter)set_strength,
+    NULL, // documentation string
+    NULL, // closure
+    },
+};
+
+// wrapped function calls
+
 static PyObject* __eq__(PyInsulatorObject *self, PyObject *other, int op)
 {
     if (!PyObject_IsInstance(other, (PyObject *)&PyInsulatorType))
@@ -49,43 +159,6 @@ static PyObject* __eq__(PyInsulatorObject *self, PyObject *other, int op)
     Py_RETURN_FALSE;
 }
 
-static PyGetSetDef getsets[] = {
-    {
-    "name",
-    (getter)get_name,
-    NULL, // setter
-    NULL, // documentation string
-    NULL, // closure
-    },
-    {
-    "density",
-    (getter)get_density,
-    NULL, // setter
-    NULL, // documentation string
-    NULL, // closure
-    },
-    {
-    "specific_heat",
-    (getter)get_specific_heat,
-    NULL, // setter
-    NULL, // documentation string
-    NULL, // closure
-    },
-    {
-    "permittivity",
-    (getter)get_permittivity,
-    NULL, // setter
-    NULL, // documentation string
-    NULL, // closure
-    },
-    {
-    "strength",
-    (getter)get_strength,
-    NULL, // setter
-    NULL, // documentation string
-    NULL, // closure
-    },
-};
 PyTypeObject PyInsulatorType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "paxpython.Insulator",

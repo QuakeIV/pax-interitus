@@ -39,7 +39,7 @@ static PyObject* mytype_get_mass(PyCelestialObject* self, void* closure)
     if (!self->ref)
         PyErr_SetString(PyExc_ValueError, "ref not initialized, error in construction of celestial type wrapper");
 
-    return PyFloat_FromDouble(CELESTIALMASS_TO_GRAMS(self->ref->mass));
+    return PyFloat_FromDouble(CELESTIALMASS_TO_KG(self->ref->mass));
 }
 static PyObject* mytype_get_radius(PyCelestialObject* self, void* closure)
 {
