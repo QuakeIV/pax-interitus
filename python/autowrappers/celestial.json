@@ -1,0 +1,37 @@
+{
+    "type":"Celestial",
+    "disable_instantiation":true,
+    "subtypes":["OrbitType",],
+    "attrs":
+    [
+        {
+            "name":"name",
+            "type":"QString",
+        },
+        {
+            "name":"parent",
+            "type":"Celestial*",
+        },
+        {
+            "name":"trajectory",
+            "type":"OrbitType",
+        },
+        {
+            "name":"mass",
+            "type":"celestialmass",
+        },
+        {
+            "name":"radius",
+            "type":"fixeddistance",
+        },
+        {
+            "name":"surface_gravity",
+            "type":"double",
+        },
+        {
+            "name":"children",
+            "type":"QList",
+            "template_type":"Celestial",
+        },
+    ],
+}

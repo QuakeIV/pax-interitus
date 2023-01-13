@@ -6,17 +6,11 @@
 #include "autowrappers/pyinsulatorwrapper.h"
 #include "autowrappers/pycapacitordesignwrapper.h"
 #include "autowrappers/pycapacitorwrapper.h"
+#include "autowrappers/pycelestialwrapper.h"
+#include "autowrappers/pyorbittypewrapper.h"
+#include "autowrappers/pyfixedv2dwrapper.h"
 
-class Celestial;
 class Spacecraft;
-
-// planets
-typedef struct
-{
-    PyObject_HEAD
-    Celestial *ref;
-} PyCelestialObject;
-extern PyTypeObject PyCelestialType;
 
 // spacecraft
 typedef struct

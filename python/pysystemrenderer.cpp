@@ -387,8 +387,7 @@ void PySystemRenderer::rightClick(QPoint location)
         // TODO: configurable click radius margins?
         if (d < 10 || d < (c->radius >> currentZoom)) // right click margins are more generous
         {
-            PyCelestialObject *new_cel = (PyCelestialObject *)PyObject_Call((PyObject *)&PyCelestialType,PyTuple_New(0),NULL);
-            new_cel->ref = c;
+            PyCelestialObject *new_cel = pyobjectize_celestial(c);
             PyList_Append(celestial_list, (PyObject *)new_cel);
             Py_DECREF(new_cel); // decref to undo incref from the newly created object, now that list is holding onto it
         }

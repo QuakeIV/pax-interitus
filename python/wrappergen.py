@@ -60,6 +60,9 @@ object_type = cfg.pop("type")
 # this drives header includes and type validation
 subtypes = cfg.pop("subtypes") if "subtypes" in cfg else []
 
+# this means the type cannot be instantiated from python
+instantiation_disabled = cfg.pop("disable_instantiation") if "disable_instantiation" in cfg else False
+
 attrs = []
 if "attrs" in cfg:
   for r in cfg.pop("attrs"):
@@ -68,9 +71,12 @@ if "attrs" in cfg:
     t = r.pop("type")
     t = t.split("*")
     v["type"] = t[0].strip()
+    v["template_type"] = r.pop("template_type") if "template_type" in r else None
     v["ptr"] = len(t) > 1 # if there is a * assume its a pointer
-    if v["type"] not in ["QString", "bool", "double"] + subtypes:
+    if v["type"] not in ["QString", "QList", "bool", "double", "celestialmass", "fixeddistance", "fixedtime"] + subtypes + [object_type]:
       raise TypeError(f"Unrecognized type: {t}")
+    if v["type"] == "QList" and v["template_type"] not in [] + subtypes + [object_type]:
+      raise TypeError(f"Template type {v['template_type']} not handled for QList")  
     unknown_attr_check(r)
     attrs.append(v)
   #
@@ -157,13 +163,24 @@ source.write("static bool wrapper_newup = true;")
 source.write("static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)")
 source.write("{")
 source.indent()
-source.write(f"Py{object_type}Object *object = (Py{object_type}Object *)type->tp_alloc(type, 0);")
-source.write("if (wrapper_newup)")
-source.indent()
-source.write(f"object->ref = new {object_type}();")
-source.dedent()
-source.write("object->tracked = false;")
-source.write("return (PyObject*)object;")
+if instantiation_disabled:
+  source.write("if (wrapper_newup)")
+  source.write("{")
+  source.indent()
+  source.write(f"PyErr_SetString(PyExc_TypeError, \"paxpython.{object_type} cannot be instantiated from python.\");")
+  source.write(f"return NULL;")
+  source.dedent()
+  source.write("}")
+  source.write(f"Py{object_type}Object *object = (Py{object_type}Object *)type->tp_alloc(type, 0);")
+  source.write("return (PyObject*)object;")
+else:
+  source.write(f"Py{object_type}Object *object = (Py{object_type}Object *)type->tp_alloc(type, 0);")
+  source.write("if (wrapper_newup)")
+  source.indent()
+  source.write(f"object->ref = new {object_type}();")
+  source.dedent()
+  source.write("object->tracked = false;")
+  source.write("return (PyObject*)object;")
 source.dedent()
 source.write("}")
 source.write()
@@ -184,7 +201,7 @@ for r in attrs:
     source.write(f"return PyFloat_FromDouble(self->ref->{name});")
   elif attr_type == "bool":
     source.write(f"return PyBool_FromLong(self->ref->{name});")
-  elif attr_type in subtypes:
+  elif attr_type in subtypes + [object_type]:
     if r["ptr"]:
       source.write(f"if (!self->ref->{name})")
       source.indent()
@@ -193,6 +210,25 @@ for r in attrs:
       source.write(f"return (PyObject*)pyobjectize_{attr_type.lower()}(self->ref->{name});")
     else:
       source.write(f"return (PyObject*)pyobjectize_{attr_type.lower()}(&self->ref->{name});")
+  elif attr_type == "fixeddistance":
+    source.write(f"return PyFloat_FromDouble(DISTANCE_FIXED_TO_M(self->ref->{name}));")
+  elif attr_type == "fixedtime":
+    source.write(f"return PyFloat_FromDouble(TIME_FIXED_TO_S(self->ref->{name}));")
+  elif attr_type == "celestialmass":
+    source.write(f"return PyFloat_FromDouble(CELESTIALMASS_TO_KG(self->ref->{name}));")
+  elif attr_type == "QList":
+    # TODO: cache this list somehow instead of re-genning on every access? unclear how...
+    template_type = r["template_type"]
+    source.write(f"PyObject *{name}_pylist = PyList_New(0);")
+    source.write(f"foreach ({template_type} *element, self->ref->{name})")
+    source.write("{")
+    source.indent()
+    source.write(f"Py{template_type}Object *py_element = pyobjectize_{template_type.lower()}(element);")
+    source.write(f"PyList_Append({name}_pylist, (PyObject *)py_element);")
+    source.write(f"Py_DECREF(py_element);")
+    source.dedent()
+    source.write("}")
+    source.write(f"return {name}_pylist;")
   else:
     raise TypeError(f"Unrecognized type: {attr_type}")
   #
@@ -224,7 +260,7 @@ for r in attrs:
   elif attr_type == "bool":
     source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for bool type not implemented.\");")
     source.write("return -1;")
-  elif attr_type in subtypes:
+  elif attr_type in subtypes + [object_type]:
     source.write(f"if (!PyObject_IsInstance(value, (PyObject *)&Py{attr_type}Type))")
     source.write("{")
     source.indent()
@@ -237,6 +273,23 @@ for r in attrs:
       source.write(f"self->ref->{name} = v->ref;")
     else:
       source.write(f"self->ref->{name} = *v->ref;")
+  elif attr_type == "fixeddistance":
+    source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for bool type not implemented.\");")
+    source.write("return -1;")
+  elif attr_type == "fixedtime":
+    source.write(f"double v = PyFloat_AsDouble(value);")
+    source.write(f"PyObject *exception = PyErr_Occurred();")
+    source.write("if (exception)")
+    source.indent()
+    source.write(f"return -1;")
+    source.dedent()
+    source.write(f"self->ref->{name} = SECONDS_TO_TIME(v);")
+  elif attr_type == "celestialmass":
+    source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for bool type not implemented.\");")
+    source.write("return -1;")
+  elif attr_type == "QList": #TODO: this may never be settable, in fact
+    source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for bool type not implemented.\");")
+    source.write("return -1;")
   else:
     raise TypeError(f"Unrecognized type: {attr_type}")
   #
@@ -256,6 +309,7 @@ if attrs:
     source.write("NULL, // documentation string")
     source.write("NULL, // closure")
     source.write("},")
+  source.write("{NULL},")
   source.dedent()
   source.write("};")
 source.write()

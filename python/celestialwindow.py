@@ -38,9 +38,8 @@ class CelestialWindow(QMainWindow):
   def update(self):
     self.ui.mass.setText(units.mass_str(self.cel.mass))
     self.ui.physical_radius.setText(units.distance_str(self.cel.radius))
-    self.ui.orbital_period.setText(self.cel.orbital_period)
-    self.ui.orbital_radius.setText(units.distance_str(self.cel.orbital_radius))
+    self.ui.orbital_period.setText(units.time_str(self.cel.trajectory.orbital_period))
+    self.ui.orbital_radius.setText(units.distance_str(self.cel.trajectory.orbital_radius))
     self.ui.surface_gravity.setText(f"{self.cel.surface_gravity:.2f} m/s²")
-    #self.ui.mass.setText(f"{Float(self.cel.mass):.2h}g")
   #
 #

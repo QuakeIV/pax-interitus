@@ -194,6 +194,7 @@ static PyGetSetDef getsets[] = {
     NULL, // documentation string
     NULL, // closure
     },
+    {NULL},
 };
 
 // wrapped function calls

@@ -15,10 +15,10 @@ class OrbitType : public Transform
     FixedV2D get_position_at_time(int64_t time);
 
 public:
-    int64_t orbital_period     = 0; //in microseconds
-    int64_t orbit_clock_offset = 0; //initial position, in microseconds
-    int64_t orbital_radius     = 0; //radius in fixed distance reference frame (this is currently only used for trajectory render culling)
-    Celestial *parent      = NULL; //for now assume you can only really orbit a celestial TODO: improve?
+    int64_t orbital_period     = 0; //in fixed time
+    int64_t orbit_clock_offset = 0; //in fixed time
+    int64_t orbital_radius     = 0; //in fixed distance (this is currently only used for trajectory render culling)
+    Celestial *parent          = NULL; //for now assume you can only really orbit a celestial TODO: improve?
 
     OrbitType(Celestial *p, double r);
     OrbitType();

@@ -1,0 +1,14 @@
+{
+    "type":"FixedV2D",
+    "attrs":
+    [
+        {
+            "name":"x",
+            "type":"fixeddistance",
+        },
+        {
+            "name":"y",
+            "type":"fixeddistance",
+        },
+    ],
+}

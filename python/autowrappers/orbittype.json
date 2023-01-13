@@ -1,0 +1,24 @@
+{
+    "type":"OrbitType",
+    "disable_instantiation":true,
+    "subtypes":["Celestial","FixedV2D",],
+    "attrs":
+    [
+        {
+            "name":"orbital_radius",
+            "type":"fixeddistance",
+        },
+        {
+            "name":"orbital_period",
+            "type":"fixedtime",
+        },
+        {
+            "name":"parent",
+            "type":"Celestial*",
+        },
+        {
+            "name":"position",
+            "type":"FixedV2D",
+        },
+    ],
+}

@@ -76,6 +76,10 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
         return NULL;
     if (PyType_Ready(&PyCapacitorType) < 0)
         return NULL;
+    if (PyType_Ready(&PyOrbitTypeType) < 0)
+        return NULL;
+    if (PyType_Ready(&PyFixedV2DType) < 0)
+        return NULL;
 
     PyObject *m = PyModule_Create(&libpaxpythonmodule);
 
@@ -118,6 +122,28 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
     if (PyModule_AddObject(m, "Capacitor", (PyObject *)&PyCapacitorType) < 0)
     {
         Py_DECREF(&PyCapacitorType);
+        Py_DECREF(m);
+        return NULL;
+    }
+    Py_INCREF(&PyCelestialType);
+    if (PyModule_AddObject(m, "Celestial", (PyObject *)&PyCelestialType) < 0)
+    {
+        Py_DECREF(&PyCelestialType);
+        Py_DECREF(m);
+        return NULL;
+    }
+    // TODO: rename this crap to just Orbit
+    Py_INCREF(&PyOrbitTypeType);
+    if (PyModule_AddObject(m, "OrbitType", (PyObject *)&PyOrbitTypeType) < 0)
+    {
+        Py_DECREF(&PyOrbitTypeType);
+        Py_DECREF(m);
+        return NULL;
+    }
+    Py_INCREF(&PyFixedV2DType);
+    if (PyModule_AddObject(m, "FixedV2D", (PyObject *)&PyFixedV2DType) < 0)
+    {
+        Py_DECREF(&PyFixedV2DType);
         Py_DECREF(m);
         return NULL;
     }
