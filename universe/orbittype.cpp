@@ -50,7 +50,8 @@ FixedV2D OrbitType::get_position_at_time(int64_t time)
         //(i think the ideal case is to remember when our current orbit started and then subtract)
         int64_t orbit_clock = (universe_time + orbit_clock_offset) % orbital_period;
         int index  = (int)(orbit_clock/racetrack_delta_time);
-        int next   = (index + 1) % racetrack_points; //wraps back around to 0 if we are about to overflow (avoid modulo here as well)
+        // mask handles wraparound, this is why racetrack points must be powers of 2
+        int next   = (index + 1) & racetrack_mask;
         FixedV2D d = rel_racetrack[next] - rel_racetrack[index];
 
         d.x = muldiv(d.x, orbit_clock%racetrack_delta_time, racetrack_delta_time);

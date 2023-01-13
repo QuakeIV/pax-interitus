@@ -26,7 +26,10 @@ public:
     void update_position(void) override;
     FixedV2D project_position(int64_t delta_time);
 
-    static const int racetrack_points = 128; //128 seems to be a good number of points for now
+    //256 seems to be a good number of points for now
+    // NOTE: must be a power of 2
+    static const int racetrack_points = 256;
+    static const int racetrack_mask = racetrack_points - 1;
     FixedV2D rel_racetrack[racetrack_points];
 
 private:
