@@ -209,7 +209,7 @@ QTabBar::tab:!selected {
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>icons/Technology.png</normaloff>icons/Technology.png</iconset>
+           <normaloff>icons/old/Technology.png</normaloff>icons/old/Technology.png</iconset>
          </property>
          <property name="iconSize">
           <size>

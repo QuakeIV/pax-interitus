@@ -1,4 +1,0 @@
-The following icons were obtained from https://github.com/simast/SolarisTheme, released under the MIT license.  As the MIT license is fully permissive of relicensing, they have been relicenced here under the parent license at the root of this repo (Affero GPL V3).
-Research.png, ZoomOut.png, GroundForces.png, Industry.png, System.png, Class.png, Comparison.png, Technology.png, Sector.png, SavePositions.png, Project.png, Wealth.png, Fleet.png, Turrent.png, Survey.png, Left.png, SpaceMasterOff.png, Colony.png, Events.png, Refresh.png, Race.png, Intelligence.png, Commanders.png, AutoTurnsOn.png, Save.png, Undo.png, Medals.png, Mining.png, Up.png, AutoTurnsOff.png, ZoomIn.png, Game.png, SpaceMasterOn.png, Galactic.png, MissileDesign.png, Grid.png, Right.png, Down.png
-
-

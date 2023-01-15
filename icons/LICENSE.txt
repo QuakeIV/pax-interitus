@@ -1,0 +1,192 @@
+Currently all icons in this directory were obtained from game-icons.net under a creative commons 3.0 license (https://creativecommons.org/licenses/by/3.0/).  Copyright for all files is held by their creators.  Use of these assets does not in any way imply endorsement by the creators.  No changes were made, however options provided on the website to customize the coloration, transparency, and orientation, and scaling were used prior to acquiring the images.  The real names were not provided with this content, so the aliases provided with the content will be used in order to document attributability.  URLs provided with aliases are also included parenthesized.
+
+Attributability is described below:
+
+Created by Delapouite (https://delapouite.com/):
+coins.png - Title: Coins icon
+money-stack.png - Title: Money stack icon
+vibrating-shield.png - Title: Vibrating shield icon
+mesh-network.png - Title: Mesh network icon
+slalom.png - Title: Slalom icon
+info.png - Title: Info icon
+planet-core.png - Title: Planet core icon
+exploding-planet.png - Title: Exploding planet icon
+solar-system.png - Title: Solar system icon
+family-tree.png - Title: Family tree icon
+diploma.png - Title: Diploma icon
+sergeant.png - Title: Sergeant icon
+calendar.png - Title: Calendar icon
+open-folder.png - Title: Open folder icon
+palette.png - Title: Palette icon
+paper-clip.png - Title: Paper clip icon
+pencil-ruler.png - Title: Pencil ruler icon
+crosshair.png - Title: Crosshair icon
+heavy-bullets.png - Title: Heavy bullets icon
+cellar-barrels.png - Title: Cellar barrles icon
+bulldozer.png - Title: Bulldozer icon
+jet-fighter.png - Title: Jet fighter icon
+foundry-bucket.png - Title: Foundry bucket icon
+offshore-platform.png - Title: Offshore plantform icon
+gas-pump.png - Title: Gas pump icon
+satellite-communication.png - Title: Satellite communication icon
+stockpiles.png - Title: Stockpiles icon
+plug.png - Title: Plug icon
+electrical-resistance.png - Title: Electrical resistance icon
+save.png - Title: Save icon
+mine-truck.png - Title: Mine truck icon
+cargo-crate.png - Title: Cargo crate icon
+stealth-bomber.png - Title: Stealth bomber icon
+forklift.png - Title: Forklift icon
+telescope.png - Title: Telescope icon
+crowbar.png - Title: Crowbar icon
+steak.png - Title: Steak icon
+wine-bottle.png - Title: Wine bottle icon
+hamburger.png - Title: Hamburger icon
+grain.png - Title: Grain icon
+sherlock-holmes.png - Title: Sherlock Holmes icon
+spy.png - Title: Spy icon
+astronaut-helmet.png - Title: Astronaut helmet icon
+congress.png - Title: Congress icon
+barrel-leak.png - Title: Barrel leak icon
+water-gallon.png - Title: Water gallon icon
+lab-coat.png - Title: Lab coat icon
+ancient-ruins.png - Title: Ancient ruins icon
+barracks.png - Title: Barracks icon
+factory.png - Title: Factory icon
+nuclear-plant.png - Title: Nuclear plant icon
+oil-pump.png - Title: Oil pump icon
+refinery.png - Title: Refinery icon
+cable-stayed-bridge.png - Title: Cable stayed bridge icon
+suspension-bridge.png - Title: Suspension bridge icon
+uprising.png - Title: Uprising icon
+crucifix.png - Title: Crucifix icon
+clockwise-rotation.png - Title: Clockwise rotation icon
+fast-forward-button.png - Title: Fast forward button icon
+fast-backwards-button.png - Title: Fast backward button icon
+expand.png - Title: Expand icon
+contract.png - Title: Contract icon
+hamburger-menu.png - Title: Hamburger menu icon
+load.png - Title: Load icon
+next-button.png - Title: Next button icon
+previous-button.png - Title: Previous button icon
+path-distance.png - Title: Path distance icon
+pie-chart.png - Title: Pie chart icon
+rss.png - Title: RSS icon
+save-arrow.png - Title: Save arrow icon
+settings-knobs.png - Title: Settings knobs icon
+shopping-cart.png - Title: Shopping cart icon
+arrow-down.png - Title: Plain arrow icon
+arrow-left.png - Title: Plain arrow icon
+arrow-up.png - Title: Plain arrow icon
+arrow-right.png - Title: Plain arrow icon
+star-medal.png - Title: Star medal icon
+wanted-reward.png - Title: Wanted reward icon
+
+Created by sbed (https://opengameart.org/content/95-game-icons):
+shield.png - Title: Shield icon
+battery-pack.png - Title: Battery pack icon
+falling.png - Title: Falling icon
+cancel.png - Title: Cancel icon
+
+Created by Lorc (https://lorcblog.blogspot.com/):
+bubble-field.png - Title: Bubble field icon
+energy-shield.png - Title: Energy shield icon
+rosa-shield.png - Title: Rosa shield icon
+shield-echoes.png - Title: Shield echoes icon
+shieldcomb.png - Title: Shieldcomb icon
+edged-shield.png - Title: Edged Shield icon
+bordered-shield.png - Title: Bordered shield icon
+cash.png - Title: Cash icon
+metal-bar.png - Title: Metal bar icon
+eclipse.png - Title: Eclipse icon
+ringed-plant.png - Title: Ringled planet icon
+orbital.png - Title: Oribtal icon
+rocket.png - Title: Rocket icon
+rocket-flight.png - Title: Rocket flight icon
+medal.png - Title: Medal icon
+cannon-ball.png - Title: Cannon ball icon
+missile-pod.png - Title: Missile pod icon
+bright-explosion.png - Title: Bright explosion icon
+implosion.png - Title: Implosion icon
+bombing-run.png - Title: Bombing run icon
+grapes.png - Title: Grapes icon
+wheat.png - Title: Wheat icon
+afterburn-icon.png - Title: Afterburn icon
+riot-shield.png - Title: Riot shield icon
+auto-repair.png - Title: Auto repair icon
+circuitry.png - Title: Circuitry icon
+cog.png - Title: Cog icon
+radar-sweep.png - Title: Radar sweep icon
+radar-dish.png - Title: Radar dish icon
+processor.png - Title: Processor icon
+spoutnik.png - Title: Spoutnik icon
+batteries.png - Title: Batteries icon
+gear-hammer.png - Title: Gear hammer icon
+dig-dug.png - Title: Dig dug icon
+scales.png - Title: Scales icon
+mining.png - Title: Mining icon
+drink-me.png - Title: Drink me icon
+cheese-wedge.png - Title: Cheese wedge icon
+ice-cube.png - Title: Ice cube icon
+martini.png - Title: Martini icon
+mine-explosion.png - Title: Mine explosion icon
+capitol.png - Title: Capitol icon
+law-star.png - Title: Law star icon
+radioactive.png - Title: Radioactive icon
+biohazard.png - Title: Biohazard icon
+erlenmeyer.png - Title: Erlenmeyer icon
+pill.png - Title: Pill icon
+dna1.png - Title: DNA 1 icon
+magnifying-glass.png - Title: Magnifying glass icon
+
+Created by Faithtoken (http://www.faithtoken.com/):
+ore.png - Title: Ore icon
+minerals.png - Title: Minerals icon
+
+Created by Skoll (https://game-icons.net/):
+ak47u.png - Title: AK47u icon
+spiked-ball.png - Title: Spiked ball icon
+colt-m1911.png - Title: Colt M1911 icon
+fn-fal.png - Title: FN FAL icon
+nuclear-bomb.png - Title: Nuclear bomb icon
+pig.png - Title: Pig icon
+tank-tread.png - Title: Tank tread icon
+oil-drum.png - Title: Oil drum icon
+ham-shank.png - Title: Ham shank icon
+atom.png - Title: Atom icon
+
+Created by Quoting (https://game-icons.net/):
+field-gun.png - Title: Field gun icon
+artillery-shell.png - Title: Artillery shell icon
+
+Created by Pierre Leducq (https://game-icons.net/):
+anti-aircraft-gun.png - Title: Anti aircraft gun icon
+
+Created by DarkZaitzev (https://www.deviantart.com/darkzaitzev):
+fried-fish.png - Title: Fried fish icon
+
+Created by Caro Asercion (https://game-icons.net/):
+round-potion.png - Title: Round potion icon
+soda-bottle.png - Title: Soda bottle icon
+test-tube-rack.png - Title: Test tube rack icon
+test-tube-held.png - Title: Test tube held icon
+
+Created by PriorBlue (https://game-icons.net/):
+battery-0.png - Title: Empty battery icon
+battery-25.png - Title: Battery 25% icon
+battery-50.png - Title: Half battery icon
+battery-75.png - Title: Battery 75% icon
+battery-100.png - Title: Full battery icon
+
+Created by Kier Heyl (https://game-icons.net/):
+dwarf-helmet.png - Title: Dwarf helmet icon
+
+Created by Carl Olsen (https://twitter.com/unstoppableCarl):
+spider-face.png - Title: Spider face icon
+
+Created by Lord Berandas (https://www.deviantart.com/berandas):
+power-button.png - Title: Power button icon
+
+Created by Guard13007 (https://www.guard13007.com/):
+play-button.png - Title: Play button icon
+pause-button.png - Title: Pause button icon
