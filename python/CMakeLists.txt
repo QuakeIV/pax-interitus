@@ -23,12 +23,12 @@ foreach(WRAPPER_CFG ${PYWRAPPER_TARGETS})
     #message("py${STRIP}wrapper.cpp")
     #message("py${STRIP}wrapper.h")
     add_custom_command(
-        OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/autowrappers/py${STRIP}wrapper.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/autowrappers/py${STRIP}wrapper.h"
+        OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/autowrappers/${STRIP}wrapper.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/autowrappers/${STRIP}wrapper.h"
         COMMAND python3 "${CMAKE_CURRENT_SOURCE_DIR}/wrappergen.py" -o "${CMAKE_CURRENT_SOURCE_DIR}/autowrappers" -i ${WRAPPER_CFG}
         DEPENDS "${WRAPPER_CFG}" "${CMAKE_CURRENT_SOURCE_DIR}/wrappergen.py"
     )
-    list(APPEND PYWRAPPER_SOURCES "autowrappers/py${STRIP}wrapper.cpp")
-    list(APPEND PYWRAPPER_SOURCES "autowrappers/py${STRIP}wrapper.h")
+    list(APPEND PYWRAPPER_SOURCES "autowrappers/${STRIP}wrapper.cpp")
+    list(APPEND PYWRAPPER_SOURCES "autowrappers/${STRIP}wrapper.h")
 endforeach()
 
 add_library(paxpython SHARED ${PYWRAPPER_SOURCES})

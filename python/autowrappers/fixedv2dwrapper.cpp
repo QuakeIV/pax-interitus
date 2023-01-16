@@ -1,7 +1,7 @@
 #include <Python.h>
 #include <structmember.h> // additional python context (forgot what exactly)
 #include "units.h" // conversion factors and so on
-#include "pyfixedv2dwrapper.h"
+#include "fixedv2dwrapper.h"
 #include "fixedv2d.h"
 
 static void type_dealloc(PyFixedV2DObject *self)

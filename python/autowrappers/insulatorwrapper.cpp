@@ -1,7 +1,7 @@
 #include <Python.h>
 #include <structmember.h> // additional python context (forgot what exactly)
 #include "units.h" // conversion factors and so on
-#include "pyinsulatorwrapper.h"
+#include "insulatorwrapper.h"
 #include "materials.h"
 
 static void type_dealloc(PyInsulatorObject *self)

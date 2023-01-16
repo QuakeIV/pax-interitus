@@ -1,9 +1,9 @@
 #include <Python.h>
 #include <structmember.h> // additional python context (forgot what exactly)
 #include "units.h" // conversion factors and so on
-#include "pyorbittypewrapper.h"
-#include "pycelestialwrapper.h"
-#include "pyfixedv2dwrapper.h"
+#include "orbittypewrapper.h"
+#include "celestialwrapper.h"
+#include "fixedv2dwrapper.h"
 #include "orbittype.h"
 
 static void type_dealloc(PyOrbitTypeObject *self)

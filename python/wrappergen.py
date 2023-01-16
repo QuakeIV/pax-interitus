@@ -113,7 +113,7 @@ unknown_attr_check(cfg)
 
 # start file writing
 
-header = FileWriter(os.path.join(args.o, f"py{object_type.lower()}wrapper.h"))
+header = FileWriter(os.path.join(args.o, f"{object_type.lower()}wrapper.h"))
 
 header.write(f"#ifndef PYWRAPPER_{object_type.upper()}_H")
 header.write(f"#define PYWRAPPER_{object_type.upper()}_H")
@@ -138,14 +138,14 @@ header.write()
 header.write(f"#endif // PYWRAPPER_{object_type.upper()}_H")
 header.close()
 
-source = FileWriter(os.path.join(args.o, f"py{object_type.lower()}wrapper.cpp"))
+source = FileWriter(os.path.join(args.o, f"{object_type.lower()}wrapper.cpp"))
 
 source.write("#include <Python.h>")
 source.write("#include <structmember.h> // additional python context (forgot what exactly)")
 source.write("#include \"units.h\" // conversion factors and so on")
-source.write(f"#include \"py{object_type.lower()}wrapper.h\"")
+source.write(f"#include \"{object_type.lower()}wrapper.h\"")
 for s in subtypes:
-  source.write(f"#include \"py{s.lower()}wrapper.h\"")
+  source.write(f"#include \"{s.lower()}wrapper.h\"")
 source.write(f"#include \"{type_header}\"")
 source.write()
 source.write(f"static void type_dealloc(Py{object_type}Object *self)")

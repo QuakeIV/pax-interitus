@@ -1,8 +1,8 @@
 #include <Python.h>
 #include <structmember.h> // additional python context (forgot what exactly)
 #include "units.h" // conversion factors and so on
-#include "pycelestialwrapper.h"
-#include "pyorbittypewrapper.h"
+#include "celestialwrapper.h"
+#include "orbittypewrapper.h"
 #include "celestial.h"
 
 static void type_dealloc(PyCelestialObject *self)

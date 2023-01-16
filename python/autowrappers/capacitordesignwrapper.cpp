@@ -1,8 +1,8 @@
 #include <Python.h>
 #include <structmember.h> // additional python context (forgot what exactly)
 #include "units.h" // conversion factors and so on
-#include "pycapacitordesignwrapper.h"
-#include "pyinsulatorwrapper.h"
+#include "capacitordesignwrapper.h"
+#include "insulatorwrapper.h"
 #include "components/capacitor.h"
 
 static void type_dealloc(PyCapacitorDesignObject *self)
