@@ -7,24 +7,6 @@
 #include <QLayout>
 #include <QMainWindow>
 
-// handy snippet for later
-//extern "C"
-//{
-//    PyObject* foo(const char* FILE_NAME)
-//    {
-//        string line;
-//        ifstream myfile(FILE_NAME);
-//        PyObject* result = PyList_New(0);
-//
-//        while (getline(myfile, line))
-//        {
-//            PyList_Append(result, PyLong_FromLong(1));
-//        }
-//
-//        return result;
-//    }
-//}
-
 static PyObject *method_test(PyObject *self, PyObject *args)
 {
     Py_RETURN_TRUE;
@@ -79,6 +61,10 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
     if (PyType_Ready(&PyOrbitTypeType) < 0)
         return NULL;
     if (PyType_Ready(&PyFixedV2DType) < 0)
+        return NULL;
+    if (PyType_Ready(&PySpacecraftDesignType) < 0)
+        return NULL;
+    if (PyType_Ready(&PyQListType) < 0)
         return NULL;
 
     PyObject *m = PyModule_Create(&libpaxpythonmodule);
@@ -144,6 +130,13 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
     if (PyModule_AddObject(m, "FixedV2D", (PyObject *)&PyFixedV2DType) < 0)
     {
         Py_DECREF(&PyFixedV2DType);
+        Py_DECREF(m);
+        return NULL;
+    }
+    Py_INCREF(&PySpacecraftDesignType);
+    if (PyModule_AddObject(m, "SpacecraftDesign", (PyObject *)&PySpacecraftDesignType) < 0)
+    {
+        Py_DECREF(&PySpacecraftDesignType);
         Py_DECREF(m);
         return NULL;
     }

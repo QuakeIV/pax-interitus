@@ -1,0 +1,34 @@
+{
+    "type":"SpacecraftDesign",
+    "header_override":"spacecraft/spacecraft.h",
+//    "subtypes":["EngineDesign","ReactorDesign","DirectedweaponDesign","JumpdriveDesign","CircuitDesign"],
+    "attrs":
+    [
+        {
+            "name":"type",
+            "type":"QString",
+        },
+        {
+            "name":"class_name",
+            "type":"QString",
+        },
+        {
+            "name":"radius",
+            "type":"fixeddistance",
+        },
+        // TODO: we need to finally have reciprocol lists so we can append EngineDesign and so on
+        //{
+        //    "name":"radius",
+        //    "type":"fixeddistance",
+        //},
+    ],
+    "funcs":
+    [
+        //{
+        //    "name":"engines",
+        //    "type":"QList",
+        //    "template_type":"EngineDesign",
+        //    "args":[],
+        //},
+    ],
+}
