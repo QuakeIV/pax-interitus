@@ -36,6 +36,7 @@ static PyObject *set_focus(PySystemRendererObject *self, PyObject *args)
 
     // TODO: other things?
     // TODO: add else case+exception?
+    // TODO: change this to take a transform pointer directly
 
     Py_RETURN_NONE;
 }

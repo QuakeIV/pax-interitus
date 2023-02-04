@@ -125,3 +125,22 @@ PyCapacitorObject *pyobjectize_capacitor(Capacitor *obj)
     wrapper_newup = true;
     return pyobj;
 }
+
+// Inits the type and adds it as a member to module
+// On failure returns false with exception set and decrefs module
+bool init_capacitor(PyObject *m)
+{
+    if (PyType_Ready(&PyCapacitorType) < 0)
+    {
+        Py_DECREF(m);
+        return false;
+    }
+    Py_INCREF(&PyCapacitorType);
+    if (PyModule_AddObject(m, "Capacitor", (PyObject *)&PyCapacitorType) < 0)
+    {
+        Py_DECREF(&PyCapacitorType);
+        Py_DECREF(m);
+        return false;
+    }
+    return true;
+}

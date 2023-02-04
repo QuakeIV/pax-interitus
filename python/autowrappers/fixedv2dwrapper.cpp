@@ -105,3 +105,22 @@ PyFixedV2DObject *pyobjectize_fixedv2d(FixedV2D *obj)
     wrapper_newup = true;
     return pyobj;
 }
+
+// Inits the type and adds it as a member to module
+// On failure returns false with exception set and decrefs module
+bool init_fixedv2d(PyObject *m)
+{
+    if (PyType_Ready(&PyFixedV2DType) < 0)
+    {
+        Py_DECREF(m);
+        return false;
+    }
+    Py_INCREF(&PyFixedV2DType);
+    if (PyModule_AddObject(m, "FixedV2D", (PyObject *)&PyFixedV2DType) < 0)
+    {
+        Py_DECREF(&PyFixedV2DType);
+        Py_DECREF(m);
+        return false;
+    }
+    return true;
+}

@@ -46,28 +46,28 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
     // NOTE: this appears to be absolutely not optional, the type will not be properly initialized without this
     if (PyType_Ready(&PySystemRendererType) < 0)
         return NULL;
-    if (PyType_Ready(&PyCelestialType) < 0)
-        return NULL;
-    if (PyType_Ready(&PySpacecraftType) < 0)
-        return NULL;
     if (PyType_Ready(&PyUniverseType) < 0)
-        return NULL;
-    if (PyType_Ready(&PyInsulatorType) < 0)
-        return NULL;
-    if (PyType_Ready(&PyCapacitorDesignType) < 0)
-        return NULL;
-    if (PyType_Ready(&PyCapacitorType) < 0)
-        return NULL;
-    if (PyType_Ready(&PyOrbitTypeType) < 0)
-        return NULL;
-    if (PyType_Ready(&PyFixedV2DType) < 0)
-        return NULL;
-    if (PyType_Ready(&PySpacecraftDesignType) < 0)
-        return NULL;
-    if (PyType_Ready(&PyQListType) < 0)
         return NULL;
 
     PyObject *m = PyModule_Create(&libpaxpythonmodule);
+
+    // does pytype_ready and also addobject
+    if (!init_celestial(m))
+        return NULL;
+    if (!init_insulator(m))
+        return NULL;
+    if (!init_capacitordesign(m))
+        return NULL;
+    if (!init_capacitor(m))
+        return NULL;
+    if (!init_orbittype(m)) // TODO: rename this type to just be orbit
+        return NULL;
+    if (!init_fixedv2d(m))
+        return NULL;
+    if (!init_spacecraftdesign(m))
+        return NULL;
+    if (!init_spacecraft(m))
+        return NULL;
 
     Py_INCREF(&PySystemRendererType);
     if (PyModule_AddObject(m, "SystemRenderer", (PyObject *)&PySystemRendererType) < 0)
@@ -76,71 +76,8 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
         Py_DECREF(m);
         return NULL;
     }
-    Py_INCREF(&PyCelestialType);
-    if (PyModule_AddObject(m, "Celestial", (PyObject *)&PyCelestialType) < 0)
-    {
-        Py_DECREF(&PyCelestialType);
-        Py_DECREF(m);
-        return NULL;
-    }
-    Py_INCREF(&PySpacecraftType);
-    if (PyModule_AddObject(m, "Spacecraft", (PyObject *)&PySpacecraftType) < 0)
-    {
-        Py_DECREF(&PySpacecraftType);
-        Py_DECREF(m);
-        return NULL;
-    }
-    Py_INCREF(&PyInsulatorType);
-    if (PyModule_AddObject(m, "Insulator", (PyObject *)&PyInsulatorType) < 0)
-    {
-        Py_DECREF(&PyInsulatorType);
-        Py_DECREF(m);
-        return NULL;
-    }
-    Py_INCREF(&PyCapacitorDesignType);
-    if (PyModule_AddObject(m, "CapacitorDesign", (PyObject *)&PyCapacitorDesignType) < 0)
-    {
-        Py_DECREF(&PyCapacitorDesignType);
-        Py_DECREF(m);
-        return NULL;
-    }
-    Py_INCREF(&PyCapacitorType);
-    if (PyModule_AddObject(m, "Capacitor", (PyObject *)&PyCapacitorType) < 0)
-    {
-        Py_DECREF(&PyCapacitorType);
-        Py_DECREF(m);
-        return NULL;
-    }
-    Py_INCREF(&PyCelestialType);
-    if (PyModule_AddObject(m, "Celestial", (PyObject *)&PyCelestialType) < 0)
-    {
-        Py_DECREF(&PyCelestialType);
-        Py_DECREF(m);
-        return NULL;
-    }
-    // TODO: rename this crap to just Orbit
-    Py_INCREF(&PyOrbitTypeType);
-    if (PyModule_AddObject(m, "OrbitType", (PyObject *)&PyOrbitTypeType) < 0)
-    {
-        Py_DECREF(&PyOrbitTypeType);
-        Py_DECREF(m);
-        return NULL;
-    }
-    Py_INCREF(&PyFixedV2DType);
-    if (PyModule_AddObject(m, "FixedV2D", (PyObject *)&PyFixedV2DType) < 0)
-    {
-        Py_DECREF(&PyFixedV2DType);
-        Py_DECREF(m);
-        return NULL;
-    }
-    Py_INCREF(&PySpacecraftDesignType);
-    if (PyModule_AddObject(m, "SpacecraftDesign", (PyObject *)&PySpacecraftDesignType) < 0)
-    {
-        Py_DECREF(&PySpacecraftDesignType);
-        Py_DECREF(m);
-        return NULL;
-    }
 
+    // different from others, this is instantiating a generic object and adding it to module, rather than adding a type object
     PyObject *u = PyObject_Call((PyObject *)&PyUniverseType,PyTuple_New(0),NULL);
     if (PyModule_AddObject(m, "universe", u) < 0)
     {
@@ -149,6 +86,7 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
         return NULL;
     }
 
+    // this is the actual sim, not python related
     universe_init();
 
     return m;

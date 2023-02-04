@@ -127,3 +127,22 @@ PySpacecraftDesignObject *pyobjectize_spacecraftdesign(SpacecraftDesign *obj)
     wrapper_newup = true;
     return pyobj;
 }
+
+// Inits the type and adds it as a member to module
+// On failure returns false with exception set and decrefs module
+bool init_spacecraftdesign(PyObject *m)
+{
+    if (PyType_Ready(&PySpacecraftDesignType) < 0)
+    {
+        Py_DECREF(m);
+        return false;
+    }
+    Py_INCREF(&PySpacecraftDesignType);
+    if (PyModule_AddObject(m, "SpacecraftDesign", (PyObject *)&PySpacecraftDesignType) < 0)
+    {
+        Py_DECREF(&PySpacecraftDesignType);
+        Py_DECREF(m);
+        return false;
+    }
+    return true;
+}

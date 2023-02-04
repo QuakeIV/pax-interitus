@@ -1,0 +1,20 @@
+{
+    "type":"Transform",
+    "subtypes":["FixedV2D"],
+    "attrs":
+    [
+        {
+            "name":"position",
+            "type":"FixedV2D",
+        },
+    ],
+    // TODO: would be nice to spport this, however no strategy right now to handle the fact that FixedV2D returns a copy of the type (rather than a pointer) and the fact that thats kindof preferable
+    //"funcs":
+    //[
+    //    {
+    //        "name":"project_position",
+    //        "type":"FixedV2D",
+    //        "args":["fixedtime"],
+    //    },
+    //],
+}

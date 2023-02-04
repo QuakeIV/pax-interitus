@@ -168,3 +168,22 @@ PyOrbitTypeObject *pyobjectize_orbittype(OrbitType *obj)
     wrapper_newup = true;
     return pyobj;
 }
+
+// Inits the type and adds it as a member to module
+// On failure returns false with exception set and decrefs module
+bool init_orbittype(PyObject *m)
+{
+    if (PyType_Ready(&PyOrbitTypeType) < 0)
+    {
+        Py_DECREF(m);
+        return false;
+    }
+    Py_INCREF(&PyOrbitTypeType);
+    if (PyModule_AddObject(m, "OrbitType", (PyObject *)&PyOrbitTypeType) < 0)
+    {
+        Py_DECREF(&PyOrbitTypeType);
+        Py_DECREF(m);
+        return false;
+    }
+    return true;
+}

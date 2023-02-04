@@ -1,0 +1,20 @@
+{
+    "type":"Spacecraft",
+    "header_override":"spacecraft/spacecraft.h",
+    "subtypes":["SpacecraftDesign", "Transform"],
+    "attrs":
+    [
+        {
+            "name":"name",
+            "type":"QString",
+        },
+        {
+            "name":"design",
+            "type":"SpacecraftDesign",
+        },
+        {
+            "name":"trajectory",
+            "type":"Transform*",
+        },
+    ],
+}

@@ -130,7 +130,10 @@ public:
     int64_t max_dt = 0; // time it takes to fully charge (currently no way this should change after initialization (maybe later it will degrade due to damage or other factors)
     int64_t charge_time = 0; // time at which the capacitor will be fully charged
 
-    //NOTE: this will cope very poorly with rapidly fluctuating voltage
+    // TODO: support designing capacitors for over-charge voltage that then cuts out once discharge voltage is reached
+    // this will also entail designer window changes
+    // TODO: probably want to de-linearize charge rate
+    //NOTE: this will cope very poorly with rapidly fluctuating voltage (performance wise)
     void update_voltage(double voltage) override
     {
         // TODO: react to over-volt

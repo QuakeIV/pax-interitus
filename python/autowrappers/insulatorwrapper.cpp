@@ -183,3 +183,22 @@ PyInsulatorObject *pyobjectize_insulator(Insulator *obj)
     wrapper_newup = true;
     return pyobj;
 }
+
+// Inits the type and adds it as a member to module
+// On failure returns false with exception set and decrefs module
+bool init_insulator(PyObject *m)
+{
+    if (PyType_Ready(&PyInsulatorType) < 0)
+    {
+        Py_DECREF(m);
+        return false;
+    }
+    Py_INCREF(&PyInsulatorType);
+    if (PyModule_AddObject(m, "Insulator", (PyObject *)&PyInsulatorType) < 0)
+    {
+        Py_DECREF(&PyInsulatorType);
+        Py_DECREF(m);
+        return false;
+    }
+    return true;
+}

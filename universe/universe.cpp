@@ -56,6 +56,7 @@ void universe_timing_loop(void)
 {
     while (true)
     {
+        // TODO: we need some kind of mechanism to cope with slipping frame times to increase delta-t (possibly just TiDi and note the current dilation factor somewhere, but we might actually be able to improve run rate by intentionally reducing the frame rate in certain circumstances)
         std::chrono::time_point start = std::chrono::system_clock::now();
         universe_update(MICROSECONDS_TO_TIME(frame_time_us));
         std::chrono::time_point end = std::chrono::system_clock::now();

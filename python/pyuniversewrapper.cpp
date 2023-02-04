@@ -50,7 +50,7 @@ static int set_paused(PySpacecraftObject* self, PyObject *value, void *closure)
     universe_paused = PyObject_IsTrue(value);
     return 0;
 }
-// TODO: for this functionality, would i think be more performant to keep a running list that can be referenced, rather than re-generating every time
+// TODO: for this functionality, it would i think be more performant to keep a running list that can be referenced, rather than re-generating every time
 // can have a function that is called every frame or something that is just update_universe and it coherency-izes all the universe data structures in one big pass
 // maybe a callback infrastructure to track changes to the primary lists, i think we were adding stuff to lists in their constructor, so that could potentially
 // serve as a place to put a callback (if we dont drop the idea of C++ ultimately altogether)
