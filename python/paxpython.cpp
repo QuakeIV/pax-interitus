@@ -43,13 +43,20 @@ static struct PyModuleDef libpaxpythonmodule = {
 
 PyMODINIT_FUNC PyInit_libpaxpython(void)
 {
+    // this is the actual sim, not directly python related
+    universe_init();
+
     // NOTE: this appears to be absolutely not optional, the type will not be properly initialized without this
-    if (PyType_Ready(&PySystemRendererType) < 0)
+    if (PyType_Ready(&PyQListType) < 0) // putting this first since other types might use it
         return NULL;
-    if (PyType_Ready(&PyUniverseType) < 0)
+    if (PyType_Ready(&PySystemRendererType) < 0)
         return NULL;
 
     PyObject *m = PyModule_Create(&libpaxpythonmodule);
+    
+    // hand-written universe wrapper (notably, adds instance of universe wrapper to module, rather than type)
+    if (!init_universewrapper(m))
+        return NULL;
 
     // does pytype_ready and also addobject
     if (!init_celestial(m))
@@ -76,18 +83,6 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
         Py_DECREF(m);
         return NULL;
     }
-
-    // different from others, this is instantiating a generic object and adding it to module, rather than adding a type object
-    PyObject *u = PyObject_Call((PyObject *)&PyUniverseType,PyTuple_New(0),NULL);
-    if (PyModule_AddObject(m, "universe", u) < 0)
-    {
-        Py_DECREF(u);
-        Py_DECREF(m);
-        return NULL;
-    }
-
-    // this is the actual sim, not python related
-    universe_init();
 
     return m;
 }

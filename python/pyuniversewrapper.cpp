@@ -68,6 +68,12 @@ static PyObject* get_insulators(PySpacecraftObject* self, void* closure)
     universe_lock.unlock_shared();
     return insulator_list;
 }
+static PyObject* spacecraft_designs_wrapper = NULL;
+static PyObject* get_spacecraft_designs(PySpacecraftObject* self, void* closure)
+{
+    Py_INCREF(spacecraft_designs_wrapper);
+    return spacecraft_designs_wrapper;
+}
 static PyGetSetDef getsets[] = {
     {"time_warp",
      (getter)get_time_warp,
@@ -94,6 +100,11 @@ static PyGetSetDef getsets[] = {
      NULL,
      "list of all insulators in the universe",  /* doc */
      NULL /* closure */},
+    {"spacecraft_designs",
+     (getter)get_spacecraft_designs,
+     NULL,
+     "list of all spacecraft designs in the universe",  /* doc */
+     NULL /* closure */},
     {NULL}
 };
 PyTypeObject PyUniverseType = {
@@ -110,3 +121,26 @@ PyTypeObject PyUniverseType = {
     .tp_getset = getsets,
     .tp_new = type_new,
 };
+
+// Inits the type and adds it as a member to module
+// On failure returns false with exception set and decrefs module
+bool init_universewrapper(PyObject *m)
+{
+    if (PyType_Ready(&PyUniverseType) < 0)
+    {
+        Py_DECREF(m);
+        return false;
+    }
+
+    // this is instantiating a generic object and adding it to module, rather than adding a type object
+    PyObject *u = PyObject_Call((PyObject *)&PyUniverseType,PyTuple_New(0),NULL);
+    if (PyModule_AddObject(m, "universe", u) < 0)
+    {
+        Py_DECREF(u);
+        Py_DECREF(m);
+        return false;
+    }
+    
+    spacecraft_designs_wrapper = (PyObject*)pyobjectize_qlist((QList<void*>*)&spacecraft_designs, &PySpacecraftDesignType, (pyobjectize_generic_func)pyobjectize_spacecraftdesign);
+    return true;
+}
