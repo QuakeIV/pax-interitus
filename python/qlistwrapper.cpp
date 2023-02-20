@@ -36,6 +36,9 @@ static Py_ssize_t size(PyQListObject *self)
 // for now, whatever
 static PyObject *getitem(PyQListObject *self, Py_ssize_t i)
 {
+    // TODO: is this allowed, or do we have to except here per the spec?
+    if (!self->ref->length())
+        Py_RETURN_NONE;
     if (i < self->ref->length())
     {
         universe_lock.lock_shared();
@@ -43,6 +46,7 @@ static PyObject *getitem(PyQListObject *self, Py_ssize_t i)
         universe_lock.unlock_shared();
         return obj;
     }
+    // TODO: handle overruning list boundaries with proper exception? may be automated by the python engine tbh, check that
     return NULL;
 }
 
