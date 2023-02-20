@@ -31,6 +31,7 @@ class MainWindow(QMainWindow):
     super().__init__()
     
     self.ui = ui_mainwindow.Ui_MainWindow()
+    # TODO: would be really nice to eventually have custom window icons for each kind of window, or at least to begin with broad categories
     self.ui.setupUi(self)
 
     #self.setWindowTitle("Pax Test")
