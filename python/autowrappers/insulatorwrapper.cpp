@@ -33,8 +33,11 @@ static int set_name(PyInsulatorObject *self, PyObject *value, void *closure)
         PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
         return -1;
     }
-    PyErr_SetString(PyExc_NotImplementedError, "Setter for QString type not implemented.");
-    return -1;
+    const char *c_str = PyUnicode_AsUTF8(value);
+    if (!c_str)
+        return -1;
+    QString v = QString(c_str);
+    self->ref->name = v;
     return 0;
 }
 static PyObject* get_density(PyInsulatorObject *self, void *closure)

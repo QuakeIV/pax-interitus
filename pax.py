@@ -15,6 +15,7 @@ from build.python import ui_mainwindow # pyuic autogenned .py script
 
 from python.techwindow import TechWindow
 from python.celestialwindow import CelestialWindow
+from python.spacecraftdesigner import SpacecraftDesigner
 
 app = QApplication()
 
@@ -53,6 +54,7 @@ class MainWindow(QMainWindow):
     self.ui.statusbar.showMessage("Imma status bar (TODO)")
     
     self.ui.actionTechWindow.triggered.connect(lambda: TechWindow(self).show())
+    self.ui.actionSpacecraftDesigner.triggered.connect(lambda: SpacecraftDesigner(self).show())
     self.ui.techbutton.clicked.connect(lambda: TechWindow(self).show())
   #
 

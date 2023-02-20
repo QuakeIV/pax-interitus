@@ -251,8 +251,17 @@ for r in attrs:
   source.dedent()
   source.write("}")
   if   attr_type == "QString":
-    source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for QString type not implemented.\");")
-    source.write("return -1;")
+    if r["ptr"]:
+      source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for pointer to QString type not implemented.\");")
+      source.write("return -1;")
+    else:
+      source.write("const char *c_str = PyUnicode_AsUTF8(value);")
+      source.write("if (!c_str)")
+      source.indent()
+      source.write("return -1;")
+      source.dedent()
+      source.write("QString v = QString(c_str);")
+      source.write(f"self->ref->{name} = v;")
   elif attr_type == "double":
     source.write(f"double v = PyFloat_AsDouble(value);")
     source.write(f"PyObject *exception = PyErr_Occurred();")

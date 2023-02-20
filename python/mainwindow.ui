@@ -119,22 +119,19 @@ QLineEdit:focus  {
   border-color: rgb(105, 156, 232);
 }
 QTabWidget::pane {
-    position: absolute;
-    top: -1px; /* allow the tabs to overlap over the top border and join with the window below*/
-}
-QTabWidget::tab-bar {
-  left: 5px; /* move to the right by 5px */
-}
-QTabBar {
-  background: rgb(38, 44, 59); /* captures the margin above unselected tabs */
-  /* the rest of the background color of the tab bar is handled by the containing widget on an individual basis*/
+  /*position: absolute;*/
+  border-top: 1px solid rgb(105, 156, 232);
+  top: -1px; /* allow the tabs to overlap over the top border and join with the window below*/
 }
 QTabBar::tab {
   background: rgb(72, 98, 145);
   border: 1px solid #9B9B9B;
-  min-width: 8ex;
-  padding: 2px;
+  border-bottom: 1px solid rgb(105, 156, 232);
+/*  min-width: 8ex;*/
+  font-size:14pt;
+  padding: 7px;
   margin-right: -1px; /* overlap on borders so they arent doubled up */
+/*  height: 20px;*/
 }
 QTabBar::tab:last {
   margin-right: 0px; /* prevent rightmost border from being chopped off */
@@ -143,10 +140,6 @@ QTabBar::tab:selected {
   background: rgb(44, 86, 145);
   border-color: rgb(105, 156, 232);
   border-bottom-color: rgb(44, 86, 145);
-}
-QTabBar::tab:!selected {
-  margin-top: 3px; /* make non-selected tabs look smaller */
-  /*border-bottom: 0px;*/
 }</string>
   </property>
   <widget class="QWidget" name="mainwidget">

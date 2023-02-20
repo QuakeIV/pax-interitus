@@ -47,7 +47,12 @@
        <bool>false</bool>
       </property>
       <property name="styleSheet">
-       <string notr="true"/>
+       <string notr="true">QTabWidget::tab-bar {
+  left: 5px; /* move to the right by 5px */
+}
+QTabBar {
+  background: rgb(38, 44, 59); /* captures the margin above unselected tabs */
+}</string>
       </property>
       <property name="currentIndex">
        <number>0</number>

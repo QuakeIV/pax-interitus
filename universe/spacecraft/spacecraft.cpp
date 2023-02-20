@@ -48,7 +48,7 @@ int64_t Spacecraft::max_acceleration(void)
 {
     return 0;
 }
-// damage in joules
+// damage in joules?
 void Spacecraft::take_damage(uint64_t damage)
 {
 }

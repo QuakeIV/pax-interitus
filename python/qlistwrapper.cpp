@@ -96,11 +96,19 @@ static PyObject *type_remove(PyQListObject *self, PyObject *args)
     PyPaxgenericObject *o;
     if (PyArg_ParseTuple(args, "O!", self->type, &o))
     {
-        // TODO: this could leak
-        if (self->ref->removeOne(o->ref))        
+        if (self->ref->removeOne(o->ref))
+        {
+            // TODO: this is really not ideal, basically forces everyone to treat these objects as ephemeral in case someone else deletes it out from under you
+            // could potentially make this work with a ref counter if the python object is eh... dont remember the term but if you are always returned the same wrapper object
+            // could facilitate that with a 'wrapper' pointer on the actual base object?
+            // if we can then find a solution for whether the object is tracked or not on deletion (ie what lists it might be registered in) we are good to go
+            o->tracked = false;
             Py_RETURN_NONE; // success
+        }
         else
+        {
             PyErr_SetString(PyExc_ValueError, "Value not found."); // using return NULL below
+        }
     }
     return NULL; // failure (exception)
 }
