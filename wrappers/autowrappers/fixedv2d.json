@@ -1,5 +1,6 @@
 {
     "type":"FixedV2D",
+    "header":"fixedv2d.h",
     "attrs":
     [
         {

@@ -2,6 +2,7 @@
     "type":"Celestial",
     "disable_instantiation":true,
     "subtypes":["OrbitType",],
+    "header":"celestial.h",
     "attrs":
     [
         {

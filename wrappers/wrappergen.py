@@ -101,10 +101,7 @@ if "funcs" in cfg:
     funcs.append(f)
 #
 
-type_header = f"{object_type.lower()}.h"
-if "header_override" in cfg:
-  type_header = cfg.pop("header_override")
-#
+type_header = cfg.pop("header")
 
 # error on unrecognized keys
 unknown_attr_check(cfg)

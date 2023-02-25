@@ -1,5 +1,6 @@
 {
     "type":"OrbitType",
+    "header":"orbittype.h",
     "disable_instantiation":true,
     "subtypes":["Celestial","FixedV2D",],
     "attrs":

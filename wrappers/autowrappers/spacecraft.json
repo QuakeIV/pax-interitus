@@ -1,6 +1,6 @@
 {
     "type":"Spacecraft",
-    "header_override":"spacecraft/spacecraft.h",
+    "header":"spacecraft/spacecraft.h",
     "subtypes":["SpacecraftDesign", "Transform"],
     "attrs":
     [

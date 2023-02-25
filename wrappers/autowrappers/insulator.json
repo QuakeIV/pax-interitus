@@ -1,6 +1,6 @@
 {
     "type":"Insulator",
-    "header_override":"materials.h",
+    "header":"materials.h",
     "attrs":
     [
         {

@@ -1,6 +1,6 @@
 {
     "type":"Capacitor",
-    "header_override":"components/capacitor.h",
+    "header":"components/capacitor.h",
     "subtypes":["CapacitorDesign",],
     "attrs":
     [

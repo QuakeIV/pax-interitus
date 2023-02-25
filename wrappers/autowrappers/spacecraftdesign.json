@@ -1,6 +1,6 @@
 {
     "type":"SpacecraftDesign",
-    "header_override":"spacecraft/spacecraft.h",
+    "header":"spacecraft/spacecraft.h",
 //    "subtypes":["EngineDesign","ReactorDesign","DirectedweaponDesign","JumpdriveDesign","CircuitDesign"],
     "attrs":
     [
