@@ -1,0 +1,1 @@
+These files were originally obtained from a repo advertising itself as MIT licensed and a mistaken attempt to relicense these was made under GPL.  Currently working on fixing that in the parent directory.  This directory will eventually be gone.

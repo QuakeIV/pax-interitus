@@ -4,23 +4,24 @@
 import sys, os
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
-from PySide6.QtCore import QSize, Qt, QDir
+from PySide6.QtCore import QSize, Qt
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QToolBar, QVBoxLayout, QHBoxLayout, QWidget, QMenu
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtGui import QAction, QIcon, QCursor
 import shiboken6
 
-from build.python import libpaxpython
-from build.python import ui_mainwindow # pyuic autogenned .py script
+from build import libpaxpython
+from build import ui # pyuic autogenned .py scripts
 
-from python.techwindow import TechWindow
-from python.celestialwindow import CelestialWindow
-from python.spacecraftdesigner import SpacecraftDesigner
+from techwindow import TechWindow
+from celestialwindow import CelestialWindow
+from spacecraftdesigner import SpacecraftDesigner
 
 app = QApplication()
 
-# add resource search path (lazy solution) so we can find our stupid icons
-QDir.addSearchPath("icons", "python")
+# lazy solution to finding our icons
+# TODO: really need a better way to let qt designer and also this script see our icons without piling everything into the root directory
+os.chdir("ui")
 
 # kill when ctrl-c is pressed (annoying when this doesnt work)
 import signal
@@ -29,8 +30,7 @@ signal.signal(signal.SIGINT, signal.SIG_DFL) # apparently thats sig_default and 
 class MainWindow(QMainWindow):
   def __init__(self):
     super().__init__()
-    
-    self.ui = ui_mainwindow.Ui_MainWindow()
+    self.ui = ui.mainwindow.Ui_MainWindow()
     # TODO: would be really nice to eventually have custom window icons for each kind of window, or at least to begin with broad categories
     self.ui.setupUi(self)
 

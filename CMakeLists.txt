@@ -15,6 +15,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_PREFIX_PATH "$ENV{HOME}/Qt/6.2.4/gcc_64") #we are Qt 6.2.4 for now
 find_package(Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
 
-#TODO: prolly update project sources to be named something else (application core?)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
 add_subdirectory(universe)
-add_subdirectory(python) # cpython/future UI stuff
+add_subdirectory(ui)
+add_subdirectory(wrappers) # cpython wrappers to allow the python UI to interact with the universe

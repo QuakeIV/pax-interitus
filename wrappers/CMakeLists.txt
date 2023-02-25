@@ -1,19 +1,6 @@
 find_package(Python COMPONENTS Development)
 
-file(GLOB PYWRAPPER_SOURCES "*.cpp" "*.h" "*.ui")
-
-# (re)generate python UI classes automatically
-file(GLOB PYUIC_TARGETS "*.ui")
-foreach(UIC_TARGET ${PYUIC_TARGETS})
-    get_filename_component(STRIP ${UIC_TARGET} NAME_WE)
-    #message("ui_${STRIP}.py")
-    list(APPEND PYWRAPPER_SOURCES "${CMAKE_BINARY_DIR}/python/ui_${STRIP}.py")
-    add_custom_command(
-        OUTPUT "${CMAKE_BINARY_DIR}/python/ui_${STRIP}.py"
-        COMMAND pyside6-uic ${UIC_TARGET} -o "${CMAKE_BINARY_DIR}/python/ui_${STRIP}.py"
-        DEPENDS ${UIC_TARGET}
-    )
-endforeach()
+file(GLOB PYWRAPPER_SOURCES "*.cpp" "*.h")
 
 # re-run custom wrapper generators
 file(GLOB PYWRAPPER_TARGETS "autowrappers/*.json")

@@ -5,10 +5,10 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QToolBar, 
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtGui import QAction, QIcon, QCursor
 
-from build.python import libpaxpython
-from build.python import ui_celestialwindow # pyuic autogenned .py script
+from build import libpaxpython
+from build import ui # pyuic autogenned .py scripts
 
-from python import units
+import units
 
 # kill when ctrl-c is pressed (annoying when this doesnt work)
 import signal
@@ -19,7 +19,7 @@ class CelestialWindow(QMainWindow):
     if not isinstance(celestial, libpaxpython.Celestial):
       raise TypeError("must initialize celestialwindow with celestial type")
     super().__init__(parent)
-    self.ui = ui_celestialwindow.Ui_CelestialWindow()
+    self.ui = ui.celestialwindow.Ui_CelestialWindow()
     self.ui.setupUi(self)
     self.setAttribute(Qt.WA_DeleteOnClose, True) #NOTE: vital for self-updating windows or zombie timers will be left behind
     

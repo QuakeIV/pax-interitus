@@ -5,9 +5,9 @@ from PySide6.QtWidgets import QApplication, QDialog, QMainWindow, QPushButton, Q
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from PySide6.QtGui import QAction, QIcon, QCursor
 
-from build.python import libpaxpython
-from build.python import ui_capacitordesigner # pyuic autogenned .py script
-from python.units import *
+from build import libpaxpython
+from build import ui # pyuic autogenned .py scripts
+import units
 
 # kill when ctrl-c is pressed (annoying when this doesnt work)
 import signal
@@ -17,7 +17,7 @@ class CapacitorDesigner(QMainWindow):
   def __init__(self, parent=None):
     super().__init__(parent)
     
-    self.ui = ui_capacitordesigner.Ui_CapacitorDesigner()
+    self.ui = ui.capacitordesigner.Ui_CapacitorDesigner()
     self.ui.setupUi(self)
     self.setAttribute(Qt.WA_DeleteOnClose, True)
     
@@ -50,20 +50,20 @@ class CapacitorDesigner(QMainWindow):
 
     self.ui.insulator.setCurrentText(self.design.insulator.name)
 
-    spec_voltage = parse_voltage(self.ui.voltage_edit.text())
+    spec_voltage = units.parse_voltage(self.ui.voltage_edit.text())
     if spec_voltage == None:
       return
     #TODO: this needs to change if we ever introduce min separation
     separation = spec_voltage/self.design.insulator.strength;
     self.design.plate_separation = separation
     
-    spec_capacity = parse_energy(self.ui.capacity_edit.text())
+    spec_capacity = units.parse_energy(self.ui.capacity_edit.text())
     if spec_capacity == None:
       return
     plate_area = (2 * spec_capacity * separation) / (spec_voltage * spec_voltage * self.design.insulator.permittivity);
     self.design.plate_area = plate_area
     
-    spec_amperage = parse_amperage(self.ui.amperage_edit.text())
+    spec_amperage = units.parse_amperage(self.ui.amperage_edit.text())
     if spec_amperage == None:
       return
     resistance = spec_voltage/spec_amperage;
@@ -71,16 +71,16 @@ class CapacitorDesigner(QMainWindow):
     
     #TODO: charge time
     
-    self.ui.chargetime_label.setText(time_str(self.design.charge_time()))
-    self.ui.volume_label.setText(volume_str(self.design.volume()))
+    self.ui.chargetime_label.setText(units.time_str(self.design.charge_time()))
+    self.ui.volume_label.setText(units.volume_str(self.design.volume()))
     # TODO: always reports 0 because density is undefined for the materials, not useful
     #self.ui.tonnage_label.setText(tonnage_str(self.design.mass()))
-    self.ui.capacitance_label.setText(capacitance_str(self.design.capacitance()))
-    self.ui.area_label.setText(area_str(self.design.plate_area))
-    self.ui.separation_label.setText(distance_str(self.design.plate_separation))
-    self.ui.resistance_label.setText(resistance_str(self.design.resistance))
-    self.ui.voltage_label.setText(voltage_str(self.design.max_voltage()))
-    self.ui.capacity_label.setText(energy_str(self.design.energy_at_voltage(spec_voltage)))
-    self.ui.amperage_label.setText(amperage_str(self.design.max_current(spec_voltage)))
+    self.ui.capacitance_label.setText(units.capacitance_str(self.design.capacitance()))
+    self.ui.area_label.setText(units.area_str(self.design.plate_area))
+    self.ui.separation_label.setText(units.distance_str(self.design.plate_separation))
+    self.ui.resistance_label.setText(units.resistance_str(self.design.resistance))
+    self.ui.voltage_label.setText(units.voltage_str(self.design.max_voltage()))
+    self.ui.capacity_label.setText(units.energy_str(self.design.energy_at_voltage(spec_voltage)))
+    self.ui.amperage_label.setText(units.amperage_str(self.design.max_current(spec_voltage)))
   #
 #
