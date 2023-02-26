@@ -72,6 +72,7 @@ if "attrs" in cfg:
     t = t.split("*")
     v["type"] = t[0].strip()
     v["template_type"] = r.pop("template_type") if "template_type" in r else None
+    v["readonly"] = r.pop("readonly") if "readonly" in r else False
     v["ptr"] = len(t) > 1 # if there is a * assume its a pointer
     if v["type"] not in ["QString", "QList", "bool", "double", "celestialmass", "fixeddistance", "fixedtime"] + subtypes + [object_type]:
       raise TypeError(f"Unrecognized type: {t}")
@@ -237,6 +238,9 @@ for r in attrs:
   source.write("}")
   
   # setter
+  # if read only, dont define the setter at all
+  if r["readonly"]:
+    continue
   source.write(f"static int set_{name}(Py{object_type}Object *self, PyObject *value, void *closure)")
   source.write("{")
   source.indent()
@@ -268,8 +272,12 @@ for r in attrs:
     source.dedent()
     source.write(f"self->ref->{name} = v;")
   elif attr_type == "bool":
-    source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for bool type not implemented.\");")
+    source.write("int v = PyObject_IsTrue(value);")
+    source.write("if (v == -1)")
+    source.indent()
     source.write("return -1;")
+    source.dedent()
+    source.write(f"self->ref->{name} = v;")
   elif attr_type in subtypes + [object_type]:
     source.write(f"if (!PyObject_IsInstance(value, (PyObject *)&Py{attr_type}Type))")
     source.write("{")
@@ -315,7 +323,10 @@ if attrs:
     name = r["name"]
     source.write(f"\"{name}\",")
     source.write(f"(getter)get_{name},")
-    source.write(f"(setter)set_{name},")
+    if r["readonly"]:
+      source.write("NULL, // readonly")
+    else:
+      source.write(f"(setter)set_{name},")
     source.write("NULL, // documentation string")
     source.write("NULL, // closure")
     source.write("},")

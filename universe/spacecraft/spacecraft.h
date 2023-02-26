@@ -24,6 +24,12 @@ public:
     QString type = "";
     QString class_name = "";
 
+    // TODO: probably want to either track this differently, or separate 'design' from a concept of a 'spec'
+    // where the 'spec' is tracked at the empire level
+    // actually 'spec' could be a wrapper for the empire level that contains a design, and is separate from spacecraft entirely
+    // this would go there probably
+    bool obsolete;
+
     QList<EngineDesign*> engines;
     QList<ReactorDesign*> reactors;
     QList<DirectedweaponDesign*> directed_weapons;

@@ -12,11 +12,9 @@
 // lock_shared and unlock_shared for readonly-lock
 std::shared_mutex universe_lock;
 
-// TODO: temporary
+// TODO: eventually allow selection to change on this
+// TODO: tie camera position and windows to this?
 Empire player_empire;
-
-// TODO: temporary
-QApplication *qapp;
 
 // master list of extant dialectric materials
 QList<Insulator*> insulator_materials;

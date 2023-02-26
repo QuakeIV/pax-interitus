@@ -58,6 +58,23 @@ static int set_class_name(PySpacecraftDesignObject *self, PyObject *value, void 
     self->ref->class_name = v;
     return 0;
 }
+static PyObject* get_obsolete(PySpacecraftDesignObject *self, void *closure)
+{
+    return PyBool_FromLong(self->ref->obsolete);
+}
+static int set_obsolete(PySpacecraftDesignObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    int v = PyObject_IsTrue(value);
+    if (v == -1)
+        return -1;
+    self->ref->obsolete = v;
+    return 0;
+}
 static PyObject* get_radius(PySpacecraftDesignObject *self, void *closure)
 {
     return PyFloat_FromDouble(DISTANCE_FIXED_TO_M(self->ref->radius));
@@ -85,6 +102,13 @@ static PyGetSetDef getsets[] = {
     "class_name",
     (getter)get_class_name,
     (setter)set_class_name,
+    NULL, // documentation string
+    NULL, // closure
+    },
+    {
+    "obsolete",
+    (getter)get_obsolete,
+    (setter)set_obsolete,
     NULL, // documentation string
     NULL, // closure
     },

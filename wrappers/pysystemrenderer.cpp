@@ -416,47 +416,6 @@ void PySystemRenderer::rightClick(QPoint location)
         }
     }
 
-    //QMenu *m = new QMenu("derp", this);
-    //m->setAttribute(Qt::WA_DeleteOnClose); //this was tested with the below code to garbage collect the menu
-//    connect(m, &QMenu::destroyed,
-//            this, [m]() { qDebug() << "deleted" << (qintptr)m; });
-
-//    foreach(Celestial *c, cels)
-//    {
-//        QMenu *submenu = m->addMenu(c->name);
-//        submenu->addAction("Focus", [this, c]()
-//        {
-//            this->offset.x = 0;
-//            this->offset.y = 0;
-//            this->focus = &c->trajectory;
-//        });
-
-//        submenu->addAction("Info",  [this, c]()
-//        {
-//            CelestialWindow *w = new CelestialWindow(c,this); // all new windows should root on the main window, not self, so they persist as one might expect
-//            w->setAttribute(Qt::WA_DeleteOnClose);
-//            w->move(qapp->activeWindow()->mapToGlobal(QPoint(40,20)));
-//            w->show();
-////            connect(w, &CelestialWindow::destroyed,
-////                    this, [w]() { qDebug() << "deleted" << (qintptr)w; });
-//        });
-//    }
-
-    //if (cels.length() && spacecraft.length())
-    //    m->addSeparator();
-
-    //foreach(Spacecraft *s, spacecraft)
-    //{
-    //    QMenu *submenu = m->addMenu(s->name);
-    //    submenu->addAction("Focus", [this, s]()
-    //    {
-    //        this->offset.x = 0;
-    //        this->offset.y = 0;
-    //        this->focus = s->trajectory;
-    //    });
-    //}
-    //m->popup(mapToGlobal(location));
-
     if (!PyObject_CallFunctionObjArgs(py_obj->rightClickCallback, celestial_list, spacecraft_list, NULL))
     {
         PyErr_Print();

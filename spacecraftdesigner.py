@@ -56,6 +56,10 @@ class SpacecraftDesigner(QMainWindow):
     self.update()
   #
   
+  def enterEvent(self, event):
+    self.update()
+  #
+  
   def selectclass_activated(self, index):
     if self.design:
       self.design.type = self.ui.selectclass.currentText()
@@ -98,9 +102,9 @@ class SpacecraftDesigner(QMainWindow):
   def mark_obsolete(self, checked = False):
     if self.design:
       if checked:
-        print("mark design as obsolete")
+        self.design.obsolete = True
       else:
-        print("unobsolete design")
+        self.design.obsolete = False
       #
     #
     self.update()
@@ -121,6 +125,9 @@ class SpacecraftDesigner(QMainWindow):
     if self.design not in libpaxpython.universe.spacecraft_designs:
       if libpaxpython.universe.spacecraft_designs:
         self.design = libpaxpython.universe.spacecraft_designs[0]
+      else:
+        # TODO: note this is currently necessary to avoid segfault, API side should except here probably
+        self.design = None
       #
     #
     
@@ -141,6 +148,7 @@ class SpacecraftDesigner(QMainWindow):
           idx = i
         i += 1
       #
+      self.ui.markobsolete.setChecked(self.design.obsolete)
       self.ui.selecteddesign.setCurrentIndex(idx)
     else:
       self.ui.selecteddesign.addItem("None", None)

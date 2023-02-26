@@ -13,6 +13,10 @@
             "type":"QString",
         },
         {
+            "name":"obsolete",
+            "type":"bool",
+        },
+        {
             "name":"radius",
             "type":"fixeddistance",
         },

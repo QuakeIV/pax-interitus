@@ -45,31 +45,9 @@ static PyObject* get_uses_power(PyCapacitorDesignObject *self, void *closure)
 {
     return PyBool_FromLong(self->ref->uses_power);
 }
-static int set_uses_power(PyCapacitorDesignObject *self, PyObject *value, void *closure)
-{
-    if (value == NULL)
-    {
-        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
-        return -1;
-    }
-    PyErr_SetString(PyExc_NotImplementedError, "Setter for bool type not implemented.");
-    return -1;
-    return 0;
-}
 static PyObject* get_produces_power(PyCapacitorDesignObject *self, void *closure)
 {
     return PyBool_FromLong(self->ref->produces_power);
-}
-static int set_produces_power(PyCapacitorDesignObject *self, PyObject *value, void *closure)
-{
-    if (value == NULL)
-    {
-        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
-        return -1;
-    }
-    PyErr_SetString(PyExc_NotImplementedError, "Setter for bool type not implemented.");
-    return -1;
-    return 0;
 }
 static PyObject* get_plate_separation(PyCapacitorDesignObject *self, void *closure)
 {
@@ -158,14 +136,14 @@ static PyGetSetDef getsets[] = {
     {
     "uses_power",
     (getter)get_uses_power,
-    (setter)set_uses_power,
+    NULL, // readonly
     NULL, // documentation string
     NULL, // closure
     },
     {
     "produces_power",
     (getter)get_produces_power,
-    (setter)set_produces_power,
+    NULL, // readonly
     NULL, // documentation string
     NULL, // closure
     },

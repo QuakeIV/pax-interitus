@@ -11,10 +11,12 @@
         {
             "name":"uses_power",
             "type":"bool",
+            "readonly":true,
         },
         {
             "name":"produces_power",
             "type":"bool",
+            "readonly":true,
         },
         {
             "name":"plate_separation",

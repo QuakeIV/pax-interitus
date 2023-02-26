@@ -8,8 +8,6 @@
 //  - click drags
 //  - scrolling
 
-//extern QApplication *qapp;
-
 void PySystemRenderer::mousePressEvent(QMouseEvent *event)
 {
     // manually fixing click position detection
