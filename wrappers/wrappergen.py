@@ -71,13 +71,19 @@ if "attrs" in cfg:
     t = r.pop("type")
     t = t.split("*")
     v["type"] = t[0].strip()
-    v["template_type"] = r.pop("template_type") if "template_type" in r else None
+    tt = r.pop("template_type") if "template_type" in r else ""
+    tt = tt.split("*")
+    v["template_type"] = tt[0].strip() if tt[0] else None
+    v["template_type_ptr"] = len(tt) > 1
     v["readonly"] = r.pop("readonly") if "readonly" in r else False
     v["ptr"] = len(t) > 1 # if there is a * assume its a pointer
-    if v["type"] not in ["QString", "QList", "bool", "double", "celestialmass", "fixeddistance", "fixedtime"] + subtypes + [object_type]:
+    if v["type"] not in ["QString", "QList", "bool", "double", "celestialmass", "fixeddistance", "fixedtime", "uint64_t"] + subtypes + [object_type]:
       raise TypeError(f"Unrecognized type: {t}")
-    if v["type"] == "QList" and v["template_type"] not in [] + subtypes + [object_type]:
-      raise TypeError(f"Template type {v['template_type']} not handled for QList")  
+    if v["type"] == "QList":
+      if v["template_type"] not in [] + subtypes + [object_type]:
+        raise TypeError(f"Template type {v['template_type']} not handled for QList")
+      if not v["template_type_ptr"]:
+        raise TypeError(f"Template type {v['template_type']} must be pointer for QList")
     unknown_attr_check(r)
     attrs.append(v)
   #
@@ -166,6 +172,7 @@ source.write("static PyObject *type_new(PyTypeObject *type, PyObject *args, PyOb
 source.write("{")
 source.indent()
 if instantiation_disabled:
+  # TODO: currently on 3.8, there are far better ways to handle this in future versions of python iirc
   source.write("if (wrapper_newup)")
   source.write("{")
   source.indent()
@@ -197,8 +204,8 @@ for r in attrs:
   source.write(f"static PyObject* get_{name}(Py{object_type}Object *self, void *closure)")
   source.write("{")
   source.indent()
-  if   attr_type == "QString":
-    source.write(f"return PyUnicode_FromString(self->ref->{name}.toStdString().c_str());")
+  if   attr_type == "uint64_t":
+    source.write(f"return PyLong_FromUnsignedLongLong(self->ref->{name});")
   elif attr_type == "double":
     source.write(f"return PyFloat_FromDouble(self->ref->{name});")
   elif attr_type == "bool":
@@ -218,6 +225,8 @@ for r in attrs:
     source.write(f"return PyFloat_FromDouble(TIME_FIXED_TO_S(self->ref->{name}));")
   elif attr_type == "celestialmass":
     source.write(f"return PyFloat_FromDouble(CELESTIALMASS_TO_KG(self->ref->{name}));")
+  elif attr_type == "QString":
+    source.write(f"return PyUnicode_FromString(self->ref->{name}.toStdString().c_str());")
   elif attr_type == "QList":
     # TODO: cache this list somehow instead of re-genning on every access? unclear how...
     template_type = r["template_type"]
@@ -251,18 +260,14 @@ for r in attrs:
   source.write("return -1;")
   source.dedent()
   source.write("}")
-  if   attr_type == "QString":
-    if r["ptr"]:
-      source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for pointer to QString type not implemented.\");")
-      source.write("return -1;")
-    else:
-      source.write("const char *c_str = PyUnicode_AsUTF8(value);")
-      source.write("if (!c_str)")
-      source.indent()
-      source.write("return -1;")
-      source.dedent()
-      source.write("QString v = QString(c_str);")
-      source.write(f"self->ref->{name} = v;")
+  if   attr_type == "uint64_t":
+    source.write(f"uint64_t v = PyLong_AsUnsignedLongLong(value);")
+    source.write(f"PyObject *exception = PyErr_Occurred();")
+    source.write("if (exception)")
+    source.indent()
+    source.write(f"return -1;")
+    source.dedent()
+    source.write(f"self->ref->{name} = v;")
   elif attr_type == "double":
     source.write(f"double v = PyFloat_AsDouble(value);")
     source.write(f"PyObject *exception = PyErr_Occurred();")
@@ -305,6 +310,18 @@ for r in attrs:
   elif attr_type == "celestialmass":
     source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for bool type not implemented.\");")
     source.write("return -1;")
+  elif attr_type == "QString":
+    if r["ptr"]:
+      source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for pointer to QString type not implemented.\");")
+      source.write("return -1;")
+    else:
+      source.write("const char *c_str = PyUnicode_AsUTF8(value);")
+      source.write("if (!c_str)")
+      source.indent()
+      source.write("return -1;")
+      source.dedent()
+      source.write("QString v = QString(c_str);")
+      source.write(f"self->ref->{name} = v;")
   elif attr_type == "QList": #TODO: this may never be settable, in fact
     source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for bool type not implemented.\");")
     source.write("return -1;")

@@ -32,7 +32,7 @@
         {
             "name":"children",
             "type":"QList",
-            "template_type":"Celestial",
+            "template_type":"Celestial*",
         },
     ],
 }
