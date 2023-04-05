@@ -40,7 +40,7 @@ public:
 
     // you can focus on transforms and follow them
     Transform *focus;
-    SolarSystemType *focus_system;
+    SolarSystem *focus_system;
     FixedV2D offset; //this offset is relative to the 'focus' point
 
     // mouse activity

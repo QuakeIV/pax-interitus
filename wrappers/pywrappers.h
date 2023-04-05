@@ -7,6 +7,7 @@
 #include "autowrappers/capacitordesignwrapper.h"
 #include "autowrappers/capacitorwrapper.h"
 #include "autowrappers/celestialwrapper.h"
+#include "autowrappers/solarsystemwrapper.h"
 #include "autowrappers/orbittypewrapper.h"
 #include "autowrappers/fixedv2dwrapper.h"
 #include "autowrappers/transformwrapper.h"

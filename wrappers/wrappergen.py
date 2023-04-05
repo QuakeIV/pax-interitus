@@ -78,7 +78,7 @@ if "attrs" in cfg:
     v["readonly"] = r.pop("readonly") if "readonly" in r else False
     v["ptr"] = len(t) > 1 # if there is a * assume its a pointer
     if v["type"] not in ["QString", "QList", "bool", "double", "celestialmass", "fixeddistance", "fixedtime", "uint64_t"] + subtypes + [object_type]:
-      raise TypeError(f"Unrecognized type: {t}")
+      raise TypeError(f"Unrecognized type: {t[0].strip()}")
     if v["type"] == "QList":
       if v["template_type"] not in [] + subtypes + [object_type]:
         raise TypeError(f"Template type {v['template_type']} not handled for QList")

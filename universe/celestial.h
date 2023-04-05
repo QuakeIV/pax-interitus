@@ -6,7 +6,7 @@
 #include <QList>
 #include <QPainter>
 
-class SolarSystemType;
+class SolarSystem;
 
 class Celestial
 {
@@ -15,7 +15,7 @@ public:
     // r = radius in meters, m = mass in whatever the mass ref frame was
     // distance = meters
     //for stars
-    Celestial(double r, uint64_t m);
+    Celestial(double r, uint64_t m, SolarSystem *system);
     //planets/moons/etc
     Celestial(double r, uint64_t m, double distance, Celestial *parent);
 
@@ -37,7 +37,7 @@ public:
 
     QList<Celestial*> children;
 
-    SolarSystemType *system; //what system is the celestial located in
+    SolarSystem *system; //what system is the celestial located in
 };
 
 #endif // CELESTIALTYPE_H

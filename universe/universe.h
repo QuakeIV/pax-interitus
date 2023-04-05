@@ -7,7 +7,7 @@
 
 class Transform;
 class Celestial;
-class SolarSystemType;
+class SolarSystem;
 class Spacecraft;
 class SpacecraftDesign;
 
@@ -20,9 +20,11 @@ extern int64_t universe_next_event;
 extern bool universe_paused;
 extern int64_t universe_time_warp;
 const int64_t universe_min_warp = -20;
+// TODO: reconsider this, with respect to balance/pacing issues aurora had where it felt like decades flew by almost instantly
+// target something like a max of one year every hour, or one year every 10 minutes? something like that
 const int64_t universe_max_warp =  26;
 extern QList<Transform*> transforms;
-extern QList<SolarSystemType*> systems;
+extern QList<SolarSystem*> systems;
 extern QList<Spacecraft*> spacecraft;
 // TODO: this should most definitively be stored as part of an empire
 extern QList<SpacecraftDesign*> spacecraft_designs;

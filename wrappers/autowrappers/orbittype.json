@@ -1,7 +1,7 @@
 {
     "type":"OrbitType",
     "header":"orbittype.h",
-    "disable_instantiation":true,
+    "disable_instantiation":true, // TODO: support parameterized instantiation
     "subtypes":["Celestial","FixedV2D",],
     "attrs":
     [

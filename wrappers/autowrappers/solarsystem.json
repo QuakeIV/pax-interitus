@@ -1,0 +1,31 @@
+{
+    "type":"SolarSystem",
+    "disable_instantiation":true,
+    "subtypes":["Spacecraft","Celestial"],
+    "header":"solarsystem.h",
+    "attrs":
+    [
+        {
+            "name":"name",
+            "type":"QString",
+        },
+        {
+            "name":"system_id",
+            "type":"uint64_t",
+        },
+        {
+            "name":"root",
+            "type":"Celestial",
+        },
+        {
+            "name":"spacecraft",
+            "type":"QList",
+            "template_type":"Spacecraft*",
+        },
+        {
+            "name":"celestials",
+            "type":"QList",
+            "template_type":"Celestial*",
+        },
+    ],
+}

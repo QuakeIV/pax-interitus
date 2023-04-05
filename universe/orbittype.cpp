@@ -5,12 +5,10 @@
 #include "utilities.h"
 #include "units.h"
 
-OrbitType::OrbitType()
-{
-}
+OrbitType::OrbitType(SolarSystem *solarsystem) : Transform(solarsystem) {}
 
 //TODO: non circular orbits (racetrack should support this, we just need to be able to take additional parameters)
-OrbitType::OrbitType(Celestial *p, double r)
+OrbitType::OrbitType(Celestial *p, double r) : Transform(p->system)
 {
     parent = p;
     orbital_radius = DISTANCE_M_TO_FIXED(r);

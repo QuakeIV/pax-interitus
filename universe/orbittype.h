@@ -20,8 +20,8 @@ public:
     int64_t orbital_radius     = 0; //in fixed distance (this is currently only used for trajectory render culling)
     Celestial *parent          = NULL; //for now assume you can only really orbit a celestial TODO: improve?
 
+    OrbitType(SolarSystem *solarsystem);
     OrbitType(Celestial *p, double r);
-    OrbitType();
 
     void update_position(void) override;
     FixedV2D project_position(int64_t delta_time);

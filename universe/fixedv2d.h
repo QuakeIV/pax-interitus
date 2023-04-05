@@ -9,7 +9,6 @@
 // these limits could actually be expressed as a sphere its just not obvious how that aught to be
 // calculated or enforced
 
-#include <QDebug>
 #include "utilities.h"
 
 class FixedV2D

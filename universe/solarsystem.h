@@ -5,11 +5,7 @@
 #include "celestial.h"
 #include "spacecraft/spacecraft.h"
 
-class Taskgroup;
-class SolarSystemType;
-extern QList<SolarSystemType*> systems;
-
-class SolarSystemType
+class SolarSystem
 {
 public:
     Celestial root; //root celestial body (this might possibly change later)
@@ -21,7 +17,7 @@ public:
     QString name;
 
     // parameters for root celestial object
-    SolarSystemType(double r, uint64_t m);
+    SolarSystem(double r, uint64_t m);
 };
 
 #endif // SOLARSYSTEMTYPE_H

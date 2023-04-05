@@ -1,8 +1,9 @@
 #include "celestial.h"
-#include "solarsystemtype.h"
+#include "solarsystem.h"
 
 // for stars
-Celestial::Celestial(double r, uint64_t m)
+Celestial::Celestial(double r, uint64_t m, SolarSystem *system):
+    trajectory(system)
 {
     radius = DISTANCE_M_TO_FIXED(r);
     mass = m;

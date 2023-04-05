@@ -3,6 +3,7 @@
 #include "units.h" // conversion factors and so on
 #include "transformwrapper.h"
 #include "fixedv2dwrapper.h"
+#include "solarsystemwrapper.h"
 #include "transform.h"
 
 static void type_dealloc(PyTransformObject *self)
@@ -15,10 +16,12 @@ static void type_dealloc(PyTransformObject *self)
 static bool wrapper_newup = true;
 static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    PyTransformObject *object = (PyTransformObject *)type->tp_alloc(type, 0);
     if (wrapper_newup)
-        object->ref = new Transform();
-    object->tracked = false;
+    {
+        PyErr_SetString(PyExc_TypeError, "paxpython.Transform cannot be instantiated from python.");
+        return NULL;
+    }
+    PyTransformObject *object = (PyTransformObject *)type->tp_alloc(type, 0);
     return (PyObject*)object;
 }
 
@@ -43,11 +46,40 @@ static int set_position(PyTransformObject *self, PyObject *value, void *closure)
     self->ref->position = *v->ref;
     return 0;
 }
+static PyObject* get_solarsystem(PyTransformObject *self, void *closure)
+{
+    if (!self->ref->solarsystem)
+        Py_RETURN_NONE;
+    return (PyObject*)pyobjectize_solarsystem(self->ref->solarsystem);
+}
+static int set_solarsystem(PyTransformObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    if (!PyObject_IsInstance(value, (PyObject *)&PySolarSystemType))
+    {
+        PyErr_SetString(PyExc_TypeError, "Can only set value to SolarSystem.");
+        return -1;
+    }
+    PySolarSystemObject *v = (PySolarSystemObject*)value;
+    self->ref->solarsystem = v->ref;
+    return 0;
+}
 static PyGetSetDef getsets[] = {
     {
     "position",
     (getter)get_position,
     (setter)set_position,
+    NULL, // documentation string
+    NULL, // closure
+    },
+    {
+    "solarsystem",
+    (getter)get_solarsystem,
+    (setter)set_solarsystem,
     NULL, // documentation string
     NULL, // closure
     },

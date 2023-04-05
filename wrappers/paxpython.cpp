@@ -61,6 +61,8 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
     // does pytype_ready and also addobject
     if (!init_celestial(m))
         return NULL;
+    if (!init_solarsystem(m))
+        return NULL;
     if (!init_insulator(m))
         return NULL;
     if (!init_capacitordesign(m))
@@ -70,6 +72,8 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
     if (!init_orbittype(m)) // TODO: rename this type to just be orbit
         return NULL;
     if (!init_fixedv2d(m))
+        return NULL;
+    if (!init_transform(m))
         return NULL;
     if (!init_spacecraftdesign(m))
         return NULL;

@@ -4,7 +4,7 @@
 #include "fixedv2d.h"
 #include "universe.h"
 #include <QApplication>
-#include "solarsystemtype.h"
+#include "solarsystem.h"
 #include <QMenu>
 #include "utilities.h"
 #include <QLayout>

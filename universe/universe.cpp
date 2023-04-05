@@ -2,11 +2,12 @@
 #include "transform.h"
 #include "celestial.h"
 #include "spacecraft/taskgroup.h"
-#include "solarsystemtype.h"
+#include "solarsystem.h"
 #include "spacecraft/spacecraft.h"
 #include "units.h"
 #include <thread>
 #include <chrono>
+#include <QDebug>
 
 // this is supposed to prevent the UI/python interface from screwing up datastructures while the universe loop is working on them
 // lock_shared and unlock_shared for readonly-lock
@@ -36,7 +37,7 @@ int64_t universe_next_event = INT64_MAX;
 QList<Transform*> transforms;
 
 // track all extant solar systems
-QList<SolarSystemType*> systems;
+QList<SolarSystem*> systems;
 
 // track all spacecraft in existence
 QList<Spacecraft*> spacecraft;
@@ -140,7 +141,7 @@ void universe_init(void)
     insulator_materials.append(i);
 
     // for now hard code the solar system because to heck with it i tell you
-    static SolarSystemType sol = SolarSystemType(695700000.0, 1988500000000000);
+    static SolarSystem sol = SolarSystem(695700000.0, 1988500000000000);
     sol.root.color = QColor(226, 223, 24); // nice sun color
     sol.root.name = "Sol";
     sol.name = "Sol";
@@ -311,7 +312,7 @@ void universe_init(void)
 
     static Spacecraft testcraft1 = Spacecraft();
     testcraft1.name = "SS Test 1";
-    static Transform epic_static_position = Transform();
+    static Transform epic_static_position = Transform(&sol);
     epic_static_position.position.x = -105684699015963;
     epic_static_position.position.y = -27305789478705;
     testcraft1.trajectory = &epic_static_position;
