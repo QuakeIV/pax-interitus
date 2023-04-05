@@ -127,7 +127,7 @@ def area_str(qty):
   return f"{sigfig(qty/scale, 6)}{unit}"
 #
 
-# TODO: internal reference frame is in liters, this is translating to cubic meters as that is more familiar to a lot of space game ners
+# TODO: internal reference frame is in liters, this is translating to cubic meters as that is more familiar to a lot of space game nerds
 # should we do everyting internally in m3? maybe not a lot of math appears to prefer liters? is that true at all?
 # TODO: general scaling improvements, this seems fine for now though
 volume_scale = {}
@@ -135,8 +135,8 @@ volume_scale[0.000001] = "mm³"
 volume_scale[1000] = "m³"
 volume_scale[1000000000000] = "km³"
 def volume_str(qty):
-  scale, unit = _find_scale_match(qty, volume_scale, 100.0)
-  return f"{sigfig(qty/scale, 6)}{unit}"
+  scale, unit = _find_scale_match(qty, volume_scale, 10.0)
+  return f"{sigfig(qty/scale, 4)}{unit}"
 #
 
 #time scale (rather different in general)
