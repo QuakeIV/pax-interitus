@@ -1,0 +1,2 @@
+In relation to icon.png:
+This icon was obtained for free without license off of the internet, its provenance is unfortunately unknown however it looks nice so it is currently being used.  This notice serves only to clarify that it does not explicitly fall under the overarching Affero GPL v3 license.
