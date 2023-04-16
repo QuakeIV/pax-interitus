@@ -1,6 +1,6 @@
 {
     "type":"Celestial",
-    "disable_instantiation":true,
+    "init":false,
     "subtypes":["OrbitType",],
     "header":"celestial.h",
     "attrs":

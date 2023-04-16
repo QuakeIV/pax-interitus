@@ -16,7 +16,9 @@ static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     PyInsulatorObject *object = (PyInsulatorObject *)type->tp_alloc(type, 0);
     if (wrapper_newup)
+    {
         object->ref = new Insulator();
+    }
     object->tracked = false;
     return (PyObject*)object;
 }

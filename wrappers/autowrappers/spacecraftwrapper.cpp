@@ -18,7 +18,9 @@ static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     PySpacecraftObject *object = (PySpacecraftObject *)type->tp_alloc(type, 0);
     if (wrapper_newup)
+    {
         object->ref = new Spacecraft();
+    }
     object->tracked = false;
     return (PyObject*)object;
 }

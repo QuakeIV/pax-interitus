@@ -1,6 +1,6 @@
 {
     "type":"SolarSystem",
-    "disable_instantiation":true,
+    "init":false,
     "subtypes":["Spacecraft","Celestial"],
     "header":"solarsystem.h",
     "attrs":

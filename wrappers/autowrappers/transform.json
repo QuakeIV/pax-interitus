@@ -1,8 +1,8 @@
 {
     "type":"Transform",
     "header":"transform.h",
-    "disable_instantiation":true, // TODO: support parameterized instantiation
     "subtypes":["FixedV2D","SolarSystem"],
+    "init":{"args":[{"name":"system","type":"SolarSystem"}]},
     "attrs":
     [
         {
@@ -14,7 +14,7 @@
             "type":"SolarSystem*",
         },
     ],
-    // TODO: would be nice to spport this, however no strategy right now to handle the fact that FixedV2D returns a copy of the type (rather than a pointer) (and the fact that thats kindof preferable)
+    // TODO: would be nice to spport this, however no strategy right now to handle the fact that FixedV2D returns a copy of the type (rather than a pointer) (and the fact that it being the way it is is kindof preferable)
     //"funcs":
     //[
     //    {

@@ -16,12 +16,15 @@ static void type_dealloc(PyTransformObject *self)
 static bool wrapper_newup = true;
 static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
+    PyTransformObject *object = (PyTransformObject *)type->tp_alloc(type, 0);
     if (wrapper_newup)
     {
-        PyErr_SetString(PyExc_TypeError, "paxpython.Transform cannot be instantiated from python.");
-        return NULL;
+        SolarSystem *system;
+        if (!PyArg_ParseTuple(args, "O!", &PySolarSystemType, &system))
+            return NULL;
+        object->ref = new Transform(system);
     }
-    PyTransformObject *object = (PyTransformObject *)type->tp_alloc(type, 0);
+    object->tracked = false;
     return (PyObject*)object;
 }
 

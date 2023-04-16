@@ -17,7 +17,9 @@ static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     PyCapacitorDesignObject *object = (PyCapacitorDesignObject *)type->tp_alloc(type, 0);
     if (wrapper_newup)
+    {
         object->ref = new CapacitorDesign();
+    }
     object->tracked = false;
     return (PyObject*)object;
 }

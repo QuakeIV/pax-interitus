@@ -1,5 +1,4 @@
 
-
 class FileWriter:
   def __init__(self, filename):
     self.file = open(filename, "w")
@@ -32,10 +31,33 @@ def unknown_attr_check(thing):
   if thing:
     raise KeyError(f"unrecognized keys for file ({args.i}): {list(thing.keys())}")
 #
-  
 
+# helper to turn args json into 
+def pyargparse_args(args):
+  argparse_string = ""
+  argptrs = []
+  for a in args:
+    attr_name = a["name"]
+    type_name = a["type"]
+    if   type_name == "double":
+      source.write(f"double {attr_name};")
+      argparse_string += "d"
+      argptrs.append(f"&{attr_name}")
+    elif type_name in subtypes + [object_type]:
+      source.write(f"{type_name} *{attr_name};")
+      argparse_string += "O!"
+      argptrs.append(f"&Py{type_name}Type") # type specifier
+      argptrs.append(f"&{attr_name}") # actual attribute what for storing the value
+  # build arg parser string
+  if args:
+    argptr_str = ", ".join(argptrs)
+    source.write(f"if (!PyArg_ParseTuple(args, \"{argparse_string}\", {argptr_str}))")
+    source.indent()
+    source.write("return NULL;")
+    source.dedent()
+#
 
-# json5 allows trailing commas
+# json5 allows trailing commas and comments, loosens up syntax a bit in general
 import sys, json5, os, argparse
 
 parser = argparse.ArgumentParser(
@@ -60,8 +82,24 @@ object_type = cfg.pop("type")
 # this drives header includes and type validation
 subtypes = cfg.pop("subtypes") if "subtypes" in cfg else []
 
-# this means the type cannot be instantiated from python
-instantiation_disabled = cfg.pop("disable_instantiation") if "disable_instantiation" in cfg else False
+# instantiation config
+init_cfg = cfg.pop("init") if "init" in cfg else {"args":[]}
+# checking if its equal to false instead of logcal not-ing it, because other things might evaluate as logically false but not be what I am looking for
+instantiation_disabled = init_cfg == False
+if init_cfg:
+  init_args_cfg = init_cfg.pop("args")
+  unknown_attr_check(init_cfg)
+  init_args = []
+  # args parameter is not optional
+  if not isinstance(init_args_cfg, list):
+    raise TypeError("init args must be list")
+  for arg in init_args_cfg:
+    a = {}
+    a["name"] = arg.pop("name")
+    a["type"] = arg.pop("type")
+    unknown_attr_check(arg)
+    init_args.append(a)
+# not really worth unknown_attr_check on init_args_cfg, we already type check it is a list, and then iterate over it
 
 attrs = []
 if "attrs" in cfg:
@@ -172,7 +210,7 @@ source.write("static PyObject *type_new(PyTypeObject *type, PyObject *args, PyOb
 source.write("{")
 source.indent()
 if instantiation_disabled:
-  # TODO: currently on 3.8, there are far better ways to handle this in future versions of python iirc
+  # TODO: currently on 3.8, there are far better ways to handle this in future versions of python iirc (specifically, disabling instantiation)
   source.write("if (wrapper_newup)")
   source.write("{")
   source.indent()
@@ -185,9 +223,13 @@ if instantiation_disabled:
 else:
   source.write(f"Py{object_type}Object *object = (Py{object_type}Object *)type->tp_alloc(type, 0);")
   source.write("if (wrapper_newup)")
+  source.write("{")
   source.indent()
-  source.write(f"object->ref = new {object_type}();")
+  pyargparse_args(init_args)
+  args = ",".join([a["name"] for a in init_args])
+  source.write(f"object->ref = new {object_type}({args});")
   source.dedent()
+  source.write("}")
   source.write("object->tracked = false;")
   source.write("return (PyObject*)object;")
 source.dedent()
@@ -358,19 +400,7 @@ for f in funcs:
   source.write(f"static PyObject *func_{name}(Py{object_type}Object *self, PyObject *args)")
   source.write("{")
   source.indent()
-  argparse_string = ""
-  for a in f["args"]:
-    if   a["type"] == "double":
-      attr_name = a["name"]
-      source.write(f"double {attr_name};")
-      argparse_string += "d"
-  # build arg parser string
-  if f["args"]:
-    argptr_str = ",".join(["&" + a["name"] for a in f["args"]])
-    source.write(f"if (!PyArg_ParseTuple(args, \"{argparse_string}\", {argptr_str}))")
-    source.indent()
-    source.write("return NULL;")
-    source.dedent()
+  pyargparse_args(f["args"]) # fetch args into variables of the same name
   args = ",".join([a["name"] for a in f["args"]])
   if   f["type"] == "double":
     source.write(f"return PyFloat_FromDouble(self->ref->{name}({args}));")

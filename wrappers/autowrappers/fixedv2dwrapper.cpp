@@ -16,7 +16,9 @@ static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
     PyFixedV2DObject *object = (PyFixedV2DObject *)type->tp_alloc(type, 0);
     if (wrapper_newup)
+    {
         object->ref = new FixedV2D();
+    }
     object->tracked = false;
     return (PyObject*)object;
 }
