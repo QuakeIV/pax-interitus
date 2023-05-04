@@ -1,7 +1,13 @@
 {
     "type":"OrbitType",
     "header":"orbittype.h",
-    "init":false,
+    "init":{
+      "args":
+      [
+        {"name":"p","type":"Celestial"},
+        {"name":"r","type":"double"},
+      ]
+    },
     "subtypes":["Celestial","FixedV2D",],
     "attrs":
     [

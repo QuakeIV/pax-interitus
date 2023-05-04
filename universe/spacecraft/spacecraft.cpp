@@ -35,6 +35,14 @@ Spacecraft::~Spacecraft()
 {
     spacecraft.removeOne(this);
 }
+bool Spacecraft::ready_to_jump(void)
+{
+    // TODO: would be nice to not have to check this
+//    if (selected_drive < 0 || selected_drive >= jump_drives.length())
+//        return false;
+//    return jump_drives[selected_drive]->jump(this, tgt);
+    return true;
+}
 bool Spacecraft::jump(Transform* tgt, int selected_drive)
 {
     // TODO: would be nice to not have to check this

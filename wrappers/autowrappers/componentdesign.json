@@ -1,0 +1,30 @@
+{
+    "type":"ComponentDesign",
+    "header":"components/component.h",
+    "subtypes":["CircuitDesign",],
+    "attrs":
+    [
+        {
+            "name":"name",
+            "type":"QString",
+        },
+        {
+            "name":"uses_power",
+            "type":"bool",
+            "readonly":true,
+        },
+        {
+            "name":"produces_power",
+            "type":"bool",
+            "readonly":true,
+        },
+    ],
+    "funcs":
+    [
+        {
+            "name":"descriptor_string",
+            "type":"QString",
+            "args":[],
+        },
+    ],
+}

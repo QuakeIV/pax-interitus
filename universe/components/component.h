@@ -74,7 +74,7 @@ class EngineDesign : public ComponentDesign
 
 };
 
-class Engine : Component
+class Engine : public Component
 {
 public:
     EngineDesign design;
@@ -85,9 +85,10 @@ public:
 // eh note that should probably be at the circuit level, the reactor should just have a wattage and voltage rating, and then be notified of its current voltage
 class ReactorDesign : public ComponentDesign
 {
+public:
     static const bool produces_power = true;
 };
-class Reactor : Component
+class Reactor : public Component
 {
 public:
     ReactorDesign design;
@@ -97,6 +98,7 @@ public:
 
 class DirectedweaponDesign : public ComponentDesign
 {
+public:
     static const bool uses_power = true;
 };
 
@@ -109,7 +111,7 @@ protected:
 public:
     DirectedweaponDesign design;
 
-    Directedweapon(Transform *pos);
+    Directedweapon();
 
     // in mm, this is probably going to change over time but something should be provided to characterize effective range
     // most likely will have parameters at some point

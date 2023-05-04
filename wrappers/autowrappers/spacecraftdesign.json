@@ -1,7 +1,7 @@
 {
     "type":"SpacecraftDesign",
     "header":"spacecraft/spacecraft.h",
-//    "subtypes":["EngineDesign","ReactorDesign","DirectedweaponDesign","JumpdriveDesign","CircuitDesign"],
+    "subtypes":["EngineDesign","ReactorDesign","DirectedweaponDesign","JumpdriveDesign","CircuitDesign"],
     "attrs":
     [
         {
@@ -20,18 +20,38 @@
             "name":"radius",
             "type":"fixeddistance",
         },
-        // TODO: we need to finally have reciprocol lists so we can append EngineDesign and so on
-        //{
-        //    "name":"radius",
-        //    "type":"fixeddistance",
-        //},
+        {
+            "name":"engines",
+            "type":"QList",
+            "template_type":"EngineDesign*",
+        },
+        {
+            "name":"reactors",
+            "type":"QList",
+            "template_type":"ReactorDesign*",
+        },
+        {
+            "name":"directed_weapons",
+            "type":"QList",
+            "template_type":"DirectedweaponDesign*",
+        },
+        {
+            "name":"jump_drives",
+            "type":"QList",
+            "template_type":"JumpdriveDesign*",
+        },
+        {
+            "name":"circuits",
+            "type":"QList",
+            "template_type":"CircuitDesign*",
+        },
     ],
     "funcs":
     [
         //{
         //    "name":"engines",
-        //    "type":"QList",
-        //    "template_type":"EngineDesign",
+        //    "type":"bool",
+        //    "template_type":"EngineDesign*",
         //    "args":[],
         //},
     ],

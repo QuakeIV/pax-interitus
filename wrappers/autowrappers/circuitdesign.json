@@ -1,0 +1,52 @@
+{
+    "type":"CircuitDesign",
+    "header":"components/circuit.h",
+    "subtypes":["Insulator","Conductor","ComponentDesign"],
+    "attrs":
+    [
+        {
+            "name":"name",
+            "type":"QString",
+        },
+        {
+            "name":"insulator",
+            "type":"Insulator*",
+        },
+        {
+            "name":"conductor",
+            "type":"Conductor*",
+        },
+        {
+            "name":"rated_voltage",
+            "type":"double",
+        },
+        {
+            "name":"rated_amperage",
+            "type":"double",
+        },
+        {
+            "name":"components",
+            "type":"QList",
+            "template_type":"ComponentDesign*",
+        },
+    ],
+    "funcs":
+    [
+        {
+            "name":"descriptor_string",
+            "type":"QString",
+            "args":[],
+        },
+        // this is just a reminder of how parameters work
+        //{
+        //    "name":"energy_at_voltage",
+        //    "type":"double",
+        //    "args":[
+        //        {
+        //            "name":"voltage",
+        //            "type":"double",
+        //        },
+        //    ],
+        //},
+    ],
+}

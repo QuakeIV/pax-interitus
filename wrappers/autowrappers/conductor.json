@@ -1,0 +1,23 @@
+{
+    "type":"Conductor",
+    "header":"materials.h",
+    "attrs":
+    [
+        {
+            "name":"name",
+            "type":"QString",
+        },
+        {
+            "name":"density",
+            "type":"double",
+        },
+        {
+            "name":"specific_heat",
+            "type":"double",
+        },
+        {
+            "name":"resistivity",
+            "type":"double",
+        },
+    ],
+}

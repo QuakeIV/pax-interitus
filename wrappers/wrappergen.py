@@ -133,7 +133,7 @@ if "funcs" in cfg:
     f = {}
     f["name"] = r.pop("name")
     f["type"] = r.pop("type")
-    if f["type"] not in ["double", "fixedtime", "fixedenergy"]:
+    if f["type"] not in ["double", "bool", "fixedtime", "fixedenergy", "QString","void"]:
       raise TypeError(f"Unrecognized return type: {f['type']}")
     f["args"] = []
     for a in r.pop("args"):
@@ -408,6 +408,13 @@ for f in funcs:
     source.write(f"return PyFloat_FromDouble(((double)self->ref->{name}({args}))/TIME_FACTOR);")
   elif f["type"] == "fixedenergy": # TODO: i think for now this is just joules, not totally sure if thats really satisfactory
     source.write(f"return PyFloat_FromDouble(((double)self->ref->{name}({args})));")
+  elif f["type"] == "QString": # TODO: i think for now this is just joules, not totally sure if thats really satisfactory
+    source.write(f"return PyUnicode_FromString(self->ref->{name}({args}).toStdString().c_str());")
+  elif f["type"] == "bool": # TODO: i think for now this is just joules, not totally sure if thats really satisfactory
+    source.write(f"return PyBool_FromLong(self->ref->{name}({args}));")
+  elif f["type"] == "void": # TODO: i think for now this is just joules, not totally sure if thats really satisfactory
+    source.write(f"self->ref->{name}({args});")
+    source.write(f"Py_RETURN_NONE;")
   #TODO: return value
   #TODO: handle return type here
   source.dedent()

@@ -10,6 +10,7 @@
 // TODO: it would i think be nice for these to be specialized to particular spacecraft designs and integral to them
 class JumpdriveDesign : public ComponentDesign
 {
+public:
     CapacitorDesign cap;
     static const bool uses_power = true;
 };

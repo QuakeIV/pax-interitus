@@ -3,16 +3,29 @@
 
 #include <Python.h>
 
-#include "autowrappers/insulatorwrapper.h"
-#include "autowrappers/capacitordesignwrapper.h"
 #include "autowrappers/capacitorwrapper.h"
+#include "autowrappers/capacitordesignwrapper.h"
 #include "autowrappers/celestialwrapper.h"
-#include "autowrappers/solarsystemwrapper.h"
-#include "autowrappers/orbittypewrapper.h"
+#include "autowrappers/circuitwrapper.h"
+#include "autowrappers/circuitdesignwrapper.h"
+#include "autowrappers/componentwrapper.h"
+#include "autowrappers/componentdesignwrapper.h"
+#include "autowrappers/conductorwrapper.h"
+#include "autowrappers/directedweaponwrapper.h"
+#include "autowrappers/directedweapondesignwrapper.h"
+#include "autowrappers/enginewrapper.h"
+#include "autowrappers/enginedesignwrapper.h"
 #include "autowrappers/fixedv2dwrapper.h"
-#include "autowrappers/transformwrapper.h"
-#include "autowrappers/spacecraftdesignwrapper.h"
+#include "autowrappers/insulatorwrapper.h"
+#include "autowrappers/jumpdrivewrapper.h"
+#include "autowrappers/jumpdrivedesignwrapper.h"
+#include "autowrappers/orbittypewrapper.h"
+#include "autowrappers/reactorwrapper.h"
+#include "autowrappers/reactordesignwrapper.h"
+#include "autowrappers/solarsystemwrapper.h"
 #include "autowrappers/spacecraftwrapper.h"
+#include "autowrappers/spacecraftdesignwrapper.h"
+#include "autowrappers/transformwrapper.h"
 
 typedef PyObject *(*pyobjectize_generic_func)(void *ref);
 typedef struct

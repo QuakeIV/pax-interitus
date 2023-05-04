@@ -16,12 +16,16 @@ static void type_dealloc(PyOrbitTypeObject *self)
 static bool wrapper_newup = true;
 static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
+    PyOrbitTypeObject *object = (PyOrbitTypeObject *)type->tp_alloc(type, 0);
     if (wrapper_newup)
     {
-        PyErr_SetString(PyExc_TypeError, "paxpython.OrbitType cannot be instantiated from python.");
-        return NULL;
+        Celestial *p;
+        double r;
+        if (!PyArg_ParseTuple(args, "O!d", &PyCelestialType, &p, &r))
+            return NULL;
+        object->ref = new OrbitType(p,r);
     }
-    PyOrbitTypeObject *object = (PyOrbitTypeObject *)type->tp_alloc(type, 0);
+    object->tracked = false;
     return (PyObject*)object;
 }
 

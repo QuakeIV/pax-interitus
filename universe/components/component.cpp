@@ -3,7 +3,7 @@
 #include "spacecraft/spacecraft.h"
 
 
-Directedweapon::Directedweapon(Transform *pos)
+Directedweapon::Directedweapon()
 {
 }
 // describe effective range (parameters defining what 'effective' means to come)

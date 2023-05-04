@@ -4,6 +4,11 @@
 #include "spacecraftwrapper.h"
 #include "spacecraftdesignwrapper.h"
 #include "transformwrapper.h"
+#include "enginewrapper.h"
+#include "reactorwrapper.h"
+#include "directedweaponwrapper.h"
+#include "jumpdrivewrapper.h"
+#include "circuitwrapper.h"
 #include "spacecraft/spacecraft.h"
 
 static void type_dealloc(PySpacecraftObject *self)
@@ -86,6 +91,94 @@ static int set_trajectory(PySpacecraftObject *self, PyObject *value, void *closu
     self->ref->trajectory = v->ref;
     return 0;
 }
+static PyObject* get_engines(PySpacecraftObject *self, void *closure)
+{
+    PyObject *engines_pylist = PyList_New(0);
+    foreach (Engine *element, self->ref->engines)
+    {
+        PyEngineObject *py_element = pyobjectize_engine(element);
+        PyList_Append(engines_pylist, (PyObject *)py_element);
+        Py_DECREF(py_element);
+    }
+    return engines_pylist;
+}
+static int set_engines(PySpacecraftObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    PyErr_SetString(PyExc_NotImplementedError, "Setter for bool type not implemented.");
+    return -1;
+    return 0;
+}
+static PyObject* get_reactors(PySpacecraftObject *self, void *closure)
+{
+    PyObject *reactors_pylist = PyList_New(0);
+    foreach (Reactor *element, self->ref->reactors)
+    {
+        PyReactorObject *py_element = pyobjectize_reactor(element);
+        PyList_Append(reactors_pylist, (PyObject *)py_element);
+        Py_DECREF(py_element);
+    }
+    return reactors_pylist;
+}
+static int set_reactors(PySpacecraftObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    PyErr_SetString(PyExc_NotImplementedError, "Setter for bool type not implemented.");
+    return -1;
+    return 0;
+}
+static PyObject* get_directed_weapons(PySpacecraftObject *self, void *closure)
+{
+    PyObject *directed_weapons_pylist = PyList_New(0);
+    foreach (Directedweapon *element, self->ref->directed_weapons)
+    {
+        PyDirectedweaponObject *py_element = pyobjectize_directedweapon(element);
+        PyList_Append(directed_weapons_pylist, (PyObject *)py_element);
+        Py_DECREF(py_element);
+    }
+    return directed_weapons_pylist;
+}
+static int set_directed_weapons(PySpacecraftObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    PyErr_SetString(PyExc_NotImplementedError, "Setter for bool type not implemented.");
+    return -1;
+    return 0;
+}
+static PyObject* get_jump_drives(PySpacecraftObject *self, void *closure)
+{
+    PyObject *jump_drives_pylist = PyList_New(0);
+    foreach (Jumpdrive *element, self->ref->jump_drives)
+    {
+        PyJumpdriveObject *py_element = pyobjectize_jumpdrive(element);
+        PyList_Append(jump_drives_pylist, (PyObject *)py_element);
+        Py_DECREF(py_element);
+    }
+    return jump_drives_pylist;
+}
+static int set_jump_drives(PySpacecraftObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    PyErr_SetString(PyExc_NotImplementedError, "Setter for bool type not implemented.");
+    return -1;
+    return 0;
+}
 static PyGetSetDef getsets[] = {
     {
     "name",
@@ -108,10 +201,46 @@ static PyGetSetDef getsets[] = {
     NULL, // documentation string
     NULL, // closure
     },
+    {
+    "engines",
+    (getter)get_engines,
+    (setter)set_engines,
+    NULL, // documentation string
+    NULL, // closure
+    },
+    {
+    "reactors",
+    (getter)get_reactors,
+    (setter)set_reactors,
+    NULL, // documentation string
+    NULL, // closure
+    },
+    {
+    "directed_weapons",
+    (getter)get_directed_weapons,
+    (setter)set_directed_weapons,
+    NULL, // documentation string
+    NULL, // closure
+    },
+    {
+    "jump_drives",
+    (getter)get_jump_drives,
+    (setter)set_jump_drives,
+    NULL, // documentation string
+    NULL, // closure
+    },
     {NULL},
 };
 
 // wrapped function calls
+static PyObject *func_ready_to_jump(PySpacecraftObject *self, PyObject *args)
+{
+    return PyBool_FromLong(self->ref->ready_to_jump());
+}
+static PyMethodDef  methods[] = {
+    {"ready_to_jump", (PyCFunction)func_ready_to_jump, METH_NOARGS, PyDoc_STR("Wraps a call to ready_to_jump.")},
+    {NULL, NULL}
+};
 
 static PyObject* __eq__(PySpacecraftObject *self, PyObject *other, int op)
 {
@@ -132,6 +261,7 @@ PyTypeObject PySpacecraftType = {
     .tp_flags = Py_TPFLAGS_DEFAULT,
     .tp_doc = PyDoc_STR("PaxPython Spacecraft Type Wrapper."),
     .tp_richcompare = (richcmpfunc)&__eq__,
+    .tp_methods = methods,
     .tp_getset = getsets,
     .tp_new = type_new,
 };

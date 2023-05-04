@@ -1,0 +1,36 @@
+{
+    "type":"Circuit",
+    "header":"components/circuit.h",
+    "subtypes":["CircuitDesign","Component"],
+    "attrs":
+    [
+        {
+            "name":"design",
+            "type":"CircuitDesign",
+        },
+        {
+            "name":"components",
+            "type":"QList",
+            "template_type":"Component*",
+        },
+    ],
+    "funcs":
+    [
+        {
+            "name":"descriptor_string",
+            "type":"QString",
+            "args":[],
+        },
+        // this is just a reminder of how parameters work
+        //{
+        //    "name":"energy_at_voltage",
+        //    "type":"double",
+        //    "args":[
+        //        {
+        //            "name":"voltage",
+        //            "type":"double",
+        //        },
+        //    ],
+        //},
+    ],
+}

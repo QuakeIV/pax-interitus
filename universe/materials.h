@@ -43,6 +43,7 @@ public:
 
 class Conductor : public Material
 {
+public:
     // ohm-meters
     double resistivity;
 };

@@ -59,25 +59,51 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
         return NULL;
 
     // does pytype_ready and also addobject
-    if (!init_celestial(m))
-        return NULL;
-    if (!init_solarsystem(m))
-        return NULL;
-    if (!init_insulator(m))
+    if (!init_capacitor(m))
         return NULL;
     if (!init_capacitordesign(m))
         return NULL;
-    if (!init_capacitor(m))
+    if (!init_celestial(m))
         return NULL;
-    if (!init_orbittype(m)) // TODO: rename this type to just be orbit
+    if (!init_circuit(m))
+        return NULL;
+    if (!init_circuitdesign(m))
+        return NULL;
+    if (!init_component(m))
+        return NULL;
+    if (!init_componentdesign(m))
+        return NULL;
+    if (!init_conductor(m))
+        return NULL;
+    if (!init_directedweapon(m))
+        return NULL;
+    if (!init_directedweapondesign(m))
+        return NULL;
+    if (!init_engine(m))
+        return NULL;
+    if (!init_enginedesign(m))
         return NULL;
     if (!init_fixedv2d(m))
         return NULL;
-    if (!init_transform(m))
+    if (!init_insulator(m))
+        return NULL;
+    if (!init_jumpdrive(m))
+        return NULL;
+    if (!init_jumpdrivedesign(m))
+        return NULL;
+    if (!init_orbittype(m)) // TODO: rename this type to just be orbit
+        return NULL;
+    if (!init_reactor(m))
+        return NULL;
+    if (!init_reactordesign(m))
+        return NULL;
+    if (!init_solarsystem(m))
+        return NULL;
+    if (!init_spacecraft(m))
         return NULL;
     if (!init_spacecraftdesign(m))
         return NULL;
-    if (!init_spacecraft(m))
+    if (!init_transform(m))
         return NULL;
 
     Py_INCREF(&PySystemRendererType);
