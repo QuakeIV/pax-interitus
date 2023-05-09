@@ -4,7 +4,7 @@
     "init":{
       "args":
       [
-        {"name":"p","type":"Celestial"},
+        {"name":"p","type":"Celestial*"},
         {"name":"r","type":"double"},
       ]
     },

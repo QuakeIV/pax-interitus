@@ -237,8 +237,17 @@ static PyObject *func_ready_to_jump(PySpacecraftObject *self, PyObject *args)
 {
     return PyBool_FromLong(self->ref->ready_to_jump());
 }
+static PyObject *func_jump(PySpacecraftObject *self, PyObject *args)
+{
+    Transform *tgt;
+    int selected_drive;
+    if (!PyArg_ParseTuple(args, "O!i", &PyTransformType, &tgt, &selected_drive))
+        return NULL;
+    return PyBool_FromLong(self->ref->jump(tgt,selected_drive));
+}
 static PyMethodDef  methods[] = {
     {"ready_to_jump", (PyCFunction)func_ready_to_jump, METH_NOARGS, PyDoc_STR("Wraps a call to ready_to_jump.")},
+    {"jump", (PyCFunction)func_jump, METH_VARARGS, PyDoc_STR("Wraps a call to jump.")},
     {NULL, NULL}
 };
 

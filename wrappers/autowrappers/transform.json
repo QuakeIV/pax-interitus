@@ -2,7 +2,7 @@
     "type":"Transform",
     "header":"transform.h",
     "subtypes":["FixedV2D","SolarSystem"],
-    "init":{"args":[{"name":"system","type":"SolarSystem"}]},
+    "init":{"args":[{"name":"system","type":"SolarSystem*"}]},
     "attrs":
     [
         {

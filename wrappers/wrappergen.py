@@ -39,11 +39,17 @@ def pyargparse_args(args):
   for a in args:
     attr_name = a["name"]
     type_name = a["type"]
-    if   type_name == "double":
+    if   type_name == "int":
+      source.write(f"int {attr_name};")
+      argparse_string += "i"
+      argptrs.append(f"&{attr_name}")
+    elif type_name == "double":
       source.write(f"double {attr_name};")
       argparse_string += "d"
       argptrs.append(f"&{attr_name}")
     elif type_name in subtypes + [object_type]:
+      if not a["ptr"]:
+        raise TypeError("arg parsing non-pointer structured types not supported")
       source.write(f"{type_name} *{attr_name};")
       argparse_string += "O!"
       argptrs.append(f"&Py{type_name}Type") # type specifier
@@ -96,7 +102,10 @@ if init_cfg:
   for arg in init_args_cfg:
     a = {}
     a["name"] = arg.pop("name")
-    a["type"] = arg.pop("type")
+    t = arg.pop("type")
+    t = t.split("*")
+    a["type"] = t[0].strip()
+    a["ptr"] = len(t) > 1 # if there is a * assume its a pointer
     unknown_attr_check(arg)
     init_args.append(a)
 # not really worth unknown_attr_check on init_args_cfg, we already type check it is a list, and then iterate over it
@@ -139,9 +148,12 @@ if "funcs" in cfg:
     for a in r.pop("args"):
       arg = {}
       arg["name"] = a.pop("name")
-      arg["type"] = a.pop("type")
-      if arg["type"] not in ["double"]:
-        raise TypeError(f"Unrecognized arg type: {f['type']}")
+      t = a.pop("type")
+      t = t.split("*")
+      arg["ptr"] = len(t) > 1 # if there is a * assume its a pointer
+      arg["type"] = t[0].strip()
+      if arg["type"] not in ["double", "int"] + subtypes + [object_type]:
+        raise TypeError(f"Unrecognized arg type: {arg['type']}")
       f["args"].append(arg)
     funcs.append(f)
 #
@@ -415,6 +427,8 @@ for f in funcs:
   elif f["type"] == "void": # TODO: i think for now this is just joules, not totally sure if thats really satisfactory
     source.write(f"self->ref->{name}({args});")
     source.write(f"Py_RETURN_NONE;")
+  else:
+    raise TypeError("unhandled function return type, should have been caught during parsing")
   #TODO: return value
   #TODO: handle return type here
   source.dedent()

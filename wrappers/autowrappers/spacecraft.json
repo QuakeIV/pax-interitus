@@ -50,19 +50,19 @@
             "type":"bool",
             "args":[],
         },
-        //{
-        //    "name":"jump",
-        //    "type":"bool",
-        //    "args":[
-        //        {
-        //            "name":"tgt",
-        //            "type":"Transform*",
-        //        },
-        //        {
-        //            "name":"selected_drive",
-        //            "type":"int",
-        //        },
-        //    ],
-        //},
+        {
+            "name":"jump",
+            "type":"bool",
+            "args":[
+                {
+                    "name":"tgt",
+                    "type":"Transform*",
+                },
+                {
+                    "name":"selected_drive",
+                    "type":"int",
+                },
+            ],
+        },
     ],
 }
