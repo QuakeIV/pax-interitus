@@ -1,4 +1,3 @@
-
 class FileWriter:
   def __init__(self, filename):
     self.file = open(filename, "w")
@@ -27,12 +26,7 @@ class FileWriter:
   #
 #
 
-def unknown_attr_check(thing):
-  if thing:
-    raise KeyError(f"unrecognized keys for file ({args.i}): {list(thing.keys())}")
-#
-
-# helper to turn args json into 
+# helper to turn args json into local variables in a generated python c api function
 def pyargparse_args(args):
   argparse_string = ""
   argptrs = []
@@ -47,7 +41,7 @@ def pyargparse_args(args):
       source.write(f"double {attr_name};")
       argparse_string += "d"
       argptrs.append(f"&{attr_name}")
-    elif type_name in subtypes + [object_type]:
+    elif type_name in cfg.subtypes + [cfg.object_type]:
       if not a["ptr"]:
         raise TypeError("arg parsing non-pointer structured types not supported")
       source.write(f"{type_name} *{attr_name};")
@@ -64,7 +58,7 @@ def pyargparse_args(args):
 #
 
 # json5 allows trailing commas and comments, loosens up syntax a bit in general
-import sys, json5, os, argparse
+import sys, json5, os, argparse, libwrappergen.parse
 
 parser = argparse.ArgumentParser(
   prog = "Paxpython Type Wrapper Generator",
@@ -77,136 +71,50 @@ required.add_argument("-i", metavar="input config json path",  required=True)
 args = parser.parse_args()
 
 # set default values, leave out non-optional values so there are errors downstream
-with open(args.i) as f:
-  cfg = json5.load(f)
-#
-
-# TOOD: it might be better to just derive this from the file name, however the question of capitalization does then come up since most of the types are like This
-object_type = cfg.pop("type")
-
-# this is used to declare structured subtypes that are also wrapped in python objects
-# this drives header includes and type validation
-subtypes = cfg.pop("subtypes") if "subtypes" in cfg else []
-
-# instantiation config
-init_cfg = cfg.pop("init") if "init" in cfg else {"args":[]}
-# checking if its equal to false instead of logcal not-ing it, because other things might evaluate as logically false but not be what I am looking for
-instantiation_disabled = init_cfg == False
-if init_cfg:
-  init_args_cfg = init_cfg.pop("args")
-  unknown_attr_check(init_cfg)
-  init_args = []
-  # args parameter is not optional
-  if not isinstance(init_args_cfg, list):
-    raise TypeError("init args must be list")
-  for arg in init_args_cfg:
-    a = {}
-    a["name"] = arg.pop("name")
-    t = arg.pop("type")
-    t = t.split("*")
-    a["type"] = t[0].strip()
-    a["ptr"] = len(t) > 1 # if there is a * assume its a pointer
-    unknown_attr_check(arg)
-    init_args.append(a)
-# not really worth unknown_attr_check on init_args_cfg, we already type check it is a list, and then iterate over it
-
-attrs = []
-if "attrs" in cfg:
-  for r in cfg.pop("attrs"):
-    v = {}
-    v["name"] = r.pop("name")
-    t = r.pop("type")
-    t = t.split("*")
-    v["type"] = t[0].strip()
-    tt = r.pop("template_type") if "template_type" in r else ""
-    tt = tt.split("*")
-    v["template_type"] = tt[0].strip() if tt[0] else None
-    v["template_type_ptr"] = len(tt) > 1
-    v["readonly"] = r.pop("readonly") if "readonly" in r else False
-    v["ptr"] = len(t) > 1 # if there is a * assume its a pointer
-    if v["type"] not in ["QString", "QList", "bool", "double", "celestialmass", "fixeddistance", "fixedtime", "uint64_t"] + subtypes + [object_type]:
-      raise TypeError(f"Unrecognized type: {t[0].strip()}")
-    if v["type"] == "QList":
-      if v["template_type"] not in [] + subtypes + [object_type]:
-        raise TypeError(f"Template type {v['template_type']} not handled for QList")
-      if not v["template_type_ptr"]:
-        raise TypeError(f"Template type {v['template_type']} must be pointer for QList")
-    unknown_attr_check(r)
-    attrs.append(v)
-  #
-#
-
-funcs = []
-if "funcs" in cfg:
-  for r in cfg.pop("funcs"):
-    f = {}
-    f["name"] = r.pop("name")
-    f["type"] = r.pop("type")
-    if f["type"] not in ["double", "bool", "fixedtime", "fixedenergy", "QString","void"]:
-      raise TypeError(f"Unrecognized return type: {f['type']}")
-    f["args"] = []
-    for a in r.pop("args"):
-      arg = {}
-      arg["name"] = a.pop("name")
-      t = a.pop("type")
-      t = t.split("*")
-      arg["ptr"] = len(t) > 1 # if there is a * assume its a pointer
-      arg["type"] = t[0].strip()
-      if arg["type"] not in ["double", "int"] + subtypes + [object_type]:
-        raise TypeError(f"Unrecognized arg type: {arg['type']}")
-      f["args"].append(arg)
-    funcs.append(f)
-#
-
-type_header = cfg.pop("header")
-
-# error on unrecognized keys
-unknown_attr_check(cfg)
-
-
+cfg = libwrappergen.parse.load(args.i)
 
 # start file writing
 
-header = FileWriter(os.path.join(args.o, f"{object_type.lower()}wrapper.h"))
+header = FileWriter(os.path.join(args.o, f"{cfg.object_type.lower()}wrapper.h"))
 
-header.write(f"#ifndef PYWRAPPER_{object_type.upper()}_H")
-header.write(f"#define PYWRAPPER_{object_type.upper()}_H")
+header.write(f"#ifndef PYWRAPPER_{cfg.object_type.upper()}_H")
+header.write(f"#define PYWRAPPER_{cfg.object_type.upper()}_H")
 header.write()
 header.write("#include <Python.h>")
 header.write()
-header.write(f"class {object_type};")
+header.write(f"class {cfg.object_type};")
 header.write("typedef struct")
 header.write("{")
 header.indent()
 header.write("PyObject_HEAD")
-header.write(f"{object_type} *ref;")
+header.write(f"{cfg.object_type} *ref;")
 header.write("bool tracked;")
 header.dedent()
-header.write(f"}} Py{object_type}Object;")
+header.write(f"}} Py{cfg.object_type}Object;")
 header.write()
 header.write("// Inits the type and adds it as a member to module")
 header.write("// On failure returns false with exception set and decrefs module")
-header.write(f"bool init_{object_type.lower()}(PyObject *m);")
+header.write(f"bool init_{cfg.object_type.lower()}(PyObject *m);")
 header.write()
 header.write("// Takes pointer to object, returns python wrapper for object with ref count of 1")
-header.write(f"Py{object_type}Object *pyobjectize_{object_type.lower()}({object_type} *obj);")
+header.write(f"Py{cfg.object_type}Object *pyobjectize_{cfg.object_type.lower()}({cfg.object_type} *obj);")
 header.write()
-header.write(f"extern PyTypeObject Py{object_type}Type;")
+header.write(f"extern PyTypeObject Py{cfg.object_type}Type;")
 header.write()
-header.write(f"#endif // PYWRAPPER_{object_type.upper()}_H")
+header.write(f"#endif // PYWRAPPER_{cfg.object_type.upper()}_H")
 header.close()
 
-source = FileWriter(os.path.join(args.o, f"{object_type.lower()}wrapper.cpp"))
+source = FileWriter(os.path.join(args.o, f"{cfg.object_type.lower()}wrapper.cpp"))
 
 source.write("#include <Python.h>")
 source.write("#include <structmember.h> // additional python context (forgot what exactly)")
 source.write("#include \"units.h\" // conversion factors and so on")
-source.write(f"#include \"{object_type.lower()}wrapper.h\"")
-for s in subtypes:
+source.write(f"#include \"{cfg.object_type.lower()}wrapper.h\"")
+for s in cfg.subtypes:
   source.write(f"#include \"{s.lower()}wrapper.h\"")
-source.write(f"#include \"{type_header}\"")
+source.write(f"#include \"{cfg.type_header}\"")
 source.write()
-source.write(f"static void type_dealloc(Py{object_type}Object *self)")
+source.write(f"static void type_dealloc(Py{cfg.object_type}Object *self)")
 source.write("{")
 source.indent()
 source.write("if (!self->tracked)")
@@ -221,25 +129,25 @@ source.write("static bool wrapper_newup = true;")
 source.write("static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)")
 source.write("{")
 source.indent()
-if instantiation_disabled:
+if cfg.instantiation_disabled:
   # TODO: currently on 3.8, there are far better ways to handle this in future versions of python iirc (specifically, disabling instantiation)
   source.write("if (wrapper_newup)")
   source.write("{")
   source.indent()
-  source.write(f"PyErr_SetString(PyExc_TypeError, \"paxpython.{object_type} cannot be instantiated from python.\");")
+  source.write(f"PyErr_SetString(PyExc_TypeError, \"paxpython.{cfg.object_type} cannot be instantiated from python.\");")
   source.write(f"return NULL;")
   source.dedent()
   source.write("}")
-  source.write(f"Py{object_type}Object *object = (Py{object_type}Object *)type->tp_alloc(type, 0);")
+  source.write(f"Py{cfg.object_type}Object *object = (Py{cfg.object_type}Object *)type->tp_alloc(type, 0);")
   source.write("return (PyObject*)object;")
 else:
-  source.write(f"Py{object_type}Object *object = (Py{object_type}Object *)type->tp_alloc(type, 0);")
+  source.write(f"Py{cfg.object_type}Object *object = (Py{cfg.object_type}Object *)type->tp_alloc(type, 0);")
   source.write("if (wrapper_newup)")
   source.write("{")
   source.indent()
-  pyargparse_args(init_args)
-  args = ",".join([a["name"] for a in init_args])
-  source.write(f"object->ref = new {object_type}({args});")
+  pyargparse_args(cfg.init_args)
+  args = ",".join([a["name"] for a in cfg.init_args])
+  source.write(f"object->ref = new {cfg.object_type}({args});")
   source.dedent()
   source.write("}")
   source.write("object->tracked = false;")
@@ -250,12 +158,12 @@ source.write()
 # generate 'getter' functions for attributes 
 #TODO: setters
 source.write("// attribute functions")
-for r in attrs:
+for r in cfg.attrs:
   name = r["name"]
   attr_type = r["type"]
 
   # getter
-  source.write(f"static PyObject* get_{name}(Py{object_type}Object *self, void *closure)")
+  source.write(f"static PyObject* get_{name}(Py{cfg.object_type}Object *self, void *closure)")
   source.write("{")
   source.indent()
   if   attr_type == "uint64_t":
@@ -264,7 +172,7 @@ for r in attrs:
     source.write(f"return PyFloat_FromDouble(self->ref->{name});")
   elif attr_type == "bool":
     source.write(f"return PyBool_FromLong(self->ref->{name});")
-  elif attr_type in subtypes + [object_type]:
+  elif attr_type in cfg.subtypes + [cfg.object_type]:
     if r["ptr"]:
       source.write(f"if (!self->ref->{name})")
       source.indent()
@@ -304,7 +212,7 @@ for r in attrs:
   # if read only, dont define the setter at all
   if r["readonly"]:
     continue
-  source.write(f"static int set_{name}(Py{object_type}Object *self, PyObject *value, void *closure)")
+  source.write(f"static int set_{name}(Py{cfg.object_type}Object *self, PyObject *value, void *closure)")
   source.write("{")
   source.indent()
   source.write("if (value == NULL)")
@@ -337,7 +245,7 @@ for r in attrs:
     source.write("return -1;")
     source.dedent()
     source.write(f"self->ref->{name} = v;")
-  elif attr_type in subtypes + [object_type]:
+  elif attr_type in cfg.subtypes + [cfg.object_type]:
     source.write(f"if (!PyObject_IsInstance(value, (PyObject *)&Py{attr_type}Type))")
     source.write("{")
     source.indent()
@@ -386,10 +294,10 @@ for r in attrs:
   source.dedent()
   source.write("}")
 # build getset array
-if attrs:
+if cfg.attrs:
   source.write("static PyGetSetDef getsets[] = {")
   source.indent()
-  for r in attrs:
+  for r in cfg.attrs:
     source.write("{")
     name = r["name"]
     source.write(f"\"{name}\",")
@@ -407,9 +315,9 @@ if attrs:
 source.write()
 # build wrapped function calls
 source.write("// wrapped function calls")
-for f in funcs:
+for f in cfg.funcs:
   name = f["name"]
-  source.write(f"static PyObject *func_{name}(Py{object_type}Object *self, PyObject *args)")
+  source.write(f"static PyObject *func_{name}(Py{cfg.object_type}Object *self, PyObject *args)")
   source.write("{")
   source.indent()
   pyargparse_args(f["args"]) # fetch args into variables of the same name
@@ -434,10 +342,10 @@ for f in funcs:
   source.dedent()
   source.write("}")
 #build methoddef array
-if funcs:
+if cfg.funcs:
   source.write("static PyMethodDef  methods[] = {")
   source.indent()
-  for f in funcs:
+  for f in cfg.funcs:
     name = f["name"]
     method = "METH_VARARGS" if f["args"] else "METH_NOARGS"
     source.write(f"{{\"{name}\", (PyCFunction)func_{name}, {method}, PyDoc_STR(\"Wraps a call to {name}.\")}},")
@@ -446,14 +354,14 @@ if funcs:
   source.write("};")
 source.write()
 # equality function which just checks the base wrapped pointer
-source.write(f"static PyObject* __eq__(Py{object_type}Object *self, PyObject *other, int op)")
+source.write(f"static PyObject* __eq__(Py{cfg.object_type}Object *self, PyObject *other, int op)")
 source.write("{")
 source.indent()
-source.write(f"if (!PyObject_IsInstance(other, (PyObject *)&Py{object_type}Type))")
+source.write(f"if (!PyObject_IsInstance(other, (PyObject *)&Py{cfg.object_type}Type))")
 source.indent()
 source.write("Py_RETURN_FALSE;")
 source.dedent()
-source.write(f"Py{object_type}Object *other_cast = (Py{object_type}Object *)other;")
+source.write(f"Py{cfg.object_type}Object *other_cast = (Py{cfg.object_type}Object *)other;")
 source.write(f"if (op == Py_EQ && self->ref == other_cast->ref)")
 source.indent()
 source.write("Py_RETURN_TRUE;")
@@ -462,31 +370,32 @@ source.write("Py_RETURN_FALSE;")
 source.dedent()
 source.write("}")
 source.write()
-source.write(f"PyTypeObject Py{object_type}Type = {{")
+source.write(f"PyTypeObject Py{cfg.object_type}Type = {{")
 source.indent()
 source.write("PyVarObject_HEAD_INIT(NULL, 0)")
-source.write(f".tp_name = \"paxpython.{object_type}\",")
-source.write(f".tp_basicsize = sizeof(Py{object_type}Object),")
+source.write(f".tp_name = \"paxpython.{cfg.object_type}\",")
+source.write(f".tp_basicsize = sizeof(Py{cfg.object_type}Object),")
 source.write(".tp_itemsize = 0,")
 source.write(".tp_dealloc = (destructor)type_dealloc,")
 # .tp_repr (__repr__) function would live here
 source.write(".tp_flags = Py_TPFLAGS_DEFAULT,")
-source.write(f".tp_doc = PyDoc_STR(\"PaxPython {object_type} Type Wrapper.\"),")
+source.write(f".tp_doc = PyDoc_STR(\"PaxPython {cfg.object_type} Type Wrapper.\"),")
 source.write(".tp_richcompare = (richcmpfunc)&__eq__,")
-if funcs:
+if cfg.funcs:
   source.write(".tp_methods = methods,")
-if attrs:
+if cfg.attrs:
   source.write(".tp_getset = getsets,")
+# .tp_base = &PyTransformType, base type stuff would be here
 source.write(".tp_new = type_new,")
 source.dedent()
 source.write("};")
 source.write()
 source.write("// Takes pointer to object, returns python wrapper for object with ref count of 1")
-source.write(f"Py{object_type}Object *pyobjectize_{object_type.lower()}({object_type} *obj)")
+source.write(f"Py{cfg.object_type}Object *pyobjectize_{cfg.object_type.lower()}({cfg.object_type} *obj)")
 source.write("{")
 source.indent()
 source.write("wrapper_newup = false;")
-source.write(f"Py{object_type}Object *pyobj = (Py{object_type}Object *)PyObject_Call((PyObject *)&Py{object_type}Type,PyTuple_New(0),NULL);")
+source.write(f"Py{cfg.object_type}Object *pyobj = (Py{cfg.object_type}Object *)PyObject_Call((PyObject *)&Py{cfg.object_type}Type,PyTuple_New(0),NULL);")
 source.write("pyobj->ref = obj;")
 source.write("pyobj->tracked = true;") # disables garbage collection of tracked object
 source.write("wrapper_newup = true;")
@@ -496,21 +405,21 @@ source.write("}")
 source.write()
 source.write("// Inits the type and adds it as a member to module")
 source.write("// On failure returns false with exception set and decrefs module")
-source.write(f"bool init_{object_type.lower()}(PyObject *m)")
+source.write(f"bool init_{cfg.object_type.lower()}(PyObject *m)")
 source.write("{")
 source.indent()
-source.write(f"if (PyType_Ready(&Py{object_type}Type) < 0)")
+source.write(f"if (PyType_Ready(&Py{cfg.object_type}Type) < 0)")
 source.write("{")
 source.indent()
 source.write("Py_DECREF(m);")
 source.write("return false;")
 source.dedent()
 source.write("}")
-source.write(f"Py_INCREF(&Py{object_type}Type);")
-source.write(f"if (PyModule_AddObject(m, \"{object_type}\", (PyObject *)&Py{object_type}Type) < 0)")
+source.write(f"Py_INCREF(&Py{cfg.object_type}Type);")
+source.write(f"if (PyModule_AddObject(m, \"{cfg.object_type}\", (PyObject *)&Py{cfg.object_type}Type) < 0)")
 source.write("{")
 source.indent()
-source.write(f"Py_DECREF(&Py{object_type}Type);")
+source.write(f"Py_DECREF(&Py{cfg.object_type}Type);")
 source.write("Py_DECREF(m);")
 source.write("return false;")
 source.dedent()
