@@ -1,7 +1,7 @@
 {
     "type":"Circuit",
     "header":"components/circuit.h",
-    "subtypes":["CircuitDesign","Component"],
+    "include":["circuitdesign.json","component.json"],
     "attrs":
     [
         {

@@ -1,35 +1,17 @@
 {
     "type":"EngineDesign",
     "header":"components/component.h",
-    "subtypes":["CircuitDesign",],
+    "base_type":"componentdesign.json",
+    "include":["circuitdesign.json",],
     "attrs":
     [
-        {
-            "name":"name",
-            "type":"QString",
-        },
-        {
-            "name":"uses_power",
-            "type":"bool",
-            "readonly":true,
-        },
-        {
-            "name":"produces_power",
-            "type":"bool",
-            "readonly":true,
-        },
-        {
-            "name":"circuit",
-            "type":"CircuitDesign*",
-        },
+        //{
+        //    "name":"circuit",
+        //    "type":"CircuitDesign*",
+        //},
     ],
     "funcs":
     [
-        {
-            "name":"descriptor_string",
-            "type":"QString",
-            "args":[],
-        },
         //{
         //    "name":"energy_at_voltage",
         //    "type":"double",

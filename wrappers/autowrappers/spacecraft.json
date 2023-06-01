@@ -1,7 +1,7 @@
 {
     "type":"Spacecraft",
     "header":"spacecraft/spacecraft.h",
-    "subtypes":["SpacecraftDesign", "Transform", "Engine", "Reactor", "Directedweapon", "Jumpdrive", "Circuit"],
+    "include":["spacecraftdesign.json", "transform.json", "engine.json", "reactor.json", "directedweapon.json", "jumpdrive.json", "circuit.json"],
     "attrs":
     [
         {
@@ -48,7 +48,12 @@
         {
             "name":"ready_to_jump",
             "type":"bool",
-            "args":[],
+            "args":[
+                {
+                    "name":"tgt",
+                    "type":"Transform*",
+                },
+            ],
         },
         {
             "name":"jump",
@@ -58,9 +63,15 @@
                     "name":"tgt",
                     "type":"Transform*",
                 },
+            ],
+        },
+        {
+            "name":"select_jumpdrive",
+            "type":"bool",
+            "args":[
                 {
-                    "name":"selected_drive",
-                    "type":"int",
+                    "name":"drive",
+                    "type":"Jumpdrive*",
                 },
             ],
         },

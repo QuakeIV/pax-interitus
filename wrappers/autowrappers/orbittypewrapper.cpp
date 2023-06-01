@@ -2,8 +2,27 @@
 #include <structmember.h> // additional python context (forgot what exactly)
 #include "units.h" // conversion factors and so on
 #include "orbittypewrapper.h"
+#include "transformwrapper.h"
 #include "celestialwrapper.h"
 #include "fixedv2dwrapper.h"
+#include "solarsystemwrapper.h"
+#include "spacecraftwrapper.h"
+#include "spacecraftdesignwrapper.h"
+#include "enginewrapper.h"
+#include "reactorwrapper.h"
+#include "directedweaponwrapper.h"
+#include "jumpdrivewrapper.h"
+#include "circuitwrapper.h"
+#include "enginedesignwrapper.h"
+#include "reactordesignwrapper.h"
+#include "directedweapondesignwrapper.h"
+#include "jumpdrivedesignwrapper.h"
+#include "circuitdesignwrapper.h"
+#include "componentwrapper.h"
+#include "componentdesignwrapper.h"
+#include "capacitordesignwrapper.h"
+#include "insulatorwrapper.h"
+#include "conductorwrapper.h"
 #include "orbittype.h"
 
 static void type_dealloc(PyOrbitTypeObject *self)
@@ -30,6 +49,50 @@ static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 }
 
 // attribute functions
+static PyObject* get_position(PyOrbitTypeObject *self, void *closure)
+{
+    return (PyObject*)pyobjectize_fixedv2d(&self->ref->position);
+}
+static int set_position(PyOrbitTypeObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    if (!PyObject_IsInstance(value, (PyObject *)&PyFixedV2DType))
+    {
+        PyErr_SetString(PyExc_TypeError, "Can only set value to FixedV2D.");
+        return -1;
+    }
+    PyFixedV2DObject *v = (PyFixedV2DObject*)value;
+    self->ref->position = *v->ref;
+    v->tracked = true;
+    return 0;
+}
+static PyObject* get_solarsystem(PyOrbitTypeObject *self, void *closure)
+{
+    if (!self->ref->solarsystem)
+        Py_RETURN_NONE;
+    return (PyObject*)pyobjectize_solarsystem(self->ref->solarsystem);
+}
+static int set_solarsystem(PyOrbitTypeObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    if (!PyObject_IsInstance(value, (PyObject *)&PySolarSystemType))
+    {
+        PyErr_SetString(PyExc_TypeError, "Can only set value to SolarSystem.");
+        return -1;
+    }
+    PySolarSystemObject *v = (PySolarSystemObject*)value;
+    self->ref->solarsystem = v->ref;
+    v->tracked = true;
+    return 0;
+}
 static PyObject* get_orbital_radius(PyOrbitTypeObject *self, void *closure)
 {
     return PyFloat_FromDouble(DISTANCE_FIXED_TO_M(self->ref->orbital_radius));
@@ -83,29 +146,24 @@ static int set_parent(PyOrbitTypeObject *self, PyObject *value, void *closure)
     }
     PyCelestialObject *v = (PyCelestialObject*)value;
     self->ref->parent = v->ref;
-    return 0;
-}
-static PyObject* get_position(PyOrbitTypeObject *self, void *closure)
-{
-    return (PyObject*)pyobjectize_fixedv2d(&self->ref->position);
-}
-static int set_position(PyOrbitTypeObject *self, PyObject *value, void *closure)
-{
-    if (value == NULL)
-    {
-        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
-        return -1;
-    }
-    if (!PyObject_IsInstance(value, (PyObject *)&PyFixedV2DType))
-    {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to FixedV2D.");
-        return -1;
-    }
-    PyFixedV2DObject *v = (PyFixedV2DObject*)value;
-    self->ref->position = *v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyGetSetDef getsets[] = {
+    {
+    "position",
+    (getter)get_position,
+    (setter)set_position,
+    NULL, // documentation string
+    NULL, // closure
+    },
+    {
+    "solarsystem",
+    (getter)get_solarsystem,
+    (setter)set_solarsystem,
+    NULL, // documentation string
+    NULL, // closure
+    },
     {
     "orbital_radius",
     (getter)get_orbital_radius,
@@ -124,13 +182,6 @@ static PyGetSetDef getsets[] = {
     "parent",
     (getter)get_parent,
     (setter)set_parent,
-    NULL, // documentation string
-    NULL, // closure
-    },
-    {
-    "position",
-    (getter)get_position,
-    (setter)set_position,
     NULL, // documentation string
     NULL, // closure
     },

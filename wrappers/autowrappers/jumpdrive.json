@@ -1,17 +1,10 @@
 {
     "type":"Jumpdrive",
     "header":"components/jumpdrive.h",
-    "subtypes":["Spacecraft","JumpdriveDesign",],
+    "base_type":"component.json",
+    "include":["spacecraft.json","jumpdrivedesign.json",],
     "attrs":
     [
-        {
-            "name":"name",
-            "type":"QString",
-        },
-        {
-            "name":"parent",
-            "type":"Spacecraft*",
-        },
         // TODO: add fixedmass to wrappergen
         //{
         //    "name":"mass",
@@ -23,32 +16,12 @@
         //    "type":"fixeddamage",
         //}
         {
-            "name":"resistive_load",
-            "type":"double", // ohms
-        },
-        {
             "name":"design",
             "type":"JumpdriveDesign",
         },
     ],
     "funcs":
     [
-        {
-            "name":"descriptor_string",
-            "type":"QString",
-            "args":[],
-        },
-        {
-            // inform the component what voltage it currently has (this may turn out to be internal use only)
-            "name":"update_voltage",
-            "type":"void",
-            "args":[
-                {
-                    "name":"voltage",
-                    "type":"double",
-                },
-            ],
-        },
         // TODO: handle fixeddistance return type
         //{
         //    "name":"get_effective_range",

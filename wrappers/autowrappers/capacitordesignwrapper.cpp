@@ -2,7 +2,10 @@
 #include <structmember.h> // additional python context (forgot what exactly)
 #include "units.h" // conversion factors and so on
 #include "capacitordesignwrapper.h"
+#include "componentdesignwrapper.h"
 #include "insulatorwrapper.h"
+#include "circuitdesignwrapper.h"
+#include "conductorwrapper.h"
 #include "components/capacitor.h"
 
 static void type_dealloc(PyCapacitorDesignObject *self)
@@ -50,6 +53,29 @@ static PyObject* get_uses_power(PyCapacitorDesignObject *self, void *closure)
 static PyObject* get_produces_power(PyCapacitorDesignObject *self, void *closure)
 {
     return PyBool_FromLong(self->ref->produces_power);
+}
+static PyObject* get_circuit(PyCapacitorDesignObject *self, void *closure)
+{
+    if (!self->ref->circuit)
+        Py_RETURN_NONE;
+    return (PyObject*)pyobjectize_circuitdesign(self->ref->circuit);
+}
+static int set_circuit(PyCapacitorDesignObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    if (!PyObject_IsInstance(value, (PyObject *)&PyCircuitDesignType))
+    {
+        PyErr_SetString(PyExc_TypeError, "Can only set value to CircuitDesign.");
+        return -1;
+    }
+    PyCircuitDesignObject *v = (PyCircuitDesignObject*)value;
+    self->ref->circuit = v->ref;
+    v->tracked = true;
+    return 0;
 }
 static PyObject* get_plate_separation(PyCapacitorDesignObject *self, void *closure)
 {
@@ -125,6 +151,7 @@ static int set_insulator(PyCapacitorDesignObject *self, PyObject *value, void *c
     }
     PyInsulatorObject *v = (PyInsulatorObject*)value;
     self->ref->insulator = v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyGetSetDef getsets[] = {
@@ -146,6 +173,13 @@ static PyGetSetDef getsets[] = {
     "produces_power",
     (getter)get_produces_power,
     NULL, // readonly
+    NULL, // documentation string
+    NULL, // closure
+    },
+    {
+    "circuit",
+    (getter)get_circuit,
+    (setter)set_circuit,
     NULL, // documentation string
     NULL, // closure
     },
@@ -181,6 +215,10 @@ static PyGetSetDef getsets[] = {
 };
 
 // wrapped function calls
+static PyObject *func_descriptor_string(PyCapacitorDesignObject *self, PyObject *args)
+{
+    return PyUnicode_FromString(self->ref->descriptor_string().toStdString().c_str());
+}
 static PyObject *func_max_voltage(PyCapacitorDesignObject *self, PyObject *args)
 {
     return PyFloat_FromDouble(self->ref->max_voltage());
@@ -216,6 +254,7 @@ static PyObject *func_mass(PyCapacitorDesignObject *self, PyObject *args)
     return PyFloat_FromDouble(self->ref->mass());
 }
 static PyMethodDef  methods[] = {
+    {"descriptor_string", (PyCFunction)func_descriptor_string, METH_NOARGS, PyDoc_STR("Wraps a call to descriptor_string.")},
     {"max_voltage", (PyCFunction)func_max_voltage, METH_NOARGS, PyDoc_STR("Wraps a call to max_voltage.")},
     {"capacitance", (PyCFunction)func_capacitance, METH_NOARGS, PyDoc_STR("Wraps a call to capacitance.")},
     {"energy_at_voltage", (PyCFunction)func_energy_at_voltage, METH_VARARGS, PyDoc_STR("Wraps a call to energy_at_voltage.")},

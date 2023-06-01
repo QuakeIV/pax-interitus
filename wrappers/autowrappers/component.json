@@ -1,7 +1,7 @@
 {
     "type":"Component",
     "header":"components/component.h",
-    "subtypes":["Spacecraft",],
+    "include":["spacecraft.json",],
     "attrs":
     [
         {

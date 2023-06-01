@@ -1,6 +1,8 @@
 {
     "type":"OrbitType",
+    "base_type":"transform.json",
     "header":"orbittype.h",
+    "include":["celestial.json","fixedv2d.json",],
     "init":{
       "args":
       [
@@ -8,7 +10,6 @@
         {"name":"r","type":"double"},
       ]
     },
-    "subtypes":["Celestial","FixedV2D",],
     "attrs":
     [
         {
@@ -22,10 +23,6 @@
         {
             "name":"parent",
             "type":"Celestial*",
-        },
-        {
-            "name":"position",
-            "type":"FixedV2D",
         },
     ],
 }

@@ -1,7 +1,7 @@
 {
     "type":"ComponentDesign",
     "header":"components/component.h",
-    "subtypes":["CircuitDesign",],
+    "include":["circuitdesign.json",],
     "attrs":
     [
         {
@@ -17,6 +17,10 @@
             "name":"produces_power",
             "type":"bool",
             "readonly":true,
+        },
+        {
+            "name":"circuit",
+            "type":"CircuitDesign*",
         },
     ],
     "funcs":

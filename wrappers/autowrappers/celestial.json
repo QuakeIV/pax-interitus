@@ -1,7 +1,7 @@
 {
     "type":"Celestial",
     "init":false,
-    "subtypes":["OrbitType",],
+    "include":["orbittype.json",],
     "header":"celestial.h",
     "attrs":
     [

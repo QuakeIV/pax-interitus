@@ -3,6 +3,8 @@
 #include "units.h" // conversion factors and so on
 #include "componentdesignwrapper.h"
 #include "circuitdesignwrapper.h"
+#include "insulatorwrapper.h"
+#include "conductorwrapper.h"
 #include "components/component.h"
 
 static void type_dealloc(PyComponentDesignObject *self)
@@ -51,6 +53,29 @@ static PyObject* get_produces_power(PyComponentDesignObject *self, void *closure
 {
     return PyBool_FromLong(self->ref->produces_power);
 }
+static PyObject* get_circuit(PyComponentDesignObject *self, void *closure)
+{
+    if (!self->ref->circuit)
+        Py_RETURN_NONE;
+    return (PyObject*)pyobjectize_circuitdesign(self->ref->circuit);
+}
+static int set_circuit(PyComponentDesignObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    if (!PyObject_IsInstance(value, (PyObject *)&PyCircuitDesignType))
+    {
+        PyErr_SetString(PyExc_TypeError, "Can only set value to CircuitDesign.");
+        return -1;
+    }
+    PyCircuitDesignObject *v = (PyCircuitDesignObject*)value;
+    self->ref->circuit = v->ref;
+    v->tracked = true;
+    return 0;
+}
 static PyGetSetDef getsets[] = {
     {
     "name",
@@ -70,6 +95,13 @@ static PyGetSetDef getsets[] = {
     "produces_power",
     (getter)get_produces_power,
     NULL, // readonly
+    NULL, // documentation string
+    NULL, // closure
+    },
+    {
+    "circuit",
+    (getter)get_circuit,
+    (setter)set_circuit,
     NULL, // documentation string
     NULL, // closure
     },

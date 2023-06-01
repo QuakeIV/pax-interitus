@@ -1,7 +1,7 @@
 {
     "type":"Transform",
     "header":"transform.h",
-    "subtypes":["FixedV2D","SolarSystem"],
+    "include":["fixedv2d.json","solarsystem.json"],
     "init":{"args":[{"name":"system","type":"SolarSystem*"}]},
     "attrs":
     [
@@ -15,6 +15,7 @@
         },
     ],
     // TODO: would be nice to spport this, however no strategy right now to handle the fact that FixedV2D returns a copy of the type (rather than a pointer) (and the fact that it being the way it is is kindof preferable)
+    // the specific issue here relates to the fact that our wrappers can only hold onto pointers, so we would presumably need to allocate space, copy it into that space, and then return a wrapper pointing at that space, that kindof sucks
     //"funcs":
     //[
     //    {

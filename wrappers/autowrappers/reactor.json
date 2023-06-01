@@ -1,17 +1,10 @@
 {
     "type":"Reactor",
     "header":"components/component.h",
-    "subtypes":["Spacecraft","ReactorDesign",],
+    "base_type":"component.json",
+    "include":["spacecraft.json","reactordesign.json",],
     "attrs":
     [
-        {
-            "name":"name",
-            "type":"QString",
-        },
-        {
-            "name":"parent",
-            "type":"Spacecraft*",
-        },
         // TODO: add fixedmass to wrappergen
         //{
         //    "name":"mass",
@@ -22,10 +15,6 @@
         //    "name":"damage",
         //    "type":"fixeddamage",
         //}
-        {
-            "name":"resistive_load",
-            "type":"double", // ohms
-        },
         {
             "name":"design",
             "type":"ReactorDesign",
@@ -38,22 +27,6 @@
     ],
     "funcs":
     [
-        {
-            "name":"descriptor_string",
-            "type":"QString",
-            "args":[],
-        },
-        {
-            // inform the component what voltage it currently has (this may turn out to be internal use only)
-            "name":"update_voltage",
-            "type":"void",
-            "args":[
-                {
-                    "name":"voltage",
-                    "type":"double",
-                },
-            ],
-        },
         // TODO: figure out
         //{
         //    "name":"apply_damage",

@@ -1,27 +1,10 @@
 {
     "type":"JumpdriveDesign",
     "header":"components/jumpdrive.h",
-    "subtypes":["CircuitDesign","CapacitorDesign"],
+    "base_type":"componentdesign.json",
+    "include":["circuitdesign.json","capacitordesign.json"],
     "attrs":
     [
-        {
-            "name":"name",
-            "type":"QString",
-        },
-        {
-            "name":"uses_power",
-            "type":"bool",
-            "readonly":true,
-        },
-        {
-            "name":"produces_power",
-            "type":"bool",
-            "readonly":true,
-        },
-        {
-            "name":"circuit",
-            "type":"CircuitDesign*",
-        },
         {
             "name":"cap",
             "type":"CapacitorDesign",
@@ -29,11 +12,6 @@
     ],
     "funcs":
     [
-        {
-            "name":"descriptor_string",
-            "type":"QString",
-            "args":[],
-        },
         //{
         //    "name":"energy_at_voltage",
         //    "type":"double",

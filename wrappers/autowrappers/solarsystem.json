@@ -1,7 +1,7 @@
 {
     "type":"SolarSystem",
     "init":false,
-    "subtypes":["Spacecraft","Celestial"],
+    "include":["spacecraft.json","celestial.json"],
     "header":"solarsystem.h",
     "attrs":
     [

@@ -1,13 +1,10 @@
 {
     "type":"Capacitor",
     "header":"components/capacitor.h",
-    "subtypes":["CapacitorDesign",],
+    "base_type":"component.json",
+    "include":["capacitordesign.json",],
     "attrs":
     [
-        {
-            "name":"name",
-            "type":"QString",
-        },
         {
             "name":"design",
             "type":"CapacitorDesign",

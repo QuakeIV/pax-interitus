@@ -3,6 +3,26 @@
 #include "units.h" // conversion factors and so on
 #include "componentwrapper.h"
 #include "spacecraftwrapper.h"
+#include "spacecraftdesignwrapper.h"
+#include "transformwrapper.h"
+#include "enginewrapper.h"
+#include "reactorwrapper.h"
+#include "directedweaponwrapper.h"
+#include "jumpdrivewrapper.h"
+#include "circuitwrapper.h"
+#include "enginedesignwrapper.h"
+#include "reactordesignwrapper.h"
+#include "directedweapondesignwrapper.h"
+#include "jumpdrivedesignwrapper.h"
+#include "circuitdesignwrapper.h"
+#include "fixedv2dwrapper.h"
+#include "solarsystemwrapper.h"
+#include "componentdesignwrapper.h"
+#include "capacitordesignwrapper.h"
+#include "insulatorwrapper.h"
+#include "conductorwrapper.h"
+#include "celestialwrapper.h"
+#include "orbittypewrapper.h"
 #include "components/component.h"
 
 static void type_dealloc(PyComponentObject *self)
@@ -63,6 +83,7 @@ static int set_parent(PyComponentObject *self, PyObject *value, void *closure)
     }
     PySpacecraftObject *v = (PySpacecraftObject*)value;
     self->ref->parent = v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyObject* get_resistive_load(PyComponentObject *self, void *closure)

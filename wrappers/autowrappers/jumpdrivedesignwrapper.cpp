@@ -2,8 +2,11 @@
 #include <structmember.h> // additional python context (forgot what exactly)
 #include "units.h" // conversion factors and so on
 #include "jumpdrivedesignwrapper.h"
+#include "componentdesignwrapper.h"
 #include "circuitdesignwrapper.h"
 #include "capacitordesignwrapper.h"
+#include "insulatorwrapper.h"
+#include "conductorwrapper.h"
 #include "components/jumpdrive.h"
 
 static void type_dealloc(PyJumpdriveDesignObject *self)
@@ -72,6 +75,7 @@ static int set_circuit(PyJumpdriveDesignObject *self, PyObject *value, void *clo
     }
     PyCircuitDesignObject *v = (PyCircuitDesignObject*)value;
     self->ref->circuit = v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyObject* get_cap(PyJumpdriveDesignObject *self, void *closure)
@@ -92,6 +96,7 @@ static int set_cap(PyJumpdriveDesignObject *self, PyObject *value, void *closure
     }
     PyCapacitorDesignObject *v = (PyCapacitorDesignObject*)value;
     self->ref->cap = *v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyGetSetDef getsets[] = {

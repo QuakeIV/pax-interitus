@@ -7,6 +7,10 @@
 #include "directedweapondesignwrapper.h"
 #include "jumpdrivedesignwrapper.h"
 #include "circuitdesignwrapper.h"
+#include "componentdesignwrapper.h"
+#include "capacitordesignwrapper.h"
+#include "insulatorwrapper.h"
+#include "conductorwrapper.h"
 #include "spacecraft/spacecraft.h"
 
 static void type_dealloc(PySpacecraftDesignObject *self)

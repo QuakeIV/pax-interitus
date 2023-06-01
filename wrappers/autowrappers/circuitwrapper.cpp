@@ -4,6 +4,25 @@
 #include "circuitwrapper.h"
 #include "circuitdesignwrapper.h"
 #include "componentwrapper.h"
+#include "insulatorwrapper.h"
+#include "conductorwrapper.h"
+#include "componentdesignwrapper.h"
+#include "spacecraftwrapper.h"
+#include "spacecraftdesignwrapper.h"
+#include "transformwrapper.h"
+#include "enginewrapper.h"
+#include "reactorwrapper.h"
+#include "directedweaponwrapper.h"
+#include "jumpdrivewrapper.h"
+#include "enginedesignwrapper.h"
+#include "reactordesignwrapper.h"
+#include "directedweapondesignwrapper.h"
+#include "jumpdrivedesignwrapper.h"
+#include "fixedv2dwrapper.h"
+#include "solarsystemwrapper.h"
+#include "capacitordesignwrapper.h"
+#include "celestialwrapper.h"
+#include "orbittypewrapper.h"
 #include "components/circuit.h"
 
 static void type_dealloc(PyCircuitObject *self)
@@ -44,6 +63,7 @@ static int set_design(PyCircuitObject *self, PyObject *value, void *closure)
     }
     PyCircuitDesignObject *v = (PyCircuitDesignObject*)value;
     self->ref->design = *v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyObject* get_components(PyCircuitObject *self, void *closure)

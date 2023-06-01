@@ -4,6 +4,25 @@
 #include "solarsystemwrapper.h"
 #include "spacecraftwrapper.h"
 #include "celestialwrapper.h"
+#include "spacecraftdesignwrapper.h"
+#include "transformwrapper.h"
+#include "enginewrapper.h"
+#include "reactorwrapper.h"
+#include "directedweaponwrapper.h"
+#include "jumpdrivewrapper.h"
+#include "circuitwrapper.h"
+#include "orbittypewrapper.h"
+#include "enginedesignwrapper.h"
+#include "reactordesignwrapper.h"
+#include "directedweapondesignwrapper.h"
+#include "jumpdrivedesignwrapper.h"
+#include "circuitdesignwrapper.h"
+#include "fixedv2dwrapper.h"
+#include "componentwrapper.h"
+#include "componentdesignwrapper.h"
+#include "capacitordesignwrapper.h"
+#include "insulatorwrapper.h"
+#include "conductorwrapper.h"
 #include "solarsystem.h"
 
 static void type_dealloc(PySolarSystemObject *self)
@@ -80,6 +99,7 @@ static int set_root(PySolarSystemObject *self, PyObject *value, void *closure)
     }
     PyCelestialObject *v = (PyCelestialObject*)value;
     self->ref->root = *v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyObject* get_spacecraft(PySolarSystemObject *self, void *closure)

@@ -2,8 +2,27 @@
 #include <structmember.h> // additional python context (forgot what exactly)
 #include "units.h" // conversion factors and so on
 #include "enginewrapper.h"
+#include "componentwrapper.h"
 #include "spacecraftwrapper.h"
 #include "enginedesignwrapper.h"
+#include "spacecraftdesignwrapper.h"
+#include "transformwrapper.h"
+#include "reactorwrapper.h"
+#include "directedweaponwrapper.h"
+#include "jumpdrivewrapper.h"
+#include "circuitwrapper.h"
+#include "componentdesignwrapper.h"
+#include "circuitdesignwrapper.h"
+#include "reactordesignwrapper.h"
+#include "directedweapondesignwrapper.h"
+#include "jumpdrivedesignwrapper.h"
+#include "fixedv2dwrapper.h"
+#include "solarsystemwrapper.h"
+#include "insulatorwrapper.h"
+#include "conductorwrapper.h"
+#include "capacitordesignwrapper.h"
+#include "celestialwrapper.h"
+#include "orbittypewrapper.h"
 #include "components/component.h"
 
 static void type_dealloc(PyEngineObject *self)
@@ -64,6 +83,7 @@ static int set_parent(PyEngineObject *self, PyObject *value, void *closure)
     }
     PySpacecraftObject *v = (PySpacecraftObject*)value;
     self->ref->parent = v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyObject* get_resistive_load(PyEngineObject *self, void *closure)
@@ -102,6 +122,7 @@ static int set_design(PyEngineObject *self, PyObject *value, void *closure)
     }
     PyEngineDesignObject *v = (PyEngineDesignObject*)value;
     self->ref->design = *v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyGetSetDef getsets[] = {

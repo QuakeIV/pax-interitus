@@ -3,6 +3,26 @@
 #include "units.h" // conversion factors and so on
 #include "celestialwrapper.h"
 #include "orbittypewrapper.h"
+#include "transformwrapper.h"
+#include "fixedv2dwrapper.h"
+#include "solarsystemwrapper.h"
+#include "spacecraftwrapper.h"
+#include "spacecraftdesignwrapper.h"
+#include "enginewrapper.h"
+#include "reactorwrapper.h"
+#include "directedweaponwrapper.h"
+#include "jumpdrivewrapper.h"
+#include "circuitwrapper.h"
+#include "enginedesignwrapper.h"
+#include "reactordesignwrapper.h"
+#include "directedweapondesignwrapper.h"
+#include "jumpdrivedesignwrapper.h"
+#include "circuitdesignwrapper.h"
+#include "componentwrapper.h"
+#include "componentdesignwrapper.h"
+#include "capacitordesignwrapper.h"
+#include "insulatorwrapper.h"
+#include "conductorwrapper.h"
 #include "celestial.h"
 
 static void type_dealloc(PyCelestialObject *self)
@@ -63,6 +83,7 @@ static int set_parent(PyCelestialObject *self, PyObject *value, void *closure)
     }
     PyCelestialObject *v = (PyCelestialObject*)value;
     self->ref->parent = v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyObject* get_trajectory(PyCelestialObject *self, void *closure)
@@ -83,6 +104,7 @@ static int set_trajectory(PyCelestialObject *self, PyObject *value, void *closur
     }
     PyOrbitTypeObject *v = (PyOrbitTypeObject*)value;
     self->ref->trajectory = *v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyObject* get_mass(PyCelestialObject *self, void *closure)

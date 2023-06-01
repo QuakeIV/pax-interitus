@@ -65,6 +65,7 @@ static int set_insulator(PyCircuitDesignObject *self, PyObject *value, void *clo
     }
     PyInsulatorObject *v = (PyInsulatorObject*)value;
     self->ref->insulator = v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyObject* get_conductor(PyCircuitDesignObject *self, void *closure)
@@ -87,6 +88,7 @@ static int set_conductor(PyCircuitDesignObject *self, PyObject *value, void *clo
     }
     PyConductorObject *v = (PyConductorObject*)value;
     self->ref->conductor = v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyObject* get_rated_voltage(PyCircuitDesignObject *self, void *closure)

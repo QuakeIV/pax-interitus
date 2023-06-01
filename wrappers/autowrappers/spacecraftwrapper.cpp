@@ -9,6 +9,20 @@
 #include "directedweaponwrapper.h"
 #include "jumpdrivewrapper.h"
 #include "circuitwrapper.h"
+#include "enginedesignwrapper.h"
+#include "reactordesignwrapper.h"
+#include "directedweapondesignwrapper.h"
+#include "jumpdrivedesignwrapper.h"
+#include "circuitdesignwrapper.h"
+#include "fixedv2dwrapper.h"
+#include "solarsystemwrapper.h"
+#include "componentwrapper.h"
+#include "componentdesignwrapper.h"
+#include "capacitordesignwrapper.h"
+#include "insulatorwrapper.h"
+#include "conductorwrapper.h"
+#include "celestialwrapper.h"
+#include "orbittypewrapper.h"
 #include "spacecraft/spacecraft.h"
 
 static void type_dealloc(PySpacecraftObject *self)
@@ -67,6 +81,7 @@ static int set_design(PySpacecraftObject *self, PyObject *value, void *closure)
     }
     PySpacecraftDesignObject *v = (PySpacecraftDesignObject*)value;
     self->ref->design = *v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyObject* get_trajectory(PySpacecraftObject *self, void *closure)
@@ -89,6 +104,7 @@ static int set_trajectory(PySpacecraftObject *self, PyObject *value, void *closu
     }
     PyTransformObject *v = (PyTransformObject*)value;
     self->ref->trajectory = v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyObject* get_engines(PySpacecraftObject *self, void *closure)
@@ -235,19 +251,29 @@ static PyGetSetDef getsets[] = {
 // wrapped function calls
 static PyObject *func_ready_to_jump(PySpacecraftObject *self, PyObject *args)
 {
-    return PyBool_FromLong(self->ref->ready_to_jump());
+    Transform *tgt;
+    if (!PyArg_ParseTuple(args, "O!", &PyTransformType, &tgt))
+        return NULL;
+    return PyBool_FromLong(self->ref->ready_to_jump(tgt));
 }
 static PyObject *func_jump(PySpacecraftObject *self, PyObject *args)
 {
     Transform *tgt;
-    int selected_drive;
-    if (!PyArg_ParseTuple(args, "O!i", &PyTransformType, &tgt, &selected_drive))
+    if (!PyArg_ParseTuple(args, "O!", &PyTransformType, &tgt))
         return NULL;
-    return PyBool_FromLong(self->ref->jump(tgt,selected_drive));
+    return PyBool_FromLong(self->ref->jump(tgt));
+}
+static PyObject *func_select_jumpdrive(PySpacecraftObject *self, PyObject *args)
+{
+    Jumpdrive *drive;
+    if (!PyArg_ParseTuple(args, "O!", &PyJumpdriveType, &drive))
+        return NULL;
+    return PyBool_FromLong(self->ref->select_jumpdrive(drive));
 }
 static PyMethodDef  methods[] = {
-    {"ready_to_jump", (PyCFunction)func_ready_to_jump, METH_NOARGS, PyDoc_STR("Wraps a call to ready_to_jump.")},
+    {"ready_to_jump", (PyCFunction)func_ready_to_jump, METH_VARARGS, PyDoc_STR("Wraps a call to ready_to_jump.")},
     {"jump", (PyCFunction)func_jump, METH_VARARGS, PyDoc_STR("Wraps a call to jump.")},
+    {"select_jumpdrive", (PyCFunction)func_select_jumpdrive, METH_VARARGS, PyDoc_STR("Wraps a call to select_jumpdrive.")},
     {NULL, NULL}
 };
 

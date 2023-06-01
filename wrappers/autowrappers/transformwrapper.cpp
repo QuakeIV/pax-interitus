@@ -4,6 +4,25 @@
 #include "transformwrapper.h"
 #include "fixedv2dwrapper.h"
 #include "solarsystemwrapper.h"
+#include "spacecraftwrapper.h"
+#include "celestialwrapper.h"
+#include "spacecraftdesignwrapper.h"
+#include "enginewrapper.h"
+#include "reactorwrapper.h"
+#include "directedweaponwrapper.h"
+#include "jumpdrivewrapper.h"
+#include "circuitwrapper.h"
+#include "orbittypewrapper.h"
+#include "enginedesignwrapper.h"
+#include "reactordesignwrapper.h"
+#include "directedweapondesignwrapper.h"
+#include "jumpdrivedesignwrapper.h"
+#include "circuitdesignwrapper.h"
+#include "componentwrapper.h"
+#include "componentdesignwrapper.h"
+#include "capacitordesignwrapper.h"
+#include "insulatorwrapper.h"
+#include "conductorwrapper.h"
 #include "transform.h"
 
 static void type_dealloc(PyTransformObject *self)
@@ -47,6 +66,7 @@ static int set_position(PyTransformObject *self, PyObject *value, void *closure)
     }
     PyFixedV2DObject *v = (PyFixedV2DObject*)value;
     self->ref->position = *v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyObject* get_solarsystem(PyTransformObject *self, void *closure)
@@ -69,6 +89,7 @@ static int set_solarsystem(PyTransformObject *self, PyObject *value, void *closu
     }
     PySolarSystemObject *v = (PySolarSystemObject*)value;
     self->ref->solarsystem = v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyGetSetDef getsets[] = {

@@ -1,7 +1,7 @@
 {
     "type":"CircuitDesign",
     "header":"components/circuit.h",
-    "subtypes":["Insulator","Conductor","ComponentDesign"],
+    "include":["insulator.json","conductor.json","componentdesign.json"],
     "attrs":
     [
         {

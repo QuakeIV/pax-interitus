@@ -2,7 +2,10 @@
 #include <structmember.h> // additional python context (forgot what exactly)
 #include "units.h" // conversion factors and so on
 #include "directedweapondesignwrapper.h"
+#include "componentdesignwrapper.h"
 #include "circuitdesignwrapper.h"
+#include "insulatorwrapper.h"
+#include "conductorwrapper.h"
 #include "components/component.h"
 
 static void type_dealloc(PyDirectedweaponDesignObject *self)
@@ -71,6 +74,7 @@ static int set_circuit(PyDirectedweaponDesignObject *self, PyObject *value, void
     }
     PyCircuitDesignObject *v = (PyCircuitDesignObject*)value;
     self->ref->circuit = v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyGetSetDef getsets[] = {
