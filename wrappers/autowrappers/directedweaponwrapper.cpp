@@ -197,6 +197,7 @@ PyTypeObject PyDirectedweaponType = {
     .tp_richcompare = (richcmpfunc)&__eq__,
     .tp_methods = methods,
     .tp_getset = getsets,
+    .tp_base = &PyComponentType,
     .tp_new = type_new,
 };
 

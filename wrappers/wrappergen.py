@@ -399,7 +399,8 @@ for cfg in loaded_cfgs:
     source.write(".tp_methods = methods,")
   if cfg.attrs:
     source.write(".tp_getset = getsets,")
-  # .tp_base = &PyTransformType, base type stuff would be here
+  if cfg.base_type:
+    source.write(f".tp_base = &Py{cfg.base_type.type}Type,")
   source.write(".tp_new = type_new,")
   source.dedent()
   source.write("};")

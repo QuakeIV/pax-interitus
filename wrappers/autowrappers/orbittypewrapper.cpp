@@ -210,6 +210,7 @@ PyTypeObject PyOrbitTypeType = {
     .tp_doc = PyDoc_STR("PaxPython OrbitType Type Wrapper."),
     .tp_richcompare = (richcmpfunc)&__eq__,
     .tp_getset = getsets,
+    .tp_base = &PyTransformType,
     .tp_new = type_new,
 };
 
