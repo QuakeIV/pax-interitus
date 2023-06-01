@@ -38,9 +38,10 @@ static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     PyTransformObject *object = (PyTransformObject *)type->tp_alloc(type, 0);
     if (wrapper_newup)
     {
-        SolarSystem *system;
-        if (!PyArg_ParseTuple(args, "O!", &PySolarSystemType, &system))
+        PySolarSystemObject *system_pytype;
+        if (!PyArg_ParseTuple(args, "O!", &PySolarSystemType, &system_pytype))
             return NULL;
+        SolarSystem *system = system_pytype->ref;
         object->ref = new Transform(system);
     }
     object->tracked = false;

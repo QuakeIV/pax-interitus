@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>800</width>
+    <height>600</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Spacecraft Window</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+QTabBar::tab {
+/*  min-width: 8ex;*/
+  font-size:14pt;
+  padding: 7px;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">QWidget#centralwidget {
+  background: rgb(38, 44, 59)
+}</string>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QTabWidget::tab-bar {
+  left: 5px; /* move to the right by 5px */
+}
+QTabBar {
+  background: rgb(38, 44, 59); /* captures the margin above unselected tabs */
+}</string>
+      </property>
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <widget class="QWidget" name="infotab">
+       <attribute name="title">
+        <string>Spacecraft Info</string>
+       </attribute>
+       <widget class="QLabel" name="name">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>351</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>24</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Spacecraft Name</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="jumptab">
+       <attribute name="title">
+        <string>Manual Orders</string>
+       </attribute>
+       <widget class="QPushButton" name="jumpbutton">
+        <property name="geometry">
+         <rect>
+          <x>400</x>
+          <y>200</y>
+          <width>80</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Jump</string>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="jumptarget">
+        <property name="geometry">
+         <rect>
+          <x>440</x>
+          <y>120</y>
+          <width>281</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="jumporbitradius">
+        <property name="geometry">
+         <rect>
+          <x>410</x>
+          <y>60</y>
+          <width>113</width>
+          <height>22</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab3">
+       <attribute name="title">
+        <string>Tab 3</string>
+       </attribute>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>19</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

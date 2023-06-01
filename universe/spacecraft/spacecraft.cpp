@@ -35,21 +35,28 @@ Spacecraft::~Spacecraft()
 {
     spacecraft.removeOne(this);
 }
-bool Spacecraft::ready_to_jump(void)
+bool Spacecraft::ready_to_jump(Transform *tgt)
 {
-    // TODO: would be nice to not have to check this
-//    if (selected_drive < 0 || selected_drive >= jump_drives.length())
-//        return false;
-//    return jump_drives[selected_drive]->jump(this, tgt);
+    if (jump_drives.contains(selected_drive))
+        return selected_drive->cap.charged(selected_drive->calculate_jump_energy(this, tgt));
     return true;
 }
-bool Spacecraft::jump(Transform* tgt, int selected_drive)
+bool Spacecraft::jump(Transform *tgt)
 {
     // TODO: would be nice to not have to check this
-    if (selected_drive < 0 || selected_drive >= jump_drives.length())
-        return false;
+    if (jump_drives.contains(selected_drive))
+        return selected_drive->jump(this, tgt);
 
-    return jump_drives[selected_drive]->jump(this, tgt);
+    return false;
+}
+bool Spacecraft::select_jumpdrive(Jumpdrive *drive)
+{
+    if (jump_drives.contains(drive))
+    {
+        selected_drive = drive;
+        return true;
+    }
+    return false;
 }
 // max acceleration (mm/sec/sec)
 int64_t Spacecraft::max_acceleration(void)

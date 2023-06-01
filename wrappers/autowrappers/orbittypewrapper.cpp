@@ -38,10 +38,11 @@ static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     PyOrbitTypeObject *object = (PyOrbitTypeObject *)type->tp_alloc(type, 0);
     if (wrapper_newup)
     {
-        Celestial *p;
+        PyCelestialObject *p_pytype;
         double r;
-        if (!PyArg_ParseTuple(args, "O!d", &PyCelestialType, &p, &r))
+        if (!PyArg_ParseTuple(args, "O!d", &PyCelestialType, &p_pytype, &r))
             return NULL;
+        Celestial *p = p_pytype->ref;
         object->ref = new OrbitType(p,r);
     }
     object->tracked = false;

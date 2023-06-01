@@ -251,23 +251,26 @@ static PyGetSetDef getsets[] = {
 // wrapped function calls
 static PyObject *func_ready_to_jump(PySpacecraftObject *self, PyObject *args)
 {
-    Transform *tgt;
-    if (!PyArg_ParseTuple(args, "O!", &PyTransformType, &tgt))
+    PyTransformObject *tgt_pytype;
+    if (!PyArg_ParseTuple(args, "O!", &PyTransformType, &tgt_pytype))
         return NULL;
+    Transform *tgt = tgt_pytype->ref;
     return PyBool_FromLong(self->ref->ready_to_jump(tgt));
 }
 static PyObject *func_jump(PySpacecraftObject *self, PyObject *args)
 {
-    Transform *tgt;
-    if (!PyArg_ParseTuple(args, "O!", &PyTransformType, &tgt))
+    PyTransformObject *tgt_pytype;
+    if (!PyArg_ParseTuple(args, "O!", &PyTransformType, &tgt_pytype))
         return NULL;
+    Transform *tgt = tgt_pytype->ref;
     return PyBool_FromLong(self->ref->jump(tgt));
 }
 static PyObject *func_select_jumpdrive(PySpacecraftObject *self, PyObject *args)
 {
-    Jumpdrive *drive;
-    if (!PyArg_ParseTuple(args, "O!", &PyJumpdriveType, &drive))
+    PyJumpdriveObject *drive_pytype;
+    if (!PyArg_ParseTuple(args, "O!", &PyJumpdriveType, &drive_pytype))
         return NULL;
+    Jumpdrive *drive = drive_pytype->ref;
     return PyBool_FromLong(self->ref->select_jumpdrive(drive));
 }
 static PyMethodDef  methods[] = {

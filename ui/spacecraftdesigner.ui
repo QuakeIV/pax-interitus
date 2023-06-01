@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
+    <width>1004</width>
     <height>700</height>
    </rect>
   </property>
@@ -18,6 +18,10 @@
   </property>
   <property name="windowTitle">
    <string>Spacecraft Designer</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>icons/pencil-ruler.png</normaloff>icons/pencil-ruler.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">
@@ -133,12 +137,12 @@ QTabBar::tab {
          </property>
          <item>
           <property name="text">
-           <string>Cv</string>
+           <string>C</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>Fg</string>
+           <string>Cv</string>
           </property>
          </item>
          <item>
@@ -148,7 +152,22 @@ QTabBar::tab {
          </item>
          <item>
           <property name="text">
-           <string>C</string>
+           <string>Sc</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Ca</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>T</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>M</string>
           </property>
          </item>
         </widget>
@@ -410,8 +429,8 @@ QTabBar::tab {
                <widget class="QPushButton" name="designname">
                 <property name="geometry">
                  <rect>
-                  <x>50</x>
-                  <y>160</y>
+                  <x>260</x>
+                  <y>80</y>
                   <width>101</width>
                   <height>22</height>
                  </rect>
@@ -938,7 +957,7 @@ QTabBar::tab {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1000</width>
+     <width>1004</width>
      <height>19</height>
     </rect>
    </property>

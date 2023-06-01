@@ -54,6 +54,7 @@ public:
     // TODO: it turns out vtables are a bit gay should probably discontinue the use thereof as much as possible
     virtual int64_t apply_damage(int64_t dmg) { return 0; }
 
+    // TODO: this is generally dynamic, maybe this will just be updated as needed?
     double resistive_load = 0;
 
     // this is meant to be called by the parent vessel to allow the component to function
@@ -146,6 +147,6 @@ public:
 // TODO: missile launcher
 // TODO: missile (probably its own type and not a subtype of component, though really it should be a mini spacecraft in some sense)
 // TODO: missile magazine (when not a box launcher)
-// TODO: storage (supplies, cargo, same component?)
+// TODO: storage (supplies, cargo, same component?) (probably not exactly)
 
 #endif // COMPONENT_H

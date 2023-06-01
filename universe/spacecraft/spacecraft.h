@@ -72,8 +72,11 @@ public:
     // design that the spacecraft was most recently specced to
     SpacecraftDesign design;
 
-    bool ready_to_jump(void);
-    bool jump(Transform* tgt, int selected_drive);
+    Jumpdrive *selected_drive = NULL;
+
+    bool ready_to_jump(Transform *tgt);
+    bool jump(Transform *tgt);
+    bool select_jumpdrive(Jumpdrive *drive);
 
     QList<Engine*> engines;
     QList<Reactor*> reactors;

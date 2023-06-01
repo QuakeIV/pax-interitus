@@ -53,12 +53,16 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
         return NULL;
 
     PyObject *m = PyModule_Create(&libpaxpythonmodule);
-    
+
     // hand-written universe wrapper (notably, adds instance of universe wrapper to module, rather than type)
     if (!init_universewrapper(m))
         return NULL;
 
     // does pytype_ready and also addobject
+    if (!init_component(m))
+        return NULL;
+    if (!init_componentdesign(m))
+        return NULL;
     if (!init_capacitor(m))
         return NULL;
     if (!init_capacitordesign(m))
@@ -68,10 +72,6 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
     if (!init_circuit(m))
         return NULL;
     if (!init_circuitdesign(m))
-        return NULL;
-    if (!init_component(m))
-        return NULL;
-    if (!init_componentdesign(m))
         return NULL;
     if (!init_conductor(m))
         return NULL;
@@ -91,8 +91,6 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
         return NULL;
     if (!init_jumpdrivedesign(m))
         return NULL;
-    if (!init_orbittype(m)) // TODO: rename this type to just be orbit
-        return NULL;
     if (!init_reactor(m))
         return NULL;
     if (!init_reactordesign(m))
@@ -104,6 +102,8 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
     if (!init_spacecraftdesign(m))
         return NULL;
     if (!init_transform(m))
+        return NULL;
+    if (!init_orbittype(m)) // TODO: rename this type to just be orbit
         return NULL;
 
     Py_INCREF(&PySystemRendererType);

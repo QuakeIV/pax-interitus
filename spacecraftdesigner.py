@@ -75,7 +75,7 @@ class SpacecraftDesigner(QMainWindow):
   
   def new_design(self):
     d = libpaxpython.SpacecraftDesign()
-    d.type = self.ui.selectclass.currentText()
+    d.type = self.ui.selectclass.itemText(0)
     libpaxpython.universe.spacecraft_designs.append(d)
     self.design = d
     self.update()

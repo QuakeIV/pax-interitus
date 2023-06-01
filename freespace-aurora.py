@@ -16,6 +16,8 @@ from build import ui # pyuic autogenned .py scripts
 from techwindow import TechWindow
 from celestialwindow import CelestialWindow
 from spacecraftdesigner import SpacecraftDesigner
+from capacitordesigner import CapacitorDesigner
+from spacecraftwindow import SpacecraftWindow
 
 app = QApplication()
 
@@ -57,6 +59,8 @@ class MainWindow(QMainWindow):
     self.ui.actionTechWindow.triggered.connect(lambda: TechWindow(self).show())
     self.ui.actionSpacecraftDesigner.triggered.connect(lambda: SpacecraftDesigner(self).show())
     self.ui.techbutton.clicked.connect(lambda: TechWindow(self).show())
+    self.ui.shipdesignbutton.clicked.connect(lambda: SpacecraftDesigner(self).show())
+    self.ui.capacitordesignbutton.clicked.connect(lambda: CapacitorDesigner(self).show())
   #
 
   def update_warp_display(self):
@@ -115,6 +119,8 @@ class MainWindow(QMainWindow):
   #
   
   def rightclick(self, planets, ships):
+    if not planets and not ships:
+      return
     m = QMenu(self)
     m.setAttribute(Qt.WA_DeleteOnClose)
     for p in planets:
@@ -122,11 +128,13 @@ class MainWindow(QMainWindow):
       # p=p needed to capture copy of planet instead of everyone sharing last value that was iterated over
       submenu.addAction("Focus", lambda p=p: self.renderer.set_focus(p))
       submenu.addAction("Info", lambda p=p: CelestialWindow(p,self).show())
-      
+    if planets and ships:
+      m.addSeparator()
     for s in ships:
       submenu = m.addMenu(s.name)
       # s=s needed to capture copy of planet instead of everyone sharing last value that was iterated over
       submenu.addAction("Focus", lambda s=s: self.renderer.set_focus(s))
+      submenu.addAction("Info", lambda s=s: SpacecraftWindow(s,self).show())
     m.popup(QCursor.pos())
   #
 #

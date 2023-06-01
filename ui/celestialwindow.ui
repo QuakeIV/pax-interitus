@@ -19,6 +19,14 @@
   <property name="windowTitle">
    <string>Celestial Body Info</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">
+QTabBar::tab {
+/*  min-width: 8ex;*/
+  font-size:14pt;
+  padding: 7px;
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
     <string notr="true">QWidget#centralwidget {

@@ -57,10 +57,10 @@ def pyargparse_args(args):
     elif type_name in cfg.known_types:
       if not a["ptr"]:
         raise TypeError("arg parsing non-pointer structured types not supported")
-      source.write(f"{type_name} *{attr_name};")
+      source.write(f"Py{type_name}Object *{attr_name}_pytype;")
       argparse_string += "O!"
       argptrs.append(f"&Py{type_name}Type") # type specifier
-      argptrs.append(f"&{attr_name}") # actual attribute what for storing the value
+      argptrs.append(f"&{attr_name}_pytype") # actual attribute what for storing the value
   # build arg parser string
   if args:
     argptr_str = ", ".join(argptrs)
@@ -68,6 +68,12 @@ def pyargparse_args(args):
     source.indent()
     source.write("return NULL;")
     source.dedent()
+    # retrieve pointers to wrapped type, for wrapper types (has to happen after the argparse)
+    for a in args:
+      attr_name = a["name"]
+      type_name = a["type"]
+      if type_name in cfg.known_types:
+        source.write(f"{type_name} *{attr_name} = {attr_name}_pytype->ref;")
 #
 
 # identify if string matches any of the structured subtype thingies

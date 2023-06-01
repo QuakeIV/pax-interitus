@@ -6,3 +6,13 @@ both are more or less instantaneous
 regular sensors are lightspeed but can track any given spacecraft fairly easily unless its very very fast somehow, and you can drop buoys that are in FTL comms
 it might actually be better to start out with just magical instant sensors
 but the fact remains it might be better to have FTL subspace sensors that detect jumps
+
+todo:
+add reference counting, and big giga super arrays of different object types (maybe just go fixed size for now)
+
+fix:
+when tracking a jumping ship, it leaves an orbit behind
+  this would get garbage collected by the above, however the camera takes a pointer to a transform, and continues to track the now orphaned trajectory
+  need the trajectory to stay innate to spacecraft somehow, and for the camera to be able to follow it
+  implicitly, this would mean the spacecraft has room in its own structure for its trajectory
+  thats not really ideal
