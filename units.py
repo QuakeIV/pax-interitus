@@ -77,6 +77,9 @@ def distance_str(qty):
   scale, unit = _find_scale_match(qty, dist_scale, 250.0)
   return f"{sigfig(qty/scale, 6)} {unit}"
 #
+def parse_distance(s):
+  return _parse_scale(s, dist_scale)
+#
 
 energy_scale = {k:(v+"J") for k, v in base_scale.items()}
 def energy_str(qty):

@@ -7,6 +7,7 @@ from PySide6.QtGui import QAction, QIcon, QCursor
 
 from build import libpaxpython
 from build import ui # pyuic autogenned .py scripts
+import units
 
 # kill when ctrl-c is pressed (annoying when this doesnt work)
 import signal
@@ -23,25 +24,31 @@ class SpacecraftWindow(QMainWindow):
 
     self.s = spacecraft
     self.jump_target = None
-    
+    self.jump_target_altitude = 200000
+
     self.timer = QTimer(self)
     self.timer.timeout.connect(self.update)
     #self.timer.start(200)
-    
+
     self.update()
-    
+
     self.ui.jumpbutton.clicked.connect(self.jump)
     self.ui.jumptarget.activated.connect(lambda: self.select_jump_target(self.ui.jumptarget.currentData()))
+    self.ui.jumporbitradius.editingFinished.connect(self.update)
   #
-  
+
   def select_jump_target(self, target):
     self.jump_target = target
     self.update()
   #
-  
+
   def update(self):
     self.setWindowTitle("Spacecraft (" + self.s.name + ")")
     self.ui.name.setText(self.s.name)
+
+    target_altitude = units.parse_distance(self.ui.jumporbitradius.text())
+    if target_altitude:
+      self.jump_target_altitude = target_altitude
 
     self.ui.jumptarget.clear()
     root = self.s.trajectory.solarsystem.root
@@ -59,12 +66,11 @@ class SpacecraftWindow(QMainWindow):
     #self.close()
     pass
   #
-  
+
   def jump(self):
     if self.jump_target:
-      orbit = libpaxpython.OrbitType(self.jump_target, 200000 + self.jump_target.radius)
+      orbit = libpaxpython.OrbitType(self.jump_target, self.jump_target_altitude + self.jump_target.radius)
       self.s.trajectory = orbit
-      print("jump jump jump")
       self.update()
   #
 #
