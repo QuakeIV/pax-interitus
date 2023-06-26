@@ -272,11 +272,16 @@ for cfg in loaded_cfgs:
       source.write("}")
       source.write(f"Py{attr_type}Object *v = (Py{attr_type}Object*)value;")
       if r["ptr"]:
-        source.write(f"self->ref->{name} = v->ref;")
+        if r["deref"]:
+          source.write(f"*self->ref->{name} = *v->ref;")
+        else:
+          source.write(f"self->ref->{name} = v->ref;")
       else:
         source.write(f"self->ref->{name} = *v->ref;")
       # TODO: need reference counting to avoid obvious and common leaks, but this will avoid the issue of prematurely deleting stuff that we actually used when assigning it to another wrapped type
-      source.write(f"v->tracked = true;")
+      # if not dereferencing (ie copying value), then it is now 'tracked'
+      if not r["deref"]:
+        source.write(f"v->tracked = true;")
 
     elif attr_type == "fixeddistance":
       source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for bool type not implemented.\");")
@@ -305,6 +310,7 @@ for cfg in loaded_cfgs:
         source.write("QString v = QString(c_str);")
         source.write(f"self->ref->{name} = v;")
     elif attr_type == "QList": #TODO: this may never be settable, in fact
+      # TODO: if ever implemented, deref support?
       source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for bool type not implemented.\");")
       source.write("return -1;")
     else:

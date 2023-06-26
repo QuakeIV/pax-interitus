@@ -14,7 +14,7 @@
         },
         {
             "name":"trajectory",
-            "type":"Transform*",
+            "type":"*Transform*",
         },
         {
             "name":"engines",

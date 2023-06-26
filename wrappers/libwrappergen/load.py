@@ -4,7 +4,6 @@ class loaded_cfg:
   def __init__(self):
     # set up some but not all default values
     self.base_type = None
-
 #
 
 def unknown_attr_check(filename, thing):
@@ -19,6 +18,34 @@ def add_attr_or_func(l, thing):
     #
   #
   l.append(thing)
+#
+
+# helper for parse_file, evaluates typename and stores 'pointer' and 'dereference' attributes, stores properly stripped type name
+def parse_typename(cfg, a):
+  t = cfg.pop("type").strip()
+  # TODO: actually started doing this in the wrong spot, also can probably generecize the type name processing?
+  a["deref"] = False # when assinging to this, dereference and assign as value
+  a["ptr"]   = False
+  if t[0] == "*":
+    t = t[1:]
+    a["deref"] = True
+  if t[-1] == "*":
+    t = t[:-1]
+    a["ptr"] = True
+  a["type"] = t.strip()
+
+  a["template_type_deref"] = False
+  a["template_type_ptr"]   = False
+  if "template_type" in cfg:
+    tt = cfg.pop("template_type")
+    if tt[0] == "*":
+      tt = tt[1:]
+      a["template_type_deref"] = True # when assinging to this, dereference and assign as value
+    if tt[-1] == "*":
+      tt = tt[:-1]
+      a["template_type_ptr"] = True
+    a["template_type"] = tt.strip()
+  #
 #
 
 _loaded_filenames = {}
@@ -63,10 +90,9 @@ def parse_file(json_cfg, filename):
     for arg in init_args_cfg:
       a = {}
       a["name"] = arg.pop("name")
-      t = arg.pop("type")
-      t = t.split("*")
-      a["type"] = t[0].strip()
-      a["ptr"] = len(t) > 1 # if there is a * assume its a pointer
+      parse_typename(arg, a)
+      if a["deref"]:
+        raise SyntaxError(f"{c.type} ({c.path}) cannot deref init function argument")
       unknown_attr_check(filename, arg)
       cfg.init_args.append(a)
   # not really worth unknown_attr_check on init_args_cfg, we already type check it is a list, and then iterate over it
@@ -76,15 +102,8 @@ def parse_file(json_cfg, filename):
     for r in json_cfg.pop("attrs"):
       v = {}
       v["name"] = r.pop("name")
-      t = r.pop("type")
-      t = t.split("*")
-      v["type"] = t[0].strip()
-      tt = r.pop("template_type") if "template_type" in r else ""
-      tt = tt.split("*")
-      v["template_type"] = tt[0].strip() if tt[0] else None
-      v["template_type_ptr"] = len(tt) > 1
+      parse_typename(r, v)
       v["readonly"] = r.pop("readonly") if "readonly" in r else False
-      v["ptr"] = len(t) > 1 # if there is a * assume its a pointer
       unknown_attr_check(filename, r)
       add_attr_or_func(cfg.attrs, v)
     #
@@ -98,14 +117,13 @@ def parse_file(json_cfg, filename):
       f["name"] = r.pop("name")
       f["type"] = r.pop("type")
       f["args"] = []
-      for a in r.pop("args"):
-        arg = {}
-        arg["name"] = a.pop("name")
-        t = a.pop("type")
-        t = t.split("*")
-        arg["ptr"] = len(t) > 1 # if there is a * assume its a pointer
-        arg["type"] = t[0].strip()
-        f["args"].append(arg)
+      for arg in r.pop("args"):
+        a = {}
+        a["name"] = arg.pop("name")
+        parse_typename(arg, a)
+        if a["deref"]:
+          raise SyntaxError(f"{a['type']} ({cfg.path}) cannot deref function argument")
+        f["args"].append(a)
       add_attr_or_func(cfg.funcs, f)
   #
 
@@ -137,6 +155,7 @@ def get_file(filename):
 
 # will also load any unloaded included files
 def resolve_references(loaded_cfgs):
+  # TODO: would be nice to have a 'used types' to produce an appropriate list of includes
   not_traversed = list(loaded_cfgs)
   traversed = []
 
@@ -213,10 +232,14 @@ def validate(cfg):
     if a["type"] not in ["QString", "QList", "bool", "double", "celestialmass", "fixeddistance", "fixedtime", "uint64_t"] + cfg.known_types:
       raise TypeError(f"Unrecognized type: {t[0].strip()} ({filename})")
     if a["type"] == "QList":
+      if a["deref"]: #TODO: eh? maybe not illegal...
+        raise SyntaxError(f"cannot dereference QList ({cfg.path})")
+      if a["template_type_deref"]: #TODO: eh? maybe not illegal...
+        raise SyntaxError(f"cannot dereference template type of QList ({cfg.path})")
       if a["template_type"] not in [] + cfg.known_types:
-        raise TypeError(f"Template type {v['template_type']} not handled for QList ({filename})")
+        raise TypeError(f"Template type {a['template_type']} not handled for QList ({cfg.path})")
       if not a["template_type_ptr"]:
-        raise TypeError(f"Template type {v['template_type']} must be pointer for QList ({filename})")
+        raise TypeError(f"Template type {a['template_type']} must be pointer for QList ({cfg.path})")
   for f in cfg.funcs:
     if f["type"] not in ["double", "bool", "fixedtime", "fixedenergy", "QString","void"]:
       raise TypeError(f"Unrecognized return type: {f['type']} ({filename})")

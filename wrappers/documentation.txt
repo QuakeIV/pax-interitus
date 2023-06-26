@@ -1,0 +1,6 @@
+This folder contains the python wrappers for the C infrastructure.
+
+notes on json typing:
+type will either be some base type, such as fixedmass (which will be converted into a floating point in kilograms for python), or it can be a type defined by another .json, which must be included at the top of the file
+
+just the type name will store the type as a value, type* will store the type as a reference, and *type* will indicate the type is stored as a reference, but is to be assigned by value on the C++ backend

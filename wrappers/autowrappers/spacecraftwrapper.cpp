@@ -103,8 +103,7 @@ static int set_trajectory(PySpacecraftObject *self, PyObject *value, void *closu
         return -1;
     }
     PyTransformObject *v = (PyTransformObject*)value;
-    self->ref->trajectory = v->ref;
-    v->tracked = true;
+    *self->ref->trajectory = *v->ref;
     return 0;
 }
 static PyObject* get_engines(PySpacecraftObject *self, void *closure)
