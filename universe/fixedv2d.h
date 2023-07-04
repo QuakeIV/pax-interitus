@@ -11,6 +11,7 @@
 
 #include "utilities.h"
 
+// TODO: turn to struct? likely viable
 class FixedV2D
 {
 public:

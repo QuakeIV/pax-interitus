@@ -38,10 +38,12 @@ public:
     // python object (to access python callbacks)
     PySystemRendererObject *py_obj = nullptr;
 
-    // you can focus on transforms and follow them
-    Transform *focus;
+    // you can focus on positions of things and follow them
+    FixedV2D *focus;
     SolarSystem *focus_system;
-    FixedV2D offset; //this offset is relative to the 'focus' point
+    //this offset is relative to the 'focus' point
+    FixedV2D offset;
+    // TODO: maybe better to finalize camera position on top of the frame, storing that, then doing rendering?
 
     // mouse activity
     void singleClick(QPoint location);

@@ -2,7 +2,7 @@
 #define CELESTIALTYPE_H
 
 #include <QColor>
-#include "orbittype.h"
+#include "orbit.h"
 #include <QList>
 #include <QPainter>
 
@@ -23,11 +23,8 @@ public:
 
     QString name;
 
-    // TODO: kindof dubious that this is a member, while spacecraft are a pointer
-    // this might in all due reality be more effecient, however, as spacecraft
-    // may indeed get to have different kinds of transforms with some regularity,
-    // whereas planets aught not to (we will see how well that holds up)
-    OrbitType trajectory;
+    FixedV2D position;
+    Orbit *trajectory;
 
     uint64_t mass; //in exagrams (10^18 grams) (quadrillions (10^15) of kgs), ideally later replaced with more parameters later
     int64_t radius; // radius of object itself, in 2^10ths of meters (per distance reference frame in units.h)

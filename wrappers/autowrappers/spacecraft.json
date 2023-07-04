@@ -1,7 +1,20 @@
 {
     "type":"Spacecraft",
     "header":"spacecraft/spacecraft.h",
-    "include":["spacecraftdesign.json", "transform.json", "engine.json", "reactor.json", "directedweapon.json", "jumpdrive.json", "circuit.json"],
+    "include":["spacecraftdesign.json", "orbit.json", "engine.json", "reactor.json", "directedweapon.json", "jumpdrive.json", "circuit.json"],
+    "init":{
+        "args":
+        [
+            {
+                "name":"p",
+                "type":"Celestial*",
+            },
+            {
+                "name":"r",
+                "type":"double",
+            },
+        ],
+    },
     "attrs":
     [
         {
@@ -12,9 +25,14 @@
             "name":"design",
             "type":"SpacecraftDesign",
         },
+        // TODO: make this read only, should change this via jump() most likely
         {
             "name":"trajectory",
-            "type":"*Transform*",
+            "type":"*Orbit*",
+        },
+        {
+            "name":"position",
+            "type":"FixedV2D",
         },
         {
             "name":"engines",
@@ -51,7 +69,7 @@
             "args":[
                 {
                     "name":"tgt",
-                    "type":"Transform*",
+                    "type":"Orbit*",
                 },
             ],
         },
@@ -61,7 +79,7 @@
             "args":[
                 {
                     "name":"tgt",
-                    "type":"Transform*",
+                    "type":"Orbit*",
                 },
             ],
         },

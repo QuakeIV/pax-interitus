@@ -1,7 +1,7 @@
 #ifndef SPACECRAFT_H
 #define SPACECRAFT_H
 
-#include "orbittype.h"
+#include "orbit.h"
 #include "components/component.h"
 #include "components/circuit.h"
 #include "universe.h"
@@ -9,15 +9,14 @@
 
 class JumpdriveDesign;
 class Jumpdrive;
-
-class Component;
+class Celestial;
 
 // TODO: parent class for spacecraft vs installations or other such things
 class SpacecraftDesign
 {
 public:
-    SpacecraftDesign();
-    ~SpacecraftDesign();
+    SpacecraftDesign(void);
+    ~SpacecraftDesign(void);
 
     // IE Cv for corvette
     // TODO: might be worth expanding on that a bit so both Cv and Corvette are know info for different contexts
@@ -66,16 +65,17 @@ inline QString get_spacecraft_design_name(SpacecraftDesign *d)
 class Spacecraft
 {
 public:
-    Spacecraft();
-    ~Spacecraft();
+    Spacecraft(Celestial *p, double r);
+    Spacecraft(Orbit *o);
+    ~Spacecraft(void);
     
     // design that the spacecraft was most recently specced to
     SpacecraftDesign design;
 
     Jumpdrive *selected_drive = NULL;
 
-    bool ready_to_jump(Transform *tgt);
-    bool jump(Transform *tgt);
+    bool ready_to_jump(Orbit *tgt);
+    bool jump(Orbit *tgt);
     bool select_jumpdrive(Jumpdrive *drive);
 
     QList<Engine*> engines;
@@ -87,12 +87,13 @@ public:
     // should be engineering problems to overcome before multiples are practical
     QList<Jumpdrive*> jump_drives;
 
-    // TODO: kinematic trajectory that can either ride a fixed orbit or be in a dynamic maneuvering mode
     // TODO: need some way to approach a target point and produce an ETA to that point (ideally closed form)
-    Transform *trajectory;
+    FixedV2D position;
+    Orbit *trajectory;
 
     QString name = "";
-    int hull_number;
+    // TODO: is this really wanted or needed in this form?
+    uint64_t hull_number;
 
     // max acceleration (mm/sec/sec)
     int64_t max_acceleration(void);

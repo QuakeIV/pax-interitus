@@ -101,9 +101,7 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
         return NULL;
     if (!init_spacecraftdesign(m))
         return NULL;
-    if (!init_transform(m))
-        return NULL;
-    if (!init_orbittype(m)) // TODO: rename this type to just be orbit
+    if (!init_orbit(m))
         return NULL;
 
     Py_INCREF(&PySystemRendererType);

@@ -9,7 +9,7 @@
 #include "componentdesignwrapper.h"
 #include "spacecraftwrapper.h"
 #include "spacecraftdesignwrapper.h"
-#include "transformwrapper.h"
+#include "orbitwrapper.h"
 #include "enginewrapper.h"
 #include "reactorwrapper.h"
 #include "directedweaponwrapper.h"
@@ -18,11 +18,9 @@
 #include "reactordesignwrapper.h"
 #include "directedweapondesignwrapper.h"
 #include "jumpdrivedesignwrapper.h"
-#include "fixedv2dwrapper.h"
-#include "solarsystemwrapper.h"
-#include "capacitordesignwrapper.h"
 #include "celestialwrapper.h"
-#include "orbittypewrapper.h"
+#include "fixedv2dwrapper.h"
+#include "capacitordesignwrapper.h"
 #include "components/circuit.h"
 
 static void type_dealloc(PyCircuitObject *self)

@@ -1,5 +1,5 @@
 #include "spacecraft.h"
-#include "orbittype.h"
+#include "orbit.h"
 #include "components/component.h"
 #include "components/jumpdrive.h"
 #include "universe.h"
@@ -25,23 +25,34 @@ int64_t SpacecraftDesign::max_range(void)
 }
 
 
+static uint64_t hull_number_autoincrement = 0;
 
-
-Spacecraft::Spacecraft()
+Spacecraft::Spacecraft(Orbit *o)
 {
     spacecraft.append(this);
+
+    trajectory = new Orbit(o, &position);
+    hull_number = hull_number_autoincrement++;
 }
-Spacecraft::~Spacecraft()
+
+Spacecraft::Spacecraft(Celestial *p, double r)
 {
-    spacecraft.removeOne(this);
+    spacecraft.append(this);
+
+    trajectory = new Orbit(p, r, &position);
+    hull_number = hull_number_autoincrement++;
 }
-bool Spacecraft::ready_to_jump(Transform *tgt)
+Spacecraft::~Spacecraft(void)
+{
+    spacecraft.removeAll(this);
+}
+bool Spacecraft::ready_to_jump(Orbit *tgt)
 {
     if (jump_drives.contains(selected_drive))
         return selected_drive->cap.charged(selected_drive->calculate_jump_energy(this, tgt));
     return true;
 }
-bool Spacecraft::jump(Transform *tgt)
+bool Spacecraft::jump(Orbit *tgt)
 {
     // TODO: would be nice to not have to check this
     if (jump_drives.contains(selected_drive))

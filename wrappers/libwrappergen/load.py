@@ -169,7 +169,10 @@ def resolve_references(loaded_cfgs):
 
     resolved_includes = []
     for i in c.includes:
-      inc_cfg = get_file(i)
+      try:
+        inc_cfg = get_file(i)
+      except FileNotFoundError as e:
+        raise FileNotFoundError(f"While parsing ({c.path}) couldn't find include ({i})")
       resolved_includes.append(inc_cfg)
       if inc_cfg not in traversed + not_traversed:
         not_traversed.append(inc_cfg)
@@ -230,7 +233,7 @@ def resolve_inheritance(cfg):
 def validate(cfg):
   for a in cfg.attrs:
     if a["type"] not in ["QString", "QList", "bool", "double", "celestialmass", "fixeddistance", "fixedtime", "uint64_t"] + cfg.known_types:
-      raise TypeError(f"Unrecognized type: {t[0].strip()} ({filename})")
+      raise TypeError(f"Unrecognized type: {a['type']} ({cfg.path})")
     if a["type"] == "QList":
       if a["deref"]: #TODO: eh? maybe not illegal...
         raise SyntaxError(f"cannot dereference QList ({cfg.path})")
@@ -245,7 +248,7 @@ def validate(cfg):
       raise TypeError(f"Unrecognized return type: {f['type']} ({filename})")
     for a in f["args"]:
       if a["type"] not in ["double", "int"] + cfg.known_types:
-        raise TypeError(f"Unrecognized arg type: {arg['type']} ({filename})")
+        raise TypeError(f"Unrecognized arg type: {a['type']} ({cfg.path})")
       #
     #
   #

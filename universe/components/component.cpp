@@ -24,11 +24,11 @@ void Directedweapon::fire_on_target(FixedV2D aim, Spacecraft *tgt)
     // origin: point shot was fired from
     // poa: point of aim
     // target: position of target
-    __uint128_t aim_length2 = (parent->trajectory->position - aim).length2(); //length of aim arc
+    __uint128_t aim_length2 = (parent->position - aim).length2(); //length of aim arc
     int64_t aim_length = int_sqrt(aim_length2);
 
-    __uint128_t origin_target2 = tgt->trajectory->position.distance2(parent->trajectory->position);
-    __uint128_t aim_target2 = tgt->trajectory->position.distance2(aim);
+    __uint128_t origin_target2 = tgt->position.distance2(parent->position);
+    __uint128_t aim_target2 = tgt->position.distance2(aim);
     // TODO: algorithm is not great in terms of managing overflows
     // also takes some effeciency hits by dividing more than needed to try to lessen the overflow problem somewhat
     // TODO: there is also an unfortuante degree of roundoff, this just typically amounts to a few millimeters so meh

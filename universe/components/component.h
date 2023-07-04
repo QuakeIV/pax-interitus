@@ -2,7 +2,7 @@
 #define COMPONENT_H
 
 #include "utilities.h"
-#include "transform.h"
+#include "orbit.h"
 #include "circuit.h"
 
 class BeamType;

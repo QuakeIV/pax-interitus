@@ -1,8 +1,7 @@
 #include <Python.h>
 #include <structmember.h> // additional python context (forgot what exactly)
 #include "units.h" // conversion factors and so on
-#include "orbittypewrapper.h"
-#include "transformwrapper.h"
+#include "orbitwrapper.h"
 #include "celestialwrapper.h"
 #include "fixedv2dwrapper.h"
 #include "solarsystemwrapper.h"
@@ -23,9 +22,9 @@
 #include "capacitordesignwrapper.h"
 #include "insulatorwrapper.h"
 #include "conductorwrapper.h"
-#include "orbittype.h"
+#include "orbit.h"
 
-static void type_dealloc(PyOrbitTypeObject *self)
+static void type_dealloc(PyOrbitObject *self)
 {
     if (!self->tracked)
         delete self->ref;
@@ -35,26 +34,30 @@ static void type_dealloc(PyOrbitTypeObject *self)
 static bool wrapper_newup = true;
 static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    PyOrbitTypeObject *object = (PyOrbitTypeObject *)type->tp_alloc(type, 0);
+    PyOrbitObject *object = (PyOrbitObject *)type->tp_alloc(type, 0);
     if (wrapper_newup)
     {
         PyCelestialObject *p_pytype;
         double r;
-        if (!PyArg_ParseTuple(args, "O!d", &PyCelestialType, &p_pytype, &r))
+        PyFixedV2DObject *pos_pytype;
+        if (!PyArg_ParseTuple(args, "O!dO!", &PyCelestialType, &p_pytype, &r, &PyFixedV2DType, &pos_pytype))
             return NULL;
         Celestial *p = p_pytype->ref;
-        object->ref = new OrbitType(p,r);
+        FixedV2D *pos = pos_pytype->ref;
+        object->ref = new Orbit(p,r,pos);
     }
     object->tracked = false;
     return (PyObject*)object;
 }
 
 // attribute functions
-static PyObject* get_position(PyOrbitTypeObject *self, void *closure)
+static PyObject* get_position(PyOrbitObject *self, void *closure)
 {
-    return (PyObject*)pyobjectize_fixedv2d(&self->ref->position);
+    if (!self->ref->position)
+        Py_RETURN_NONE;
+    return (PyObject*)pyobjectize_fixedv2d(self->ref->position);
 }
-static int set_position(PyOrbitTypeObject *self, PyObject *value, void *closure)
+static int set_position(PyOrbitObject *self, PyObject *value, void *closure)
 {
     if (value == NULL)
     {
@@ -67,17 +70,17 @@ static int set_position(PyOrbitTypeObject *self, PyObject *value, void *closure)
         return -1;
     }
     PyFixedV2DObject *v = (PyFixedV2DObject*)value;
-    self->ref->position = *v->ref;
+    self->ref->position = v->ref;
     v->tracked = true;
     return 0;
 }
-static PyObject* get_solarsystem(PyOrbitTypeObject *self, void *closure)
+static PyObject* get_solarsystem(PyOrbitObject *self, void *closure)
 {
     if (!self->ref->solarsystem)
         Py_RETURN_NONE;
     return (PyObject*)pyobjectize_solarsystem(self->ref->solarsystem);
 }
-static int set_solarsystem(PyOrbitTypeObject *self, PyObject *value, void *closure)
+static int set_solarsystem(PyOrbitObject *self, PyObject *value, void *closure)
 {
     if (value == NULL)
     {
@@ -94,11 +97,11 @@ static int set_solarsystem(PyOrbitTypeObject *self, PyObject *value, void *closu
     v->tracked = true;
     return 0;
 }
-static PyObject* get_orbital_radius(PyOrbitTypeObject *self, void *closure)
+static PyObject* get_orbital_radius(PyOrbitObject *self, void *closure)
 {
     return PyFloat_FromDouble(DISTANCE_FIXED_TO_M(self->ref->orbital_radius));
 }
-static int set_orbital_radius(PyOrbitTypeObject *self, PyObject *value, void *closure)
+static int set_orbital_radius(PyOrbitObject *self, PyObject *value, void *closure)
 {
     if (value == NULL)
     {
@@ -109,11 +112,11 @@ static int set_orbital_radius(PyOrbitTypeObject *self, PyObject *value, void *cl
     return -1;
     return 0;
 }
-static PyObject* get_orbital_period(PyOrbitTypeObject *self, void *closure)
+static PyObject* get_orbital_period(PyOrbitObject *self, void *closure)
 {
     return PyFloat_FromDouble(TIME_FIXED_TO_S(self->ref->orbital_period));
 }
-static int set_orbital_period(PyOrbitTypeObject *self, PyObject *value, void *closure)
+static int set_orbital_period(PyOrbitObject *self, PyObject *value, void *closure)
 {
     if (value == NULL)
     {
@@ -127,13 +130,13 @@ static int set_orbital_period(PyOrbitTypeObject *self, PyObject *value, void *cl
     self->ref->orbital_period = SECONDS_TO_TIME(v);
     return 0;
 }
-static PyObject* get_parent(PyOrbitTypeObject *self, void *closure)
+static PyObject* get_parent(PyOrbitObject *self, void *closure)
 {
     if (!self->ref->parent)
         Py_RETURN_NONE;
     return (PyObject*)pyobjectize_celestial(self->ref->parent);
 }
-static int set_parent(PyOrbitTypeObject *self, PyObject *value, void *closure)
+static int set_parent(PyOrbitObject *self, PyObject *value, void *closure)
 {
     if (value == NULL)
     {
@@ -191,35 +194,34 @@ static PyGetSetDef getsets[] = {
 
 // wrapped function calls
 
-static PyObject* __eq__(PyOrbitTypeObject *self, PyObject *other, int op)
+static PyObject* __eq__(PyOrbitObject *self, PyObject *other, int op)
 {
-    if (!PyObject_IsInstance(other, (PyObject *)&PyOrbitTypeType))
+    if (!PyObject_IsInstance(other, (PyObject *)&PyOrbitType))
         Py_RETURN_FALSE;
-    PyOrbitTypeObject *other_cast = (PyOrbitTypeObject *)other;
+    PyOrbitObject *other_cast = (PyOrbitObject *)other;
     if (op == Py_EQ && self->ref == other_cast->ref)
         Py_RETURN_TRUE;
     Py_RETURN_FALSE;
 }
 
-PyTypeObject PyOrbitTypeType = {
+PyTypeObject PyOrbitType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "paxpython.OrbitType",
-    .tp_basicsize = sizeof(PyOrbitTypeObject),
+    .tp_name = "paxpython.Orbit",
+    .tp_basicsize = sizeof(PyOrbitObject),
     .tp_itemsize = 0,
     .tp_dealloc = (destructor)type_dealloc,
     .tp_flags = Py_TPFLAGS_DEFAULT,
-    .tp_doc = PyDoc_STR("PaxPython OrbitType Type Wrapper."),
+    .tp_doc = PyDoc_STR("PaxPython Orbit Type Wrapper."),
     .tp_richcompare = (richcmpfunc)&__eq__,
     .tp_getset = getsets,
-    .tp_base = &PyTransformType,
     .tp_new = type_new,
 };
 
 // Takes pointer to object, returns python wrapper for object with ref count of 1
-PyOrbitTypeObject *pyobjectize_orbittype(OrbitType *obj)
+PyOrbitObject *pyobjectize_orbit(Orbit *obj)
 {
     wrapper_newup = false;
-    PyOrbitTypeObject *pyobj = (PyOrbitTypeObject *)PyObject_Call((PyObject *)&PyOrbitTypeType,PyTuple_New(0),NULL);
+    PyOrbitObject *pyobj = (PyOrbitObject *)PyObject_Call((PyObject *)&PyOrbitType,PyTuple_New(0),NULL);
     pyobj->ref = obj;
     pyobj->tracked = true;
     wrapper_newup = true;
@@ -228,17 +230,17 @@ PyOrbitTypeObject *pyobjectize_orbittype(OrbitType *obj)
 
 // Inits the type and adds it as a member to module
 // On failure returns false with exception set and decrefs module
-bool init_orbittype(PyObject *m)
+bool init_orbit(PyObject *m)
 {
-    if (PyType_Ready(&PyOrbitTypeType) < 0)
+    if (PyType_Ready(&PyOrbitType) < 0)
     {
         Py_DECREF(m);
         return false;
     }
-    Py_INCREF(&PyOrbitTypeType);
-    if (PyModule_AddObject(m, "OrbitType", (PyObject *)&PyOrbitTypeType) < 0)
+    Py_INCREF(&PyOrbitType);
+    if (PyModule_AddObject(m, "Orbit", (PyObject *)&PyOrbitType) < 0)
     {
-        Py_DECREF(&PyOrbitTypeType);
+        Py_DECREF(&PyOrbitType);
         Py_DECREF(m);
         return false;
     }

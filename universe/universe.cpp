@@ -1,5 +1,5 @@
 #include "universe.h"
-#include "transform.h"
+#include "orbit.h"
 #include "celestial.h"
 #include "spacecraft/taskgroup.h"
 #include "solarsystem.h"
@@ -18,6 +18,7 @@ std::shared_mutex universe_lock;
 Empire player_empire;
 
 // master list of extant dialectric materials
+// TODO: is this the right file for this?
 QList<Insulator*> insulator_materials;
 
 bool universe_paused = false;
@@ -31,10 +32,8 @@ int64_t universe_time;
 // TODO: we really need to be careful with how this gets set
 int64_t universe_next_event = INT64_MAX;
 
-//TODO: it might be better to only update the transforms we are currently looking at (cull by current system if nothing else)
-// at that point the transforms can just be handed whatever the current universe time is when they come into view
-// this will require complicated handling for things that have routes
-QList<Transform*> transforms;
+// all trajectories
+QList<Orbit*> trajectories;
 
 // track all extant solar systems
 QList<SolarSystem*> systems;
@@ -310,28 +309,15 @@ void universe_init(void)
     static Celestial styx = Celestial(12000.0, 8, 42656000.0, &pluto);
     styx.name = "Styx";
 
-    static Spacecraft testcraft1 = Spacecraft();
+    static Spacecraft testcraft1 = Spacecraft(&earth, DISTANCE_FIXED_TO_M(earth.radius) + 400000.0);
     testcraft1.name = "SS Test 1";
-    static Transform epic_static_position = Transform(&sol);
-    epic_static_position.position.x = -105684699015963;
-    epic_static_position.position.y = -27305789478705;
-    testcraft1.trajectory = &epic_static_position;
     sol.spacecraft.append(&testcraft1);
-    static Spacecraft testcraft2 = Spacecraft();
-    static OrbitType t1 = OrbitType(&earth, DISTANCE_FIXED_TO_M(earth.radius) + 400000.0);
-    testcraft2.trajectory = &t1;
+    static Spacecraft testcraft2 = Spacecraft(testcraft1.trajectory);
     testcraft2.name = "SS Test 2";
     sol.spacecraft.append(&testcraft2);
-    static Spacecraft testcraft3 = Spacecraft();
-    static OrbitType t2 = OrbitType(&earth, DISTANCE_FIXED_TO_M(earth.radius) + 400000.0);
-    testcraft3.trajectory = &t2;
+    static Spacecraft testcraft3 = Spacecraft(&earth, DISTANCE_FIXED_TO_M(earth.radius) + 400000.0);
     testcraft3.name = "SS Test 3";
     sol.spacecraft.append(&testcraft3);
-    static Spacecraft testcraft4 = Spacecraft();
-    static OrbitType t3 = OrbitType(&earth, DISTANCE_FIXED_TO_M(earth.radius) + 400000.0);
-    testcraft4.trajectory = &t3;
-    testcraft4.name = "SS Test 4";
-    sol.spacecraft.append(&testcraft4);
 
     // set up timing
     universe_updater = new std::thread(universe_timing_loop);
@@ -372,7 +358,7 @@ void universe_update(int64_t delta_t)
     universe_next_event = INT64_MAX;
 
     // TODO: respect orbit heirarchy instead of just blindly traversing list
-    foreach (Transform *t, transforms)
+    foreach (Orbit *t, trajectories)
     {
         t->update_position();
     }

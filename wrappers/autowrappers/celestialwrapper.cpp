@@ -2,8 +2,7 @@
 #include <structmember.h> // additional python context (forgot what exactly)
 #include "units.h" // conversion factors and so on
 #include "celestialwrapper.h"
-#include "orbittypewrapper.h"
-#include "transformwrapper.h"
+#include "orbitwrapper.h"
 #include "fixedv2dwrapper.h"
 #include "solarsystemwrapper.h"
 #include "spacecraftwrapper.h"
@@ -88,7 +87,9 @@ static int set_parent(PyCelestialObject *self, PyObject *value, void *closure)
 }
 static PyObject* get_trajectory(PyCelestialObject *self, void *closure)
 {
-    return (PyObject*)pyobjectize_orbittype(&self->ref->trajectory);
+    if (!self->ref->trajectory)
+        Py_RETURN_NONE;
+    return (PyObject*)pyobjectize_orbit(self->ref->trajectory);
 }
 static int set_trajectory(PyCelestialObject *self, PyObject *value, void *closure)
 {
@@ -97,13 +98,13 @@ static int set_trajectory(PyCelestialObject *self, PyObject *value, void *closur
         PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
         return -1;
     }
-    if (!PyObject_IsInstance(value, (PyObject *)&PyOrbitTypeType))
+    if (!PyObject_IsInstance(value, (PyObject *)&PyOrbitType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to OrbitType.");
+        PyErr_SetString(PyExc_TypeError, "Can only set value to Orbit.");
         return -1;
     }
-    PyOrbitTypeObject *v = (PyOrbitTypeObject*)value;
-    self->ref->trajectory = *v->ref;
+    PyOrbitObject *v = (PyOrbitObject*)value;
+    self->ref->trajectory = v->ref;
     v->tracked = true;
     return 0;
 }

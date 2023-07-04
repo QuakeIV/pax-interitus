@@ -6,7 +6,7 @@
 #include "spacecraftwrapper.h"
 #include "enginedesignwrapper.h"
 #include "spacecraftdesignwrapper.h"
-#include "transformwrapper.h"
+#include "orbitwrapper.h"
 #include "reactorwrapper.h"
 #include "directedweaponwrapper.h"
 #include "jumpdrivewrapper.h"
@@ -16,13 +16,11 @@
 #include "reactordesignwrapper.h"
 #include "directedweapondesignwrapper.h"
 #include "jumpdrivedesignwrapper.h"
+#include "celestialwrapper.h"
 #include "fixedv2dwrapper.h"
-#include "solarsystemwrapper.h"
 #include "insulatorwrapper.h"
 #include "conductorwrapper.h"
 #include "capacitordesignwrapper.h"
-#include "celestialwrapper.h"
-#include "orbittypewrapper.h"
 #include "components/component.h"
 
 static void type_dealloc(PyEngineObject *self)

@@ -1,7 +1,7 @@
 {
     "type":"Celestial",
     "init":false,
-    "include":["orbittype.json",],
+    "include":["orbit.json",],
     "header":"celestial.h",
     "attrs":
     [
@@ -15,7 +15,7 @@
         },
         {
             "name":"trajectory",
-            "type":"OrbitType",
+            "type":"Orbit*",
         },
         {
             "name":"mass",

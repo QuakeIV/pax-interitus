@@ -19,13 +19,12 @@
 #include "autowrappers/insulatorwrapper.h"
 #include "autowrappers/jumpdrivewrapper.h"
 #include "autowrappers/jumpdrivedesignwrapper.h"
-#include "autowrappers/orbittypewrapper.h"
+#include "autowrappers/orbitwrapper.h"
 #include "autowrappers/reactorwrapper.h"
 #include "autowrappers/reactordesignwrapper.h"
 #include "autowrappers/solarsystemwrapper.h"
 #include "autowrappers/spacecraftwrapper.h"
 #include "autowrappers/spacecraftdesignwrapper.h"
-#include "autowrappers/transformwrapper.h"
 
 typedef PyObject *(*pyobjectize_generic_func)(void *ref);
 typedef struct

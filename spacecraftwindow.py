@@ -69,7 +69,7 @@ class SpacecraftWindow(QMainWindow):
 
   def jump(self):
     if self.jump_target:
-      orbit = libpaxpython.OrbitType(self.jump_target, self.jump_target_altitude + self.jump_target.radius)
+      orbit = libpaxpython.Orbit(self.jump_target, self.jump_target_altitude + self.jump_target.radius, self.s.position)
       self.s.trajectory = orbit
       self.update()
   #

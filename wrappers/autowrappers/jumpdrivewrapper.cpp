@@ -6,7 +6,7 @@
 #include "spacecraftwrapper.h"
 #include "jumpdrivedesignwrapper.h"
 #include "spacecraftdesignwrapper.h"
-#include "transformwrapper.h"
+#include "orbitwrapper.h"
 #include "enginewrapper.h"
 #include "reactorwrapper.h"
 #include "directedweaponwrapper.h"
@@ -17,12 +17,10 @@
 #include "enginedesignwrapper.h"
 #include "reactordesignwrapper.h"
 #include "directedweapondesignwrapper.h"
+#include "celestialwrapper.h"
 #include "fixedv2dwrapper.h"
-#include "solarsystemwrapper.h"
 #include "insulatorwrapper.h"
 #include "conductorwrapper.h"
-#include "celestialwrapper.h"
-#include "orbittypewrapper.h"
 #include "components/jumpdrive.h"
 
 static void type_dealloc(PyJumpdriveObject *self)

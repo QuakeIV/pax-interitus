@@ -1,17 +1,26 @@
 
-#include "orbittype.h"
+#include "orbit.h"
 #include "celestial.h"
 #include "universe.h"
 #include "utilities.h"
 #include "units.h"
 
-OrbitType::OrbitType(SolarSystem *solarsystem) : Transform(solarsystem) {}
+// copy constructor
+Orbit::Orbit(Orbit *o, FixedV2D *pos)
+{
+    *this = *o;
+    position = pos;
+    trajectories.append(this);
+}
 
 //TODO: non circular orbits (racetrack should support this, we just need to be able to take additional parameters)
-OrbitType::OrbitType(Celestial *p, double r) : Transform(p->system)
+Orbit::Orbit(Celestial *p, double r, FixedV2D *pos)
 {
     parent = p;
+    position = pos;
+    solarsystem = p->system;
     orbital_radius = DISTANCE_M_TO_FIXED(r);
+    trajectories.append(this);
     //doing sine/cosine math in double land, and then converting back to the fixed reference frame
     //TODO: figure out how to do this right with integers
     double radius_d = r; //radius in meters
@@ -40,7 +49,13 @@ OrbitType::OrbitType(Celestial *p, double r) : Transform(p->system)
     }
 }
 
-FixedV2D OrbitType::get_position_at_time(int64_t time)
+Orbit::~Orbit(void)
+{
+    // TODO: when we custom allocate this will hopefully become a lot more efficient
+    trajectories.removeAll(this);
+}
+
+FixedV2D Orbit::get_position_at_time(int64_t time)
 {
     if (parent != NULL)
     {
@@ -55,18 +70,18 @@ FixedV2D OrbitType::get_position_at_time(int64_t time)
         d.x = muldiv(d.x, orbit_clock%racetrack_delta_time, racetrack_delta_time);
         d.y = muldiv(d.y, orbit_clock%racetrack_delta_time, racetrack_delta_time);
 
-        return d + rel_racetrack[index] + parent->trajectory.position;
+        return d + rel_racetrack[index] + parent->position;
     }
-    return position;
+    return FixedV2D();
 }
 
-FixedV2D OrbitType::project_position(int64_t delta_time)
+FixedV2D Orbit::project_position(int64_t delta_time)
 {
     return get_position_at_time(universe_time + delta_time);
 }
 
-void OrbitType::update_position(void)
+void Orbit::update_position(void)
 {
-    position = get_position_at_time(universe_time);
+    *position = get_position_at_time(universe_time);
 }
 

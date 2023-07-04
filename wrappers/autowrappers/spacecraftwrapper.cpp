@@ -3,7 +3,7 @@
 #include "units.h" // conversion factors and so on
 #include "spacecraftwrapper.h"
 #include "spacecraftdesignwrapper.h"
-#include "transformwrapper.h"
+#include "orbitwrapper.h"
 #include "enginewrapper.h"
 #include "reactorwrapper.h"
 #include "directedweaponwrapper.h"
@@ -14,6 +14,7 @@
 #include "directedweapondesignwrapper.h"
 #include "jumpdrivedesignwrapper.h"
 #include "circuitdesignwrapper.h"
+#include "celestialwrapper.h"
 #include "fixedv2dwrapper.h"
 #include "solarsystemwrapper.h"
 #include "componentwrapper.h"
@@ -21,8 +22,6 @@
 #include "capacitordesignwrapper.h"
 #include "insulatorwrapper.h"
 #include "conductorwrapper.h"
-#include "celestialwrapper.h"
-#include "orbittypewrapper.h"
 #include "spacecraft/spacecraft.h"
 
 static void type_dealloc(PySpacecraftObject *self)
@@ -38,7 +37,12 @@ static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     PySpacecraftObject *object = (PySpacecraftObject *)type->tp_alloc(type, 0);
     if (wrapper_newup)
     {
-        object->ref = new Spacecraft();
+        PyCelestialObject *p_pytype;
+        double r;
+        if (!PyArg_ParseTuple(args, "O!d", &PyCelestialType, &p_pytype, &r))
+            return NULL;
+        Celestial *p = p_pytype->ref;
+        object->ref = new Spacecraft(p,r);
     }
     object->tracked = false;
     return (PyObject*)object;
@@ -88,7 +92,7 @@ static PyObject* get_trajectory(PySpacecraftObject *self, void *closure)
 {
     if (!self->ref->trajectory)
         Py_RETURN_NONE;
-    return (PyObject*)pyobjectize_transform(self->ref->trajectory);
+    return (PyObject*)pyobjectize_orbit(self->ref->trajectory);
 }
 static int set_trajectory(PySpacecraftObject *self, PyObject *value, void *closure)
 {
@@ -97,13 +101,34 @@ static int set_trajectory(PySpacecraftObject *self, PyObject *value, void *closu
         PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
         return -1;
     }
-    if (!PyObject_IsInstance(value, (PyObject *)&PyTransformType))
+    if (!PyObject_IsInstance(value, (PyObject *)&PyOrbitType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to Transform.");
+        PyErr_SetString(PyExc_TypeError, "Can only set value to Orbit.");
         return -1;
     }
-    PyTransformObject *v = (PyTransformObject*)value;
+    PyOrbitObject *v = (PyOrbitObject*)value;
     *self->ref->trajectory = *v->ref;
+    return 0;
+}
+static PyObject* get_position(PySpacecraftObject *self, void *closure)
+{
+    return (PyObject*)pyobjectize_fixedv2d(&self->ref->position);
+}
+static int set_position(PySpacecraftObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    if (!PyObject_IsInstance(value, (PyObject *)&PyFixedV2DType))
+    {
+        PyErr_SetString(PyExc_TypeError, "Can only set value to FixedV2D.");
+        return -1;
+    }
+    PyFixedV2DObject *v = (PyFixedV2DObject*)value;
+    self->ref->position = *v->ref;
+    v->tracked = true;
     return 0;
 }
 static PyObject* get_engines(PySpacecraftObject *self, void *closure)
@@ -217,6 +242,13 @@ static PyGetSetDef getsets[] = {
     NULL, // closure
     },
     {
+    "position",
+    (getter)get_position,
+    (setter)set_position,
+    NULL, // documentation string
+    NULL, // closure
+    },
+    {
     "engines",
     (getter)get_engines,
     (setter)set_engines,
@@ -250,18 +282,18 @@ static PyGetSetDef getsets[] = {
 // wrapped function calls
 static PyObject *func_ready_to_jump(PySpacecraftObject *self, PyObject *args)
 {
-    PyTransformObject *tgt_pytype;
-    if (!PyArg_ParseTuple(args, "O!", &PyTransformType, &tgt_pytype))
+    PyOrbitObject *tgt_pytype;
+    if (!PyArg_ParseTuple(args, "O!", &PyOrbitType, &tgt_pytype))
         return NULL;
-    Transform *tgt = tgt_pytype->ref;
+    Orbit *tgt = tgt_pytype->ref;
     return PyBool_FromLong(self->ref->ready_to_jump(tgt));
 }
 static PyObject *func_jump(PySpacecraftObject *self, PyObject *args)
 {
-    PyTransformObject *tgt_pytype;
-    if (!PyArg_ParseTuple(args, "O!", &PyTransformType, &tgt_pytype))
+    PyOrbitObject *tgt_pytype;
+    if (!PyArg_ParseTuple(args, "O!", &PyOrbitType, &tgt_pytype))
         return NULL;
-    Transform *tgt = tgt_pytype->ref;
+    Orbit *tgt = tgt_pytype->ref;
     return PyBool_FromLong(self->ref->jump(tgt));
 }
 static PyObject *func_select_jumpdrive(PySpacecraftObject *self, PyObject *args)

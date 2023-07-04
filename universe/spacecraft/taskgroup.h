@@ -1,7 +1,7 @@
-#ifndef FLEETTYPE_H
-#define FLEETTYPE_H
+#ifndef TASKGROUP_H
+#define TASKGROUP_H
 
-#include "orbittype.h"
+#include "orbit.h"
 #include <QString>
 #include <QColor>
 #include "spacecraft.h"
@@ -33,4 +33,4 @@ public:
     }
 };
 
-#endif // FLEETTYPE_H
+#endif // TASKGROUP_H

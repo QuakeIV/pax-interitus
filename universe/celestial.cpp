@@ -3,13 +3,16 @@
 
 // for stars
 Celestial::Celestial(double r, uint64_t m, SolarSystem *system):
-    trajectory(system)
+    position() // just 0,0
 {
     radius = DISTANCE_M_TO_FIXED(r);
     mass = m;
     color = QColor(242,210,4); //reasonable shade of yellow (ideally this will get overridden during system gen)
     name = "Unnamed Star"; // set default name
     parent = NULL;
+    // TODO: kindof risky, no way to guard this at the moment afaik
+    // TODO: add null check to python for deref-assignment members to check for this
+    trajectory = NULL;
 
     surface_gravity = G * CELESTIALMASS_TO_KG(m) / (r*r);
 
@@ -17,12 +20,13 @@ Celestial::Celestial(double r, uint64_t m, SolarSystem *system):
 }
 
 Celestial::Celestial(double r, uint64_t m, double distance, Celestial *p):
-    trajectory(p, distance)
+    position() // just 0,0
 {
     parent = p;
     system = parent->system;
     radius = DISTANCE_M_TO_FIXED(r);
     mass = m;
+    trajectory = new Orbit(p, distance, &position);
 
     surface_gravity = G * CELESTIALMASS_TO_KG(m) / (r*r);
     

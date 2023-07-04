@@ -22,14 +22,14 @@ static PyObject *set_focus(PySystemRendererObject *self, PyObject *args)
     if (PyObject_IsInstance(obj, (PyObject *)&PyCelestialType))
     {
         PyCelestialObject *cel = (PyCelestialObject *)obj;
-        self->renderer->focus = &cel->ref->trajectory;
+        self->renderer->focus = &cel->ref->position;
         self->renderer->offset.x = 0;
         self->renderer->offset.y = 0;
     }
     else if (PyObject_IsInstance(obj, (PyObject *)&PySpacecraftType))
     {
         PySpacecraftObject *s = (PySpacecraftObject *)obj;
-        self->renderer->focus = s->ref->trajectory;
+        self->renderer->focus = &s->ref->position;
         self->renderer->offset.x = 0;
         self->renderer->offset.y = 0;
     }
@@ -128,7 +128,7 @@ PySystemRenderer::PySystemRenderer(QWidget *parent):
 
     // TODO: this is temporary, this is not long-term the suitable place to set initial focus i think
     focus_system = systems[0]; //TODO: default to zeroeth system for now (later track home system? maybe last viewed system?)
-    focus = &focus_system->root.trajectory;
+    focus = &focus_system->root.position;
 
     orbit = QPen(Qt::green);//, 1, Qt::SolidLine, Qt::SquareCap);
 }
@@ -195,7 +195,7 @@ void PySystemRenderer::render_fleets(void)
         //TODO: draw trail line?
 
         Spacecraft *sc = list.takeLast();
-        QPointF pos = position_to_screen_coordinates(sc->trajectory->position);
+        QPointF pos = position_to_screen_coordinates(sc->position);
         QPointF offset = QPointF(5,-5); //offset for text display
         //TODO: de-hardcode radius
         painter.drawEllipse(pos, 5.0, 5.0);
@@ -208,7 +208,7 @@ void PySystemRenderer::render_fleets(void)
         while (i >= 0)
         {
             // TODO: would be nice to pre-calculate fleet screen coordinates for the frame
-            QPointF copos = position_to_screen_coordinates(list[i]->trajectory->position);
+            QPointF copos = position_to_screen_coordinates(list[i]->position);
             QPointF d = copos - pos;
 
             // TODO: needs work to eliminate vertical jitter, shouldnt exist at long range zoom
@@ -266,7 +266,7 @@ void PySystemRenderer::render_scale()
 
 QPointF PySystemRenderer::position_to_screen_coordinates(FixedV2D pos)
 {
-    FixedV2D a = pos - (offset + focus->position);
+    FixedV2D a = pos - (offset + *focus);
 
     // TODO: this is capturing remainders so that the anti aliased lines drawn look much nicer, look into optimizing (mainly the float division sucks)
     int64_t mask = (1l << currentZoom) - 1l;
@@ -290,14 +290,15 @@ void PySystemRenderer::render_planet_body_recurse(Celestial *cel)
     // render planet body (but only if more center point is more than 5 pixels from parent)
     // if hypothetically both are still minimum size, this would amount to half-overlapping circles
     // if there is no parent body, draw it then as well (sun case)
-    if ((cel->trajectory.orbital_radius >> currentZoom) >= 5 || !cel->trajectory.parent)
+    // NOTE/TODO: currently if cel->parent is null, trajectory will be null, so this argument order is necessary
+    if (!cel->parent || (cel->trajectory->orbital_radius >> currentZoom) >= 5)
     {
         float rad = cel->radius >> currentZoom;
         if (rad < 5.0f)
             rad = 5.0f;
         painter.setPen(QColor(0,0,0,0));
         painter.setBrush(cel->color);
-        QPointF pos = position_to_screen_coordinates(cel->trajectory.position);
+        QPointF pos = position_to_screen_coordinates(cel->position);
         painter.drawEllipse(pos, rad, rad);
     }
 }
@@ -305,16 +306,22 @@ void PySystemRenderer::render_planet_body_recurse(Celestial *cel)
 void PySystemRenderer::render_planet_trajectory_recurse(Celestial *cel)
 {
     // only render orbit if it exists (if parent is set) and if it would be more than 10 pixels wide (otherwise dont bother drawing it its too small)
-    if (cel->trajectory.parent && (cel->trajectory.orbital_radius >> currentZoom) >= 10)
+    // NOTE/TODO: currently if cel->parent is null, trajectory will be null, so this argument order is necessary
+    if (cel->parent && (cel->trajectory->orbital_radius >> currentZoom) >= 10)
     {
         painter.setPen(orbit);
-        int64_t pts = cel->trajectory.racetrack_points;
-        FixedV2D parent_pos = cel->trajectory.parent->trajectory.position;
-        QPointF start = position_to_screen_coordinates(cel->trajectory.rel_racetrack[pts-1] + parent_pos);
+        int64_t pts = cel->trajectory->racetrack_points;
+        FixedV2D parent_pos = cel->parent->position;
+        // TODO: having to go into the trajectory, and add the parent_pos sucks
+        // it might be better if instead of rendering by planet, we simply iterated over all the orbits
+        // and rendered them based on whether they were visible or not (what for cache locality)
+        // i guess the issue is currently we do the aurora thing of hiding child orbits based
+        // on the parent object? it creates an oddly ordered traversal that sucks though, prolly better way to do it
+        QPointF start = position_to_screen_coordinates(cel->trajectory->rel_racetrack[pts-1] + parent_pos);
 
         for (int i = 0; i < pts; i++)
         {
-            QPointF next = position_to_screen_coordinates(cel->trajectory.rel_racetrack[i] + parent_pos);
+            QPointF next = position_to_screen_coordinates(cel->trajectory->rel_racetrack[i] + parent_pos);
             painter.drawLine(start, next);
             start = next;
         }
@@ -330,7 +337,7 @@ void PySystemRenderer::singleClick(QPoint location)
     Celestial *cel = planet_click_recurse(&focus_system->root, QPointF(location));
     if (cel)
     {
-        focus = &cel->trajectory;
+        focus = &cel->position;
         offset.x = 0;
         offset.y = 0;
         return;
@@ -340,7 +347,7 @@ void PySystemRenderer::singleClick(QPoint location)
     Spacecraft *spacecraft = spacecraft_click(location);
     if (spacecraft)
     {
-        focus = spacecraft->trajectory;
+        focus = &spacecraft->position;
         offset.x = 0;
         offset.y = 0;
         return;
@@ -349,8 +356,8 @@ void PySystemRenderer::singleClick(QPoint location)
     //TODO: search for other focusable objects (missiles perhaps i guess?)
 
     // if the click misses, focus onto star and incorporate position of last focused object into offset
-    offset += focus->position;
-    focus = &focus_system->root.trajectory;
+    offset += *focus;
+    focus = &focus_system->root.position;
 }
 
 // TODO: work out why this has weird timing constraints, there is no double right click so who cares
@@ -378,7 +385,7 @@ void PySystemRenderer::rightClick(QPoint location)
         //TODO: this should be functionalized as its identical to other code
         //TODO: all this rendering crap should probably migrate into a new layer of objects to keep the backend properly divorced from the rendering
         // maybe this frontend layer actually keeps references to the celestials that arent even aware of its existence
-        QPointF l = position_to_screen_coordinates(c->trajectory.position);
+        QPointF l = position_to_screen_coordinates(c->position);
 
         float x = l.x() - location.x();
         float y = l.y() - location.y();
@@ -399,7 +406,7 @@ void PySystemRenderer::rightClick(QPoint location)
     {
         //TODO: would be nice to pre-compute fleet screen position every frame
         // can track screen corners in fixedv2d form and then calculate which things are displayed, and only update those coords? maybe needless complexity
-        QPointF l = position_to_screen_coordinates(s->trajectory->position);
+        QPointF l = position_to_screen_coordinates(s->position);
 
         float x = l.x() - location.x();
         float y = l.y() - location.y();
@@ -409,8 +416,7 @@ void PySystemRenderer::rightClick(QPoint location)
         // TODO: spacecraft will most likely have their own radius eventually
         if (d < 10.0)  // right click margins are more generous
         {
-            PySpacecraftObject *new_sc = (PySpacecraftObject *)PyObject_Call((PyObject *)&PySpacecraftType,PyTuple_New(0),NULL);
-            new_sc->ref = s;
+            PySpacecraftObject *new_sc = pyobjectize_spacecraft(s);
             PyList_Append(spacecraft_list, (PyObject *)new_sc);
             Py_DECREF(new_sc); // decref to undo incref from the newly created object, now that list is holding onto it
         }
@@ -459,7 +465,7 @@ Spacecraft * PySystemRenderer::spacecraft_click(QPointF p)
     foreach (Spacecraft *s, focus_system->spacecraft)
     {
         //TODO: would be nice to pre-compute fleet screen position every frame
-        QPointF l = position_to_screen_coordinates(s->trajectory->position);
+        QPointF l = position_to_screen_coordinates(s->position);
 
         float x = l.x() - p.x();
         float y = l.y() - p.y();
@@ -475,7 +481,7 @@ Spacecraft * PySystemRenderer::spacecraft_click(QPointF p)
 Celestial * PySystemRenderer::planet_click_recurse(Celestial *cel, QPointF p)
 {
     //TODO: it would be nice to calculate display radii and coordinates at render time and then re-use them here, rather than re-calculating
-    QPointF l = position_to_screen_coordinates(cel->trajectory.position);
+    QPointF l = position_to_screen_coordinates(cel->position);
 
     float x = l.x() - p.x();
     float y = l.y() - p.y();
@@ -489,7 +495,7 @@ Celestial * PySystemRenderer::planet_click_recurse(Celestial *cel, QPointF p)
     {
         // only allow clicks on planets that are actually rendering
         // (this is to match the condition in render_planet_recurse that culls planet rendering)
-        if ((child->trajectory.orbital_radius >> currentZoom) >= 5)
+        if ((child->trajectory->orbital_radius >> currentZoom) >= 5)
         {
             //recurse into children
             Celestial *f = planet_click_recurse(child, p);

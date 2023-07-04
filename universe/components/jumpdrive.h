@@ -4,8 +4,7 @@
 #include "component.h"
 #include "capacitor.h"
 #include "spacecraft/spacecraft.h"
-#include "transform.h"
-#include "orbittype.h"
+#include "orbit.h"
 
 // TODO: it would i think be nice for these to be specialized to particular spacecraft designs and integral to them
 class JumpdriveDesign : public ComponentDesign
@@ -22,7 +21,7 @@ public:
     JumpdriveDesign design;
     Capacitor cap;
 
-    int64_t calculate_jump_energy(Spacecraft *parent, Transform *target)
+    int64_t calculate_jump_energy(Spacecraft *parent, Orbit *target)
     {
         //energy = parent.mass * some factor * jump distance?
         // actually, KE delta accounts for mass
@@ -34,12 +33,12 @@ public:
     // in other words, ideally *target is a new transform usually
     // TODO: just going to be instant for now, but a discharge/cycle time would in general be an important mechanic
     // IE defining how quickly you can be out of a bad situation after deciding to leave
-    bool jump(Spacecraft *parent, Transform *target)
+    // TODO: yeet this? we are not currently using this in python.  possibly just use it, instead?
+    bool jump(Spacecraft *parent, Orbit *target)
     {
         if (cap.discharge(calculate_jump_energy(parent, target)))
         {
-            delete parent->trajectory;
-            parent->trajectory = target;
+            *parent->trajectory = *target;
 
             //TODO: spawn jump effects that then render
             // this could be part of a 'jump signature' that actually is a mechanic in the game and persists for longer than it is usually visible in a decaying form
