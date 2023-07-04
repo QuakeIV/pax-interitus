@@ -69,7 +69,7 @@ static int set_circuit(PyDirectedweaponDesignObject *self, PyObject *value, void
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyCircuitDesignType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to CircuitDesign.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign CircuitDesign type to DirectedweaponDesign.circuit.");
         return -1;
     }
     PyCircuitDesignObject *v = (PyCircuitDesignObject*)value;

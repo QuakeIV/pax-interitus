@@ -60,7 +60,7 @@ static int set_insulator(PyCircuitDesignObject *self, PyObject *value, void *clo
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyInsulatorType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to Insulator.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign Insulator type to CircuitDesign.insulator.");
         return -1;
     }
     PyInsulatorObject *v = (PyInsulatorObject*)value;
@@ -83,7 +83,7 @@ static int set_conductor(PyCircuitDesignObject *self, PyObject *value, void *clo
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyConductorType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to Conductor.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign Conductor type to CircuitDesign.conductor.");
         return -1;
     }
     PyConductorObject *v = (PyConductorObject*)value;

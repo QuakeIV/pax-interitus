@@ -80,7 +80,7 @@ static int set_design(PySpacecraftObject *self, PyObject *value, void *closure)
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PySpacecraftDesignType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to SpacecraftDesign.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign SpacecraftDesign type to Spacecraft.design.");
         return -1;
     }
     PySpacecraftDesignObject *v = (PySpacecraftDesignObject*)value;
@@ -103,7 +103,7 @@ static int set_trajectory(PySpacecraftObject *self, PyObject *value, void *closu
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyOrbitType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to Orbit.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign Orbit type to Spacecraft.trajectory.");
         return -1;
     }
     PyOrbitObject *v = (PyOrbitObject*)value;
@@ -123,7 +123,7 @@ static int set_position(PySpacecraftObject *self, PyObject *value, void *closure
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyFixedV2DType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to FixedV2D.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign FixedV2D type to Spacecraft.position.");
         return -1;
     }
     PyFixedV2DObject *v = (PyFixedV2DObject*)value;

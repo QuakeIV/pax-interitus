@@ -18,6 +18,7 @@
 #include "jumpdrivedesignwrapper.h"
 #include "celestialwrapper.h"
 #include "fixedv2dwrapper.h"
+#include "solarsystemwrapper.h"
 #include "insulatorwrapper.h"
 #include "conductorwrapper.h"
 #include "capacitordesignwrapper.h"
@@ -76,7 +77,7 @@ static int set_parent(PyDirectedweaponObject *self, PyObject *value, void *closu
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PySpacecraftType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to Spacecraft.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign Spacecraft type to Directedweapon.parent.");
         return -1;
     }
     PySpacecraftObject *v = (PySpacecraftObject*)value;
@@ -115,7 +116,7 @@ static int set_design(PyDirectedweaponObject *self, PyObject *value, void *closu
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyDirectedweaponDesignType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to DirectedweaponDesign.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign DirectedweaponDesign type to Directedweapon.design.");
         return -1;
     }
     PyDirectedweaponDesignObject *v = (PyDirectedweaponDesignObject*)value;

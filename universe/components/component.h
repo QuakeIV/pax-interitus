@@ -19,6 +19,9 @@ public:
 
     QString name = "component design";
 
+    // TODO: i dont think this actually makes sense, circuit designs are ship specific
+    // component designs are not necessarily bound to a particular ship right?
+    // not symmetrical to components in that way
     CircuitDesign *circuit;
 
     static const bool uses_power = false;

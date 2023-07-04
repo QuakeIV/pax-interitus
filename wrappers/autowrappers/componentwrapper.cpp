@@ -17,6 +17,7 @@
 #include "circuitdesignwrapper.h"
 #include "celestialwrapper.h"
 #include "fixedv2dwrapper.h"
+#include "solarsystemwrapper.h"
 #include "componentdesignwrapper.h"
 #include "capacitordesignwrapper.h"
 #include "insulatorwrapper.h"
@@ -76,7 +77,7 @@ static int set_parent(PyComponentObject *self, PyObject *value, void *closure)
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PySpacecraftType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to Spacecraft.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign Spacecraft type to Component.parent.");
         return -1;
     }
     PySpacecraftObject *v = (PySpacecraftObject*)value;

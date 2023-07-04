@@ -21,6 +21,7 @@
 #include "jumpdrivedesignwrapper.h"
 #include "celestialwrapper.h"
 #include "fixedv2dwrapper.h"
+#include "solarsystemwrapper.h"
 #include "conductorwrapper.h"
 #include "components/capacitor.h"
 
@@ -77,7 +78,7 @@ static int set_parent(PyCapacitorObject *self, PyObject *value, void *closure)
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PySpacecraftType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to Spacecraft.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign Spacecraft type to Capacitor.parent.");
         return -1;
     }
     PySpacecraftObject *v = (PySpacecraftObject*)value;
@@ -116,7 +117,7 @@ static int set_design(PyCapacitorObject *self, PyObject *value, void *closure)
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyCapacitorDesignType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to CapacitorDesign.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign CapacitorDesign type to Capacitor.design.");
         return -1;
     }
     PyCapacitorDesignObject *v = (PyCapacitorDesignObject*)value;

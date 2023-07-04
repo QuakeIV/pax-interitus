@@ -263,10 +263,11 @@ for cfg in loaded_cfgs:
       source.dedent()
       source.write(f"self->ref->{name} = v;")
     elif attr_type in cfg.known_types:
+      # TODO: support assigning None to null this out?
       source.write(f"if (!PyObject_IsInstance(value, (PyObject *)&Py{attr_type}Type))")
       source.write("{")
       source.indent()
-      source.write(f"PyErr_SetString(PyExc_TypeError, \"Can only set value to {attr_type}.\");")
+      source.write(f"PyErr_SetString(PyExc_TypeError, \"Can only assign {attr_type} type to {cfg.type}.{name}.\");")
       source.write("return -1;")
       source.dedent()
       source.write("}")

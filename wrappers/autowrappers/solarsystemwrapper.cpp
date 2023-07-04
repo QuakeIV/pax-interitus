@@ -93,7 +93,7 @@ static int set_root(PySolarSystemObject *self, PyObject *value, void *closure)
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyCelestialType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to Celestial.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign Celestial type to SolarSystem.root.");
         return -1;
     }
     PyCelestialObject *v = (PyCelestialObject*)value;

@@ -77,7 +77,7 @@ static int set_parent(PyCelestialObject *self, PyObject *value, void *closure)
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyCelestialType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to Celestial.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign Celestial type to Celestial.parent.");
         return -1;
     }
     PyCelestialObject *v = (PyCelestialObject*)value;
@@ -100,7 +100,7 @@ static int set_trajectory(PyCelestialObject *self, PyObject *value, void *closur
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyOrbitType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to Orbit.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign Orbit type to Celestial.trajectory.");
         return -1;
     }
     PyOrbitObject *v = (PyOrbitObject*)value;

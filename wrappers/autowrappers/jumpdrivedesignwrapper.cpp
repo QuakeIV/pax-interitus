@@ -70,7 +70,7 @@ static int set_circuit(PyJumpdriveDesignObject *self, PyObject *value, void *clo
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyCircuitDesignType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to CircuitDesign.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign CircuitDesign type to JumpdriveDesign.circuit.");
         return -1;
     }
     PyCircuitDesignObject *v = (PyCircuitDesignObject*)value;
@@ -91,7 +91,7 @@ static int set_cap(PyJumpdriveDesignObject *self, PyObject *value, void *closure
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyCapacitorDesignType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to CapacitorDesign.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign CapacitorDesign type to JumpdriveDesign.cap.");
         return -1;
     }
     PyCapacitorDesignObject *v = (PyCapacitorDesignObject*)value;

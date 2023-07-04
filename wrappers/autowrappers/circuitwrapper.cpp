@@ -20,6 +20,7 @@
 #include "jumpdrivedesignwrapper.h"
 #include "celestialwrapper.h"
 #include "fixedv2dwrapper.h"
+#include "solarsystemwrapper.h"
 #include "capacitordesignwrapper.h"
 #include "components/circuit.h"
 
@@ -56,7 +57,7 @@ static int set_design(PyCircuitObject *self, PyObject *value, void *closure)
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyCircuitDesignType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to CircuitDesign.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign CircuitDesign type to Circuit.design.");
         return -1;
     }
     PyCircuitDesignObject *v = (PyCircuitDesignObject*)value;

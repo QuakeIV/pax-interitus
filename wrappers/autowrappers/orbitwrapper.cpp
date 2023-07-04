@@ -66,7 +66,7 @@ static int set_position(PyOrbitObject *self, PyObject *value, void *closure)
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyFixedV2DType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to FixedV2D.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign FixedV2D type to Orbit.position.");
         return -1;
     }
     PyFixedV2DObject *v = (PyFixedV2DObject*)value;
@@ -89,7 +89,7 @@ static int set_solarsystem(PyOrbitObject *self, PyObject *value, void *closure)
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PySolarSystemType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to SolarSystem.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign SolarSystem type to Orbit.solarsystem.");
         return -1;
     }
     PySolarSystemObject *v = (PySolarSystemObject*)value;
@@ -145,7 +145,7 @@ static int set_parent(PyOrbitObject *self, PyObject *value, void *closure)
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyCelestialType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to Celestial.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign Celestial type to Orbit.parent.");
         return -1;
     }
     PyCelestialObject *v = (PyCelestialObject*)value;

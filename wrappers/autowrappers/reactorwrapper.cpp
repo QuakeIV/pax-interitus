@@ -18,6 +18,7 @@
 #include "jumpdrivedesignwrapper.h"
 #include "celestialwrapper.h"
 #include "fixedv2dwrapper.h"
+#include "solarsystemwrapper.h"
 #include "insulatorwrapper.h"
 #include "conductorwrapper.h"
 #include "capacitordesignwrapper.h"
@@ -76,7 +77,7 @@ static int set_parent(PyReactorObject *self, PyObject *value, void *closure)
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PySpacecraftType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to Spacecraft.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign Spacecraft type to Reactor.parent.");
         return -1;
     }
     PySpacecraftObject *v = (PySpacecraftObject*)value;
@@ -115,7 +116,7 @@ static int set_design(PyReactorObject *self, PyObject *value, void *closure)
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyReactorDesignType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to ReactorDesign.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign ReactorDesign type to Reactor.design.");
         return -1;
     }
     PyReactorDesignObject *v = (PyReactorDesignObject*)value;

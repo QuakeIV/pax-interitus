@@ -69,7 +69,7 @@ static int set_circuit(PyEngineDesignObject *self, PyObject *value, void *closur
     }
     if (!PyObject_IsInstance(value, (PyObject *)&PyCircuitDesignType))
     {
-        PyErr_SetString(PyExc_TypeError, "Can only set value to CircuitDesign.");
+        PyErr_SetString(PyExc_TypeError, "Can only assign CircuitDesign type to EngineDesign.circuit.");
         return -1;
     }
     PyCircuitDesignObject *v = (PyCircuitDesignObject*)value;
