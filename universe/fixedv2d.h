@@ -11,7 +11,7 @@
 
 #include "utilities.h"
 
-// TODO: turn to struct? likely viable
+// TODO: turn to struct? probably not needed actually, seems like no real overhead for this sort of class
 class FixedV2D
 {
 public:

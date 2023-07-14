@@ -12,12 +12,14 @@ class Celestial
 {
 public:
     // TODO: is it really suitable to use radius? this is convenient for now to take KMs but may not always be the case
-    // r = radius in meters, m = mass in whatever the mass ref frame was
+    // r = radius in meters
+    // m = mass in kgs
     // distance = meters
     //for stars
-    Celestial(double r, uint64_t m, SolarSystem *system);
+    // TODO: need a good way to generate a precise version of this
+    Celestial(double r, double m, SolarSystem *system);
     //planets/moons/etc
-    Celestial(double r, uint64_t m, double distance, Celestial *parent);
+    Celestial(double r, double m, double distance, Celestial *parent);
 
     Celestial *parent;
 
@@ -26,7 +28,8 @@ public:
     FixedV2D position;
     Orbit *trajectory;
 
-    uint64_t mass; //in exagrams (10^18 grams) (quadrillions (10^15) of kgs), ideally later replaced with more parameters later
+    // TODO: need a good way to generate a precise version of this
+    __uint128_t mass; // in fixedmass, see units.h
     int64_t radius; // radius of object itself, in 2^10ths of meters (per distance reference frame in units.h)
     double surface_gravity; // informational, m/s^2
     

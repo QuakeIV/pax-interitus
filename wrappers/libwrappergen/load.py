@@ -232,7 +232,7 @@ def resolve_inheritance(cfg):
 
 def validate(cfg):
   for a in cfg.attrs:
-    if a["type"] not in ["QString", "QList", "bool", "double", "celestialmass", "fixeddistance", "fixedtime", "uint64_t"] + cfg.known_types:
+    if a["type"] not in ["QString", "QList", "bool", "double", "fixedmass", "fixeddistance", "fixedtime", "uint64_t"] + cfg.known_types:
       raise TypeError(f"Unrecognized type: {a['type']} ({cfg.path})")
     if a["type"] == "QList":
       if a["deref"]: #TODO: eh? maybe not illegal...

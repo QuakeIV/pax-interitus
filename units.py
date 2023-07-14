@@ -26,6 +26,7 @@ def _find_scale_match(qty, scale_dict, target=1):
 #
 def _parse_scale(s, scale_dict):
   s = s.strip()
+  # TODO: actually handle or at least report parse fail for the suffix?
   for k, v in scale_dict.items():
     if s.endswith(v):
       try:

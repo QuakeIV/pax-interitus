@@ -17,7 +17,7 @@ public:
     QString name;
 
     // parameters for root celestial object
-    SolarSystem(double r, uint64_t m);
+    SolarSystem(double r, double m);
 };
 
 #endif // SOLARSYSTEMTYPE_H

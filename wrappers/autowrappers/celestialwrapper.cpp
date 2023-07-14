@@ -110,7 +110,7 @@ static int set_trajectory(PyCelestialObject *self, PyObject *value, void *closur
 }
 static PyObject* get_mass(PyCelestialObject *self, void *closure)
 {
-    return PyFloat_FromDouble(CELESTIALMASS_TO_KG(self->ref->mass));
+    return PyFloat_FromDouble(MASS_FIXED_TO_KG(self->ref->mass));
 }
 static int set_mass(PyCelestialObject *self, PyObject *value, void *closure)
 {
@@ -119,7 +119,7 @@ static int set_mass(PyCelestialObject *self, PyObject *value, void *closure)
         PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
         return -1;
     }
-    PyErr_SetString(PyExc_NotImplementedError, "Setter for bool type not implemented.");
+    PyErr_SetString(PyExc_NotImplementedError, "Setter for fixedmass type not implemented.");
     return -1;
     return 0;
 }

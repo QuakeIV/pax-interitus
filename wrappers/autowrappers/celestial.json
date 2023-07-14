@@ -19,7 +19,7 @@
         },
         {
             "name":"mass",
-            "type":"celestialmass",
+            "type":"fixedmass",
         },
         {
             "name":"radius",

@@ -202,8 +202,8 @@ for cfg in loaded_cfgs:
       source.write(f"return PyFloat_FromDouble(DISTANCE_FIXED_TO_M(self->ref->{name}));")
     elif attr_type == "fixedtime":
       source.write(f"return PyFloat_FromDouble(TIME_FIXED_TO_S(self->ref->{name}));")
-    elif attr_type == "celestialmass":
-      source.write(f"return PyFloat_FromDouble(CELESTIALMASS_TO_KG(self->ref->{name}));")
+    elif attr_type == "fixedmass":
+      source.write(f"return PyFloat_FromDouble(MASS_FIXED_TO_KG(self->ref->{name}));")
     elif attr_type == "QString":
       source.write(f"return PyUnicode_FromString(self->ref->{name}.toStdString().c_str());")
     elif attr_type == "QList":
@@ -295,8 +295,8 @@ for cfg in loaded_cfgs:
       source.write(f"return -1;")
       source.dedent()
       source.write(f"self->ref->{name} = SECONDS_TO_TIME(v);")
-    elif attr_type == "celestialmass":
-      source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for bool type not implemented.\");")
+    elif attr_type == "fixedmass":
+      source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for fixedmass type not implemented.\");")
       source.write("return -1;")
     elif attr_type == "QString":
       if r["ptr"]:

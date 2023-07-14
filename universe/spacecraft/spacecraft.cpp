@@ -6,11 +6,11 @@
 
 // NOTE: current data model holds that you should not make pointers of items in the spacecraft, as if the list re-allocates the addresses will change
 
-SpacecraftDesign::SpacecraftDesign()
+SpacecraftDesign::SpacecraftDesign(void)
 {
 
 }
-SpacecraftDesign::~SpacecraftDesign()
+SpacecraftDesign::~SpacecraftDesign(void)
 {
 
 }

@@ -11,6 +11,9 @@
 
 // conversions
 
+// TODO: probably change naming scheme to something like FIXEDMASS_TO_KG and KG_TO_FIXEDMASS
+// to match the superior naming scheme developing on the python API side
+
 //TODO: poor effeciency given current use case in universe
 #define MILLISECONDS_TO_TIME(x) ((int64_t)(((double)x)*(TIME_FACTOR/1000.0)))
 #define MICROSECONDS_TO_TIME(x) ((int64_t)(((double)x)*(TIME_FACTOR/1000000.0)))
@@ -26,8 +29,8 @@
 
 #define CUBIC_METER_TO_LITER(x) ((x)*1000)
 
-#define CELESTIALMASS_TO_GRAMS(x) (((double)x) * 1000000000000000000.0)
-#define CELESTIALMASS_TO_KG(x) (((double)x) * 1000000000000000.0)
+#define MASS_FIXED_TO_KG(x) (((double)x)/1024.0)
+#define MASS_KG_TO_FIXED(x) ((x)*1024)
 
 const double G = 0.000000000066743; //gravitational constant (standard SI)
 
