@@ -55,17 +55,26 @@ def mass_str(qty):
   return f"{sigfig(qty/scale, 6)} {unit}"
 #
 # tonnage, similar but not identical to mass
+# originally meant for like ships and maybe warhead strength
+# this is currently used to express the amount of minerals on a planet and was tuned for such
 tonnage_scale = {}
-tonnage_scale[1]    = "g"
-tonnage_scale[1000] = "kg"
-tonnage_scale[1e6]  = "t"
-tonnage_scale[1e6]  = "kt"
-tonnage_scale[1e6]  = "Mt"
-tonnage_scale[1e6]  = "Gt"
-tonnage_scale[1e6]  = "Tt"
+tonnage_scale[0.001] = "g"
+tonnage_scale[1]     = "kg"
+tonnage_scale[1e3]   = "t"
+tonnage_scale[1e6]   = "kt"
+tonnage_scale[1e9]   = "Mt"
+tonnage_scale[1e12]  = "Gt"
+tonnage_scale[1e15]  = "Tt"
+tonnage_scale[1e18]  = "Pt"
+tonnage_scale[1e21]  = "Et"
+tonnage_scale[1e24]  = "Zt"
+tonnage_scale[1e27]  = "Yt"
+tonnage_scale[1e30]  = "Rt" # Ronna-Ton (lol) - circa 2022 adoption
+tonnage_scale[1e33]  = "Qt" # quetta-ton (lolol) - circa 2022 adoption
+# TODO: might eventually slip earth or solar masses in here? i think earth already falls somewhere in the middle of this scale though
 def tonnage_str(qty):
-  scale, unit = _find_scale_match(qty, mass_scale, 10.0)
-  return f"{sigfig(qty/scale, 6)} {unit}"
+  scale, unit = _find_scale_match(qty, tonnage_scale, 100.0)
+  return f"{sigfig(qty/scale, 5)} {unit}"
 #
 
 dist_scale = {k:(v+"m") for k, v in base_scale.items()}

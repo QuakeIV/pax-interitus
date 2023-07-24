@@ -1,9 +1,9 @@
 #ifndef UNIVERSE_H
 #define UNIVERSE_H
 
-#include <QList>
 #include "materials.h"
 #include <shared_mutex>
+#include <QList>
 
 class Celestial;
 class SolarSystem;

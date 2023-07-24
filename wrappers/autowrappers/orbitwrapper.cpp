@@ -5,6 +5,7 @@
 #include "celestialwrapper.h"
 #include "fixedv2dwrapper.h"
 #include "solarsystemwrapper.h"
+#include "celestial_mineralogywrapper.h"
 #include "spacecraftwrapper.h"
 #include "spacecraftdesignwrapper.h"
 #include "enginewrapper.h"

@@ -22,6 +22,7 @@
 #include "capacitordesignwrapper.h"
 #include "insulatorwrapper.h"
 #include "conductorwrapper.h"
+#include "celestial_mineralogywrapper.h"
 #include "spacecraft/spacecraft.h"
 
 static void type_dealloc(PySpacecraftObject *self)

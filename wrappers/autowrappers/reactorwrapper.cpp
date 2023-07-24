@@ -22,6 +22,7 @@
 #include "insulatorwrapper.h"
 #include "conductorwrapper.h"
 #include "capacitordesignwrapper.h"
+#include "celestial_mineralogywrapper.h"
 #include "components/component.h"
 
 static void type_dealloc(PyReactorObject *self)

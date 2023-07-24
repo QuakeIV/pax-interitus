@@ -30,7 +30,7 @@
 #define CUBIC_METER_TO_LITER(x) ((x)*1000)
 
 #define MASS_FIXED_TO_KG(x) (((double)x)/1024.0)
-#define MASS_KG_TO_FIXED(x) ((x)*1024)
+#define MASS_KG_TO_FIXED(x) ((x)*1024) // TODO: ensure better casting?
 
 const double G = 0.000000000066743; //gravitational constant (standard SI)
 

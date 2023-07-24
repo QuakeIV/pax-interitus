@@ -69,6 +69,8 @@ PyMODINIT_FUNC PyInit_libpaxpython(void)
         return NULL;
     if (!init_celestial(m))
         return NULL;
+    if (!init_celestial_mineralogy(m))
+        return NULL;
     if (!init_circuit(m))
         return NULL;
     if (!init_circuitdesign(m))

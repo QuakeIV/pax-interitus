@@ -128,7 +128,7 @@ PySystemRenderer::PySystemRenderer(QWidget *parent):
 
     // TODO: this is temporary, this is not long-term the suitable place to set initial focus i think
     focus_system = systems[0]; //TODO: default to zeroeth system for now (later track home system? maybe last viewed system?)
-    focus = &focus_system->root.position;
+    focus = &focus_system->root->position;
 
     orbit = QPen(Qt::green);//, 1, Qt::SolidLine, Qt::SquareCap);
 }
@@ -154,8 +154,8 @@ void PySystemRenderer::paintEvent(QPaintEvent *event)
     glClear(GL_COLOR_BUFFER_BIT);
     painter.endNativePainting();
 
-    render_planet_trajectory_recurse(&focus_system->root);
-    render_planet_body_recurse(&focus_system->root);
+    render_planet_trajectory_recurse(focus_system->root);
+    render_planet_body_recurse(focus_system->root);
 
     render_scale();
 
@@ -334,7 +334,7 @@ void PySystemRenderer::render_planet_trajectory_recurse(Celestial *cel)
 void PySystemRenderer::singleClick(QPoint location)
 {
     // TODO: might be nice to keep a root celestial pointer on hand to reduce derefences? possibly over factoring
-    Celestial *cel = planet_click_recurse(&focus_system->root, QPointF(location));
+    Celestial *cel = planet_click_recurse(focus_system->root, QPointF(location));
     if (cel)
     {
         focus = &cel->position;
@@ -357,7 +357,7 @@ void PySystemRenderer::singleClick(QPoint location)
 
     // if the click misses, focus onto star and incorporate position of last focused object into offset
     offset += *focus;
-    focus = &focus_system->root.position;
+    focus = &focus_system->root->position;
 }
 
 // TODO: work out why this has weird timing constraints, there is no double right click so who cares

@@ -15,7 +15,7 @@
         },
         {
             "name":"root",
-            "type":"Celestial",
+            "type":"Celestial*",
         },
         {
             "name":"spacecraft",

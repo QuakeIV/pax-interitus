@@ -1,8 +1,9 @@
 #include "celestial.h"
 #include "solarsystem.h"
+#include "minerals.h"
 
 // for stars
-Celestial::Celestial(double r, double m, SolarSystem *system):
+Celestial::Celestial(double r, double m, SolarSystem *s):
     position() // just 0,0
 {
     radius = DISTANCE_M_TO_FIXED(r);
@@ -10,10 +11,15 @@ Celestial::Celestial(double r, double m, SolarSystem *system):
     color = QColor(242,210,4); //reasonable shade of yellow (ideally this will get overridden during system gen)
     name = "Unnamed Star"; // set default name
     parent = NULL;
+    system = s;
+    system->celestials.append(this);
+
     // TODO: kindof risky, no way to guard this at the moment afaik
     // TODO: add null check to python for deref-assignment members to check for this
     // no trajectory will result in remaining stationary at 0,0
     trajectory = NULL;
+    // TODO: star mineralogy
+    mineralogy = NULL;
 
     surface_gravity = G * m / (r*r);
 }
@@ -26,6 +32,8 @@ Celestial::Celestial(double r, double m, double distance, Celestial *p):
     radius = DISTANCE_M_TO_FIXED(r);
     mass = MASS_KG_TO_FIXED(m);
     trajectory = new Orbit(p, distance, &position);
+
+    mineralogy = generate_mineralogy(mass);
 
     surface_gravity = G * m / (r*r);
     

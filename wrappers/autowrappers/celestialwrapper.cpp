@@ -3,6 +3,7 @@
 #include "units.h" // conversion factors and so on
 #include "celestialwrapper.h"
 #include "orbitwrapper.h"
+#include "celestial_mineralogywrapper.h"
 #include "fixedv2dwrapper.h"
 #include "solarsystemwrapper.h"
 #include "spacecraftwrapper.h"
@@ -156,6 +157,29 @@ static int set_surface_gravity(PyCelestialObject *self, PyObject *value, void *c
     self->ref->surface_gravity = v;
     return 0;
 }
+static PyObject* get_mineralogy(PyCelestialObject *self, void *closure)
+{
+    if (!self->ref->mineralogy)
+        Py_RETURN_NONE;
+    return (PyObject*)pyobjectize_celestial_mineralogy(self->ref->mineralogy);
+}
+static int set_mineralogy(PyCelestialObject *self, PyObject *value, void *closure)
+{
+    if (value == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
+        return -1;
+    }
+    if (!PyObject_IsInstance(value, (PyObject *)&Pycelestial_mineralogyType))
+    {
+        PyErr_SetString(PyExc_TypeError, "Can only assign celestial_mineralogy type to Celestial.mineralogy.");
+        return -1;
+    }
+    Pycelestial_mineralogyObject *v = (Pycelestial_mineralogyObject*)value;
+    self->ref->mineralogy = v->ref;
+    v->tracked = true;
+    return 0;
+}
 static PyObject* get_children(PyCelestialObject *self, void *closure)
 {
     PyObject *children_pylist = PyList_New(0);
@@ -218,6 +242,13 @@ static PyGetSetDef getsets[] = {
     "surface_gravity",
     (getter)get_surface_gravity,
     (setter)set_surface_gravity,
+    NULL, // documentation string
+    NULL, // closure
+    },
+    {
+    "mineralogy",
+    (getter)get_mineralogy,
+    (setter)set_mineralogy,
     NULL, // documentation string
     NULL, // closure
     },

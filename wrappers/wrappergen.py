@@ -95,7 +95,12 @@ for cfg in loaded_cfgs:
   header.write()
   header.write("#include <Python.h>")
   header.write()
-  header.write(f"class {cfg.type};")
+  if cfg.metatype == "class":
+    header.write(f"class {cfg.type};")
+  elif cfg.metatype == "struct":
+    header.write(f"typedef struct {cfg.type}_s {cfg.type};")
+  else:
+    raise NotImplementedError(f"cannot handle metatype: {cfg.metatype}")
   header.write("typedef struct")
   header.write("{")
   header.indent()

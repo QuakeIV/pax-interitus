@@ -11,6 +11,7 @@
 #include "directedweaponwrapper.h"
 #include "jumpdrivewrapper.h"
 #include "circuitwrapper.h"
+#include "celestial_mineralogywrapper.h"
 #include "enginedesignwrapper.h"
 #include "reactordesignwrapper.h"
 #include "directedweapondesignwrapper.h"
@@ -82,7 +83,9 @@ static int set_system_id(PySolarSystemObject *self, PyObject *value, void *closu
 }
 static PyObject* get_root(PySolarSystemObject *self, void *closure)
 {
-    return (PyObject*)pyobjectize_celestial(&self->ref->root);
+    if (!self->ref->root)
+        Py_RETURN_NONE;
+    return (PyObject*)pyobjectize_celestial(self->ref->root);
 }
 static int set_root(PySolarSystemObject *self, PyObject *value, void *closure)
 {
@@ -97,7 +100,7 @@ static int set_root(PySolarSystemObject *self, PyObject *value, void *closure)
         return -1;
     }
     PyCelestialObject *v = (PyCelestialObject*)value;
-    self->ref->root = *v->ref;
+    self->ref->root = v->ref;
     v->tracked = true;
     return 0;
 }

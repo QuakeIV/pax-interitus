@@ -1,4 +1,4 @@
-file(GLOB UNIVERSE_SOURCES "*.cpp" "*.h"
+file(GLOB UNIVERSE_SOURCES "*.cpp" "*.c" "*.h"
     "components/*.cpp" "components/*.h"
     "spacecraft/*.cpp" "spacecraft/*.h"
 )

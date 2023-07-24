@@ -23,6 +23,7 @@
 #include "fixedv2dwrapper.h"
 #include "solarsystemwrapper.h"
 #include "conductorwrapper.h"
+#include "celestial_mineralogywrapper.h"
 #include "components/capacitor.h"
 
 static void type_dealloc(PyCapacitorObject *self)

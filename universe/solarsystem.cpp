@@ -1,13 +1,13 @@
 #include "solarsystem.h"
 #include "universe.h"
+#include "celestial.h"
 
 uint64_t SolarSystem::system_id = 0;
 
-SolarSystem::SolarSystem(double r, double m):
-  root(r,m,this) //TODO: not optimal way to initialize the child type, maybe just have a default constructor for celestials?
+SolarSystem::SolarSystem(double r, double m)
 {
-    root.system = this;
-    celestials.append(&root);
+    //TODO: not optimal way to initialize the child type, maybe just have a default constructor for celestials?
+    root = new Celestial(r, m, this);
     systems.append(this);
 
     name = "System " + QString::number(system_id++);

@@ -7,6 +7,7 @@
 #include <QPainter>
 
 class SolarSystem;
+typedef struct celestial_mineralogy_s celestial_mineralogy;
 
 class Celestial
 {
@@ -16,8 +17,10 @@ public:
     // m = mass in kgs
     // distance = meters
     //for stars
-    // TODO: need a good way to generate a precise version of this
-    Celestial(double r, double m, SolarSystem *system);
+    // TODO: need a good way to generate a precise version of this (mass in particular)
+    // this generation system will probably need to be totally reworked, such that the
+    // celestial is basically dictated its properties from an outside generator algorithm
+    Celestial(double r, double m, SolarSystem *s);
     //planets/moons/etc
     Celestial(double r, double m, double distance, Celestial *parent);
 
@@ -32,6 +35,8 @@ public:
     __uint128_t mass; // in fixedmass, see units.h
     int64_t radius; // radius of object itself, in 2^10ths of meters (per distance reference frame in units.h)
     double surface_gravity; // informational, m/s^2
+
+    celestial_mineralogy *mineralogy;
     
     QColor color;
 

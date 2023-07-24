@@ -43,7 +43,7 @@ class SpacecraftWindow(QMainWindow):
   #
 
   def update(self):
-    self.setWindowTitle("Spacecraft (" + self.s.name + ")")
+    self.setWindowTitle(f"Spacecraft ({self.s.name})")
     self.ui.name.setText(self.s.name)
 
     target_altitude = units.parse_distance(self.ui.jumporbitradius.text())

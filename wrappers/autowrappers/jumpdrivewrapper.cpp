@@ -22,6 +22,7 @@
 #include "solarsystemwrapper.h"
 #include "insulatorwrapper.h"
 #include "conductorwrapper.h"
+#include "celestial_mineralogywrapper.h"
 #include "components/jumpdrive.h"
 
 static void type_dealloc(PyJumpdriveObject *self)

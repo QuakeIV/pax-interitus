@@ -22,23 +22,41 @@ class CelestialWindow(QMainWindow):
     self.ui = ui.celestialwindow.Ui_CelestialWindow()
     self.ui.setupUi(self)
     self.setAttribute(Qt.WA_DeleteOnClose, True) #NOTE: vital for self-updating windows or zombie timers will be left behind
-    
+
     self.cel = celestial
-    
+
     self.update()
-    
+
     self.timer = QTimer(self)
     self.timer.timeout.connect(self.update)
     self.timer.start(200)
   #
-  
+
   def update(self):
     self.setWindowTitle(self.cel.name + " Info")
     self.ui.name.setText(self.cel.name)
     self.ui.mass.setText(units.mass_str(self.cel.mass))
     self.ui.physical_radius.setText(units.distance_str(self.cel.radius))
-    self.ui.orbital_period.setText(units.time_str(self.cel.trajectory.orbital_period))
-    self.ui.orbital_radius.setText(units.distance_str(self.cel.trajectory.orbital_radius))
+    # TODO: for now stars just dont have a trajectory, this might need to be fixed if that is no longer the long term strategy
+    if self.cel.trajectory:
+      self.ui.orbital_period.setText(units.time_str(self.cel.trajectory.orbital_period))
+      self.ui.orbital_radius.setText(units.distance_str(self.cel.trajectory.orbital_radius))
+    else:
+      # TODO: arguably this could relate to some kind of galactic core relative trajectory, but isnt currently
+      self.ui.orbital_period.setText("None")
+      self.ui.orbital_radius.setText("None")
+    # TODO: units.py implementation?
     self.ui.surface_gravity.setText(f"{self.cel.surface_gravity:.2f} m/s²")
+
+    # minerals
+    # TODO: for now stars just dont have minerals, this might need to be fixed if that is no longer the long term strategy
+    if self.cel.mineralogy:
+      self.ui.mineral_conventional.setText(units.tonnage_str(self.cel.mineralogy.quantity_conventional))
+      self.ui.mineral_fuel.setText(units.tonnage_str(self.cel.mineralogy.quantity_fuel))
+      self.ui.mineral_duranium.setText(units.tonnage_str(self.cel.mineralogy.quantity_duranium))
+    else:
+      self.ui.mineral_conventional.setText("None")
+      self.ui.mineral_fuel.setText("None")
+      self.ui.mineral_duranium.setText("None")
   #
 #

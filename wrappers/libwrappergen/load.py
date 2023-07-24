@@ -58,6 +58,15 @@ def parse_file(json_cfg, filename):
   cfg.type = json_cfg.pop("type")
   cfg.type_header = json_cfg.pop("header")
 
+  # load meta type (struct vs class)
+  # TODO: default to class for now, may require this be specified later
+  # TODO: this solution also kindof sucks?
+  if "metatype" in json_cfg:
+    cfg.metatype = json_cfg.pop("metatype")
+  else:
+    cfg.metatype = "class"
+  #
+
   # load base type
   if "base_type" in json_cfg:
     # normalize path, so relative paths from the location of the current json will work
@@ -231,6 +240,8 @@ def resolve_inheritance(cfg):
 
 
 def validate(cfg):
+  if cfg.metatype not in ["class", "struct"]:
+    raise TypeError(f"Unrecognized metatype: {cfg.metatype}, must be struct or class")
   for a in cfg.attrs:
     if a["type"] not in ["QString", "QList", "bool", "double", "fixedmass", "fixeddistance", "fixedtime", "uint64_t"] + cfg.known_types:
       raise TypeError(f"Unrecognized type: {a['type']} ({cfg.path})")

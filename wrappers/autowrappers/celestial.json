@@ -1,7 +1,7 @@
 {
     "type":"Celestial",
     "init":false,
-    "include":["orbit.json",],
+    "include":["orbit.json","celestial_mineralogy.json"],
     "header":"celestial.h",
     "attrs":
     [
@@ -28,6 +28,10 @@
         {
             "name":"surface_gravity",
             "type":"double",
+        },
+        {
+            "name":"mineralogy",
+            "type":"celestial_mineralogy*",
         },
         {
             "name":"children",

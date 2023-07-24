@@ -9,6 +9,7 @@ but the fact remains it might be better to have FTL subspace sensors that detect
 
 todo:
 add reference counting, and big giga super arrays of different object types (maybe just go fixed size for now)
+add automatic/wholistic initialization for the python wrapper stuff
 
 fix:
 when tracking a jumping ship, it leaves an orbit behind

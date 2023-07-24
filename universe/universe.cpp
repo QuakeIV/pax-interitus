@@ -5,9 +5,11 @@
 #include "solarsystem.h"
 #include "spacecraft/spacecraft.h"
 #include "units.h"
+#include "minerals.h"
 #include <thread>
 #include <chrono>
 #include <QDebug>
+#include <QList>
 
 // this is supposed to prevent the UI/python interface from screwing up datastructures while the universe loop is working on them
 // lock_shared and unlock_shared for readonly-lock
@@ -70,6 +72,8 @@ void universe_timing_loop(void)
 
 void universe_init(void)
 {
+    mineralogy_init();
+
     // TODO: temporary
     // add some dialectric materials
     Insulator *i;
@@ -141,18 +145,18 @@ void universe_init(void)
 
     // for now hard code the solar system because to heck with it i tell you
     static SolarSystem sol = SolarSystem(695700000.0, 1988500000000000e15);
-    sol.root.color = QColor(226, 223, 24); // nice sun color
-    sol.root.name = "Sol";
+    sol.root->color = QColor(226, 223, 24); // nice sun color
+    sol.root->name = "Sol";
     sol.name = "Sol";
 
-    static Celestial mercury = Celestial(2439700.0, 330110000e15, 57909050000.0, &sol.root);
+    static Celestial mercury = Celestial(2439700.0, 330110000e15, 57909050000.0, sol.root);
     mercury.name = "Mercury";
 
-    static Celestial venus = Celestial(6051800.0, 4867500000e15, 108208000000.0, &sol.root);
+    static Celestial venus = Celestial(6051800.0, 4867500000e15, 108208000000.0, sol.root);
     venus.name = "Venus";
     venus.color = QColor(239, 119, 14);
 
-    static Celestial earth = Celestial(6378100.0, 5972200000e15, 149598023000.0, &sol.root);
+    static Celestial earth = Celestial(6378100.0, 5972200000e15, 149598023000.0, sol.root);
     earth.color = QColor(19, 33, 219);
     earth.name = "Earth";
     //moon
@@ -160,7 +164,7 @@ void universe_init(void)
     moon.name = "Luna";
 
     //mars
-    static Celestial mars = Celestial(3389500.0, 641710000e15, 227939200000.0, &sol.root);
+    static Celestial mars = Celestial(3389500.0, 641710000e15, 227939200000.0, sol.root);
     mars.name = "Mars";
     mars.color = QColor(242, 76, 26);
     //phobos/deimos
@@ -169,7 +173,7 @@ void universe_init(void)
     static Celestial deimos = Celestial(6200.0, 1e15, 23463200.0, &mars);
     deimos.name = "Deimos";
 
-    static Celestial jupiter = Celestial(69911000.0, 1898200000000e15, 778570000000.0, &sol.root);
+    static Celestial jupiter = Celestial(69911000.0, 1898200000000e15, 778570000000.0, sol.root);
     jupiter.name = "Jupiter";
     jupiter.color = QColor(249, 194, 164);
     static Celestial ganymede = Celestial(2634100.0, 148190000e15, 1070412000.0, &jupiter); //also sorted by mass
@@ -205,7 +209,7 @@ void universe_init(void)
     static Celestial adrastea = Celestial(16400.0,   2e15,         129000000.0, &jupiter);
     adrastea.name = "Adrastea";
 
-    static Celestial saturn = Celestial(58232000.0, 568340000000e15, 1433530000000.0, &sol.root);
+    static Celestial saturn = Celestial(58232000.0, 568340000000e15, 1433530000000.0, sol.root);
     saturn.name = "Saturn";
     saturn.color = QColor(198,160,110);
     static Celestial titan      = Celestial(2574730.0, 134520000e15, 1221930000.0, &saturn);
@@ -240,7 +244,7 @@ void universe_init(void)
     static Celestial tarvos     = Celestial(7500.0,    2e15,         18243800000.0, &saturn);
     static Celestial ijiraq     = Celestial(8500.0,    1e15,         11348500000.0, &saturn);
 
-    static Celestial uranus = Celestial(25559000.0, 86810000000e15, 2870972000000.0, &sol.root);
+    static Celestial uranus = Celestial(25559000.0, 86810000000e15, 2870972000000.0, sol.root);
     uranus.name = "Uranus";
     uranus.color = QColor(141,161,170);
     static Celestial titania   = Celestial(788400.0, 3400000e15, 435910000.0, &uranus);
@@ -252,13 +256,16 @@ void universe_init(void)
     static Celestial sycorax   = Celestial(78500.0,  2300e15,    12179400000.0, &uranus);
     sycorax.name = "Sycorax";
     static Celestial portia    = Celestial(67500.0,  1700e15,    69090000.0, &uranus);
+    portia.name = "Portia"; // lol dark matter
     static Celestial juliet    = Celestial(47000.0,  560e15,     64350000.0, &uranus);
     static Celestial belinda   = Celestial(45000.0,  490e15,     75260000.0, &uranus);
     static Celestial cressida  = Celestial(40000.0,  340e15,     61780000.0, &uranus);
     static Celestial rosalind  = Celestial(36000.0,  250e15,     69940000.0, &uranus);
     static Celestial caliban   = Celestial(21000.0,  250e15,     7231100000.0, &uranus);
     static Celestial desdemona = Celestial(32000.0,  180e15,     62680000.0, &uranus);
+    desdemona.name = "Desdemona";
     static Celestial bianca    = Celestial(25500.0,  92e15,      59170000.0, &uranus);
+    bianca.name = "Bianca";
     static Celestial prospero  = Celestial(25000.0,  85e15,      16276800000.0, &uranus);
     prospero.name = "Prospero";
     static Celestial setebos   = Celestial(24000.0,  75e15,      17420400000.0, &uranus);
@@ -284,7 +291,7 @@ void universe_init(void)
     static Celestial cupid     = Celestial(9000.0,   4e15,       74800000.0, &uranus);
     cupid.name = "Cupid";
 
-    static Celestial neptune = Celestial(24622000.0, 102413000000e15, 4500000000000.0, &sol.root);
+    static Celestial neptune = Celestial(24622000.0, 102413000000e15, 4500000000000.0, sol.root);
     neptune.name = "Neptune";
     neptune.color = QColor(98,122,169);
     // TODO: retrograde orbits
@@ -317,7 +324,7 @@ void universe_init(void)
     static Celestial hippocamp = Celestial(17400.0,   30e15,       105283000.0, &neptune);
 
     //TODO: pluto is actually significantly barycentric with charon
-    static Celestial pluto = Celestial(1188300.0, 13030000e15, 5906380000000.0, &sol.root);
+    static Celestial pluto = Celestial(1188300.0, 13030000e15, 5906380000000.0, sol.root);
     pluto.name = "Pluto";
     static Celestial charon = Celestial(606000.0, 1587000e15, 17536000.0, &pluto); // pluto moons by mass (because eh)
     charon.name = "Charon";

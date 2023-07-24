@@ -2,13 +2,14 @@
 #define SOLARSYSTEMTYPE_H
 
 #include <QList>
-#include "celestial.h"
 #include "spacecraft/spacecraft.h"
+
+class Celestial;
 
 class SolarSystem
 {
 public:
-    Celestial root; //root celestial body (this might possibly change later)
+    Celestial *root; //root celestial body (this might possibly change later)
 
     QList<Spacecraft*> spacecraft;
     QList<Celestial*> celestials;

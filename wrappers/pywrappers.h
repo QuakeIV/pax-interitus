@@ -6,6 +6,7 @@
 #include "autowrappers/capacitorwrapper.h"
 #include "autowrappers/capacitordesignwrapper.h"
 #include "autowrappers/celestialwrapper.h"
+#include "autowrappers/celestial_mineralogywrapper.h"
 #include "autowrappers/circuitwrapper.h"
 #include "autowrappers/circuitdesignwrapper.h"
 #include "autowrappers/componentwrapper.h"

@@ -22,6 +22,7 @@
 #include "fixedv2dwrapper.h"
 #include "solarsystemwrapper.h"
 #include "capacitordesignwrapper.h"
+#include "celestial_mineralogywrapper.h"
 #include "components/circuit.h"
 
 static void type_dealloc(PyCircuitObject *self)
