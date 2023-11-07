@@ -36,27 +36,24 @@ celestial_mineralogy *generate_mineralogy(__uint128_t mass)
     // i dunno crusty planets are about 1% crust supposedly, so just divide by 128 to produce that approximate result
     mass >>= 7;
 
-    double mass_kg = MASS_FIXED_TO_KG(mass);
+    double mass_kg = FIXEDMASS_TO_KG(mass);
 
-    alloc->quantity_conventional = MASS_KG_TO_FIXED(mass_kg*.75);
-    alloc->quantity_fuel = MASS_KG_TO_FIXED(mass_kg*.2);
-    alloc->quantity_duranium = MASS_KG_TO_FIXED(mass_kg*.05);
+//    alloc->quantity_conventional = MASS_KG_TO_FIXED(mass_kg*.75);
+//    alloc->quantity_fuel = MASS_KG_TO_FIXED(mass_kg*.2);
+//    alloc->quantity_duranium = MASS_KG_TO_FIXED(mass_kg*.05);
 
     return alloc;
 }
 
 const mineral_info mineral_conventional = {
     .name = "Conventional Minerals",
-    .extraction_difficulty = 1000,
     .refinement_difficulty = 0, // TODO: this
 };
 const mineral_info mineral_fuel = {
     .name = "Fuel Resources",
-    .extraction_difficulty = 500,
     .refinement_difficulty = 0, // TODO: this
 };
 const mineral_info mineral_duranium = {
     .name = "High end structural material",
-    .extraction_difficulty = 10000,
     .refinement_difficulty = 0, // TODO: this
 };

@@ -1,5 +1,6 @@
 file(GLOB UNIVERSE_SOURCES "*.cpp" "*.c" "*.h"
     "components/*.cpp" "components/*.h"
+    "mining/*.c" "mining/*.cpp" "mining/*.h"
     "spacecraft/*.cpp" "spacecraft/*.h"
 )
 

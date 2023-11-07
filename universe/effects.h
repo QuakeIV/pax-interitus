@@ -1,7 +1,8 @@
 #ifndef EFFECTS_H
 #define EFFECTS_H
 
-#include "orbittype.h"
+#include "fixedv2d.h"
+#include <stdint.h>
 
 // effects exist purely to cue rendering of things
 // TODO: which list the effect lives in will define what it looks like
@@ -11,10 +12,9 @@ class Effect
 public:
     Effect()
     {
-
     }
 
-    OrbitType position;
+    FixedV2D position;
 
     int64_t creation_time;
     int64_t destruction_time;

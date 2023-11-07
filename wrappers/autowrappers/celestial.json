@@ -29,10 +29,10 @@
             "name":"surface_gravity",
             "type":"double",
         },
-        {
-            "name":"mineralogy",
-            "type":"celestial_mineralogy*",
-        },
+        //{
+        //    "name":"mineralogy",
+        //    "type":"celestial_mineralogy*",
+        //},
         {
             "name":"children",
             "type":"QList",

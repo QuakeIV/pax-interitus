@@ -1,15 +1,110 @@
 
 good idea:
+suppose there is any way to track what object's event is next, in the case where there is a sub tick?
+  this would imply there is some way to avoid interactions with other industries or things, so maybe?
+
+graphcical planet size comparison with earth as reference (let bigger stuff proceed off screen)
+
+mineral deposits aught to be generated with a certain amount of mineral present in mind, and then gangue is added later
+
+just a semi goofy idea in general, from 'vampire hunter (2000)'
+  "Vampires rule the night, but their numbers are dwindling"
+    >pictures of various gothic stuff in space, implying by 'night' they mean space
+      they did mean that btw
+
 subspace sensor network (to detect jumps)
 subspace comms
 both are more or less instantaneous
 regular sensors are lightspeed but can track any given spacecraft fairly easily unless its very very fast somehow, and you can drop buoys that are in FTL comms
 it might actually be better to start out with just magical instant sensors
 but the fact remains it might be better to have FTL subspace sensors that detect jumps
+- Allow ships to do ‘synchronized jumps’ where they combine their navigational solution in order to ensure they come out at a given destination more or less in formation, if still overall offset from where they would like to be
+- there should be a distiction between modular components, and ‘built in’ where it’s fashioned into the design of the hull (so not modular and cant really be copied elsewhere, achieves generally superior performance.  maybe its possible to try to modularize it after the fact)
+- Interpolator plots for the capacitor charge curve, should be performant and also hit a curve (and should only cost memory wrt to resolution vs performance) (so in other words, just hard code an interpolated curve of some sort instead of it being linear)
+- maybe we should track food in terms of 'enough food to feed one person for a year' (ala king of dragon pass)
+- The game probably at some point needs to support variably sized arrays of orbit points for different trajectories (probably has to always be powers of 2)
+- Have the design spec for capacitors and so forth potentially be a ‘requirement’ that then feeds into stuff a supplier can bid existing components for and potentially hit a lower cost but have other tradeoffs like being oversized for the job
+- For freespace-aurora, a cool hint of the shivans existence might be super dense asteroid fields from relatively recently (in cosmic terms) destroyed planets that are slowly starting to re-accrete
+- regarding station keeping, it should be a pretty standard thing to hold position at a set offset from a desired orbital trajectory, for purposes of maintaining a formation.  IE offset from a jump node.  it should be nearly free in some cases where the difference in trajectories is very slim.  i think it should be possible to calculate a fixed fuel bill for this, which the player can plan around
+  - maybe same for lagrange points
+  - base station keeping bill in general to stay on desired course?
+communication buoys
+it would be cool if you could telescopically identify certain features of unexplored systems, such as the presence of gas giants, and there could be a field of research where you can also estimate likely jump node routes
+  -maybe its pretty guaranteed that an estimated node will exist to some extent or another but it may or may not be viable (or may become viable later with superior tech)
+  -it can be a tech line to gain access to these estimates
+call sensor picket ships outriders?
+stable values for goods between games would be nice, use labor as a consistent value item to derive all prices from?
+try to avoid expressing mineralogy in terms of relative percentages, thats normally going to be wrong i think
+expressing moons in, for instance, quadrillions of tons, sounds fun (instead of say petaton)
+
+it would be cool if we had abstracted ai behavior scripts
+you could have your empires anthropology department work on what class of script the ai is running
+ie civilized, uncivilized, insane, devouring swarm, wild animal (ie star swarm), etc
+this could then give you intel on how you can expect it to behave
+perhaps you can tell them to get started on that right away, before contact is truly established
+
+planetary layers:
+  ocean
+    -only able to build on ocean floor?
+  ice
+    add rocky-ice for purposes of places like callisto?  seems like that may prove common (ceres also?)
+  crust
+  rock?
+    wikipedia seems to believe there is a difference between a metallic core and rock
+  iron-nickel core
+  atmosphere
+mixture of layers? ie land/water (could apply this to ice shelf oceans as well where in some places the ice is directly on land, and elsewhere it is not)
+  - fluid layers in general might have a percentage aspect of bleed-through to the layer below
+industries can perhaps exist within or at the interface of layers (maybe both systems at once, there)
+this will effect how they respond to orbital bombardment and invasion, in particular what would be required to conduct both
+would also effect where transportation industry needs to exist, what kinds of industries can exist, and the cost of moving materials
+maybe the interface can be skipped when its not beneficial to utilize it
+  alterhatively, its an accessibility thing, so water will provide direct access to the layer below, ice will not
+  as will atmosphere
+    implicitly, this layer can be added and removed via terraforming one would assume
+      water too i guess?
+  rock/ice layer can only provide access to layer below in proportion to the scale of its tunnel networks, which may conveniently not matter much if its penetrating into another ice layer
+  how about attaching habitats to the bottom of ice layers as well?
+    siesmic stability factors for both
+one of the early elements of colonization should be research bases that collect samples and so on, which exist purely to explore and do viability studies and so on (latter of which has no real place until much further along)
+
+
+factor radiation into habitability (for instance europa may suck on the surface but the oceans could be quite livable)
+
+horseshoe orbit models
+  -no way to functionalize this in the time domain?
+
+add toggle to switch between adjacent units for planet mass? (ie kg vs earth masses)
+
+jump transport
+  carries craft without drives
+  related to bp style subspace gates?
+    -assuredly
+
+industry
+have every body of industry retain the ability to 'bid' on a contract, or try to produce something
+if a more specialized industry outcompetes it, that puts pressure on the remainder to specialize or simply die out (not necessarily a practical difference, so whichever way feels better i guess?)
+
+deployments
+any base with a presence at all should require some degree of resupply, and probably some degree of manning
+there should be an upper limit on deployment length so that even if well provisioned it still eventually must be visited (maybe there are ways to at least reparameterize how the current deployment is relieved)
 
 todo:
 add reference counting, and big giga super arrays of different object types (maybe just go fixed size for now)
 add automatic/wholistic initialization for the python wrapper stuff
+ore grade as a separate concept from gangue ratio
+procedural generation of planets, ie procedural/keyed random
+  -eventually convert sol to that
+switch to parameterized ellipse?
+economy regression tests
+  -evaluate what smoothing features are truly needed
+allow ai to price in anticipated availability issues in advance
+  -mines are known to run out of supplies and start depreciating
+  -ai starts bidding ahead for their future supplies of goods, before they actually need them
+    -i guess this implies they normally think and purchase ahead by a set amount anyhow
+
+change mines to not set next_event but to instead edge detect when they ran out of ore or supplies and compute their quantity based on that, and then they can become truly inactive and stop doing work (rather than staggering the frame rate and causing everything to be reevaluated forever.  actually, this is an issue in general because there will need to be an imposition of delta T limits.  maybe company planning cycles will actually impose next_events, some industries will need to trigger sub framing to allow things to happen on schedule)
+
 
 fix:
 when tracking a jumping ship, it leaves an orbit behind

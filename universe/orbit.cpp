@@ -39,7 +39,7 @@ Orbit::Orbit(Celestial *p, double r, FixedV2D *pos)
         //period in milliseconds (doing calculation in double land, and then converting back to the integral reference frame)
         const double G = 0.0000000000667408; //gravitational constant (standard SI unit frame)
         //did some algebra, assuming newtonian gravity, newtonian motion this should yield orbital period
-        double period_d = (radius_d*PI*2.0/sqrt((MASS_FIXED_TO_KG(p->mass) * G)/radius_d)) * (double)TIME_FACTOR;
+        double period_d = (radius_d*PI*2.0/sqrt((FIXEDMASS_TO_KG(p->mass) * G)/radius_d)) * (double)TIME_FACTOR;
         orbital_period = (int64_t)period_d;
         //worst case roundoff error here is I think racetrack_points - 1 milliseconds (this is the true reference for orbital period in terms of calculating position)
         racetrack_delta_time = orbital_period/racetrack_points;
@@ -84,4 +84,3 @@ void Orbit::update_position(void)
 {
     *position = get_position_at_time(universe_time);
 }
-

@@ -2,7 +2,7 @@
 #include <structmember.h> // additional python context (forgot what exactly)
 #include "units.h" // conversion factors and so on
 #include "celestial_mineralogywrapper.h"
-#include "universe/minerals.h"
+#include "universe/mining/minerals.h"
 
 static void type_dealloc(Pycelestial_mineralogyObject *self)
 {
@@ -24,75 +24,6 @@ static PyObject *type_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 }
 
 // attribute functions
-static PyObject* get_quantity_conventional(Pycelestial_mineralogyObject *self, void *closure)
-{
-    return PyFloat_FromDouble(MASS_FIXED_TO_KG(self->ref->quantity_conventional));
-}
-static int set_quantity_conventional(Pycelestial_mineralogyObject *self, PyObject *value, void *closure)
-{
-    if (value == NULL)
-    {
-        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
-        return -1;
-    }
-    PyErr_SetString(PyExc_NotImplementedError, "Setter for fixedmass type not implemented.");
-    return -1;
-    return 0;
-}
-static PyObject* get_quantity_fuel(Pycelestial_mineralogyObject *self, void *closure)
-{
-    return PyFloat_FromDouble(MASS_FIXED_TO_KG(self->ref->quantity_fuel));
-}
-static int set_quantity_fuel(Pycelestial_mineralogyObject *self, PyObject *value, void *closure)
-{
-    if (value == NULL)
-    {
-        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
-        return -1;
-    }
-    PyErr_SetString(PyExc_NotImplementedError, "Setter for fixedmass type not implemented.");
-    return -1;
-    return 0;
-}
-static PyObject* get_quantity_duranium(Pycelestial_mineralogyObject *self, void *closure)
-{
-    return PyFloat_FromDouble(MASS_FIXED_TO_KG(self->ref->quantity_duranium));
-}
-static int set_quantity_duranium(Pycelestial_mineralogyObject *self, PyObject *value, void *closure)
-{
-    if (value == NULL)
-    {
-        PyErr_SetString(PyExc_TypeError, "Cannot delete attribute.");
-        return -1;
-    }
-    PyErr_SetString(PyExc_NotImplementedError, "Setter for fixedmass type not implemented.");
-    return -1;
-    return 0;
-}
-static PyGetSetDef getsets[] = {
-    {
-    "quantity_conventional",
-    (getter)get_quantity_conventional,
-    (setter)set_quantity_conventional,
-    NULL, // documentation string
-    NULL, // closure
-    },
-    {
-    "quantity_fuel",
-    (getter)get_quantity_fuel,
-    (setter)set_quantity_fuel,
-    NULL, // documentation string
-    NULL, // closure
-    },
-    {
-    "quantity_duranium",
-    (getter)get_quantity_duranium,
-    (setter)set_quantity_duranium,
-    NULL, // documentation string
-    NULL, // closure
-    },
-    {NULL},
-};
 
 // wrapped function calls
 
@@ -115,7 +46,6 @@ PyTypeObject Pycelestial_mineralogyType = {
     .tp_flags = Py_TPFLAGS_DEFAULT,
     .tp_doc = PyDoc_STR("PaxPython celestial_mineralogy Type Wrapper."),
     .tp_richcompare = (richcmpfunc)&__eq__,
-    .tp_getset = getsets,
     .tp_new = type_new,
 };
 

@@ -1,13 +1,13 @@
 #include "celestial.h"
 #include "solarsystem.h"
-#include "minerals.h"
+#include "mining/minerals.h"
 
 // for stars
 Celestial::Celestial(double r, double m, SolarSystem *s):
     position() // just 0,0
 {
     radius = DISTANCE_M_TO_FIXED(r);
-    mass = MASS_KG_TO_FIXED(m);
+    mass = KG_TO_FIXEDMASS(m);
     color = QColor(242,210,4); //reasonable shade of yellow (ideally this will get overridden during system gen)
     name = "Unnamed Star"; // set default name
     parent = NULL;
@@ -30,13 +30,13 @@ Celestial::Celestial(double r, double m, double distance, Celestial *p):
     parent = p;
     system = parent->system;
     radius = DISTANCE_M_TO_FIXED(r);
-    mass = MASS_KG_TO_FIXED(m);
+    mass = KG_TO_FIXEDMASS(m);
     trajectory = new Orbit(p, distance, &position);
 
     mineralogy = generate_mineralogy(mass);
 
     surface_gravity = G * m / (r*r);
-    
+
     color = QColor(180,180,180); //assume gray dusty moon until overridden
 
     name = parent->name + " " + QString::number(parent->children.length());

@@ -5,7 +5,7 @@
 #include "solarsystem.h"
 #include "spacecraft/spacecraft.h"
 #include "units.h"
-#include "minerals.h"
+#include "mining/minerals.h"
 #include <thread>
 #include <chrono>
 #include <QDebug>
@@ -24,9 +24,8 @@ Empire player_empire;
 QList<Insulator*> insulator_materials;
 
 bool universe_paused = false;
-int64_t universe_time_warp = 0; //this is a power applied to 2
-// TODO: we may be obliged to go over into microseconds or something to get better definition on fast-moving objects
-// we have plenty of resolution left, at present we could model time out to +/-146 million years from t=0 (however admittedly it would be fun to have planet formation levels of time scale)
+// powers of 2 warp factor
+int64_t universe_time_warp = 0;
 // TODO: negative time is extremely not-functional
 int64_t universe_time;
 
@@ -64,7 +63,7 @@ void universe_timing_loop(void)
 
         // lazy diagnosis of frame overrun
         // TODO: (wow this chrono library seems horrible and vastly overweight)
-        // not that vital to gun for accurate time, minding (stolen from mainwindow.cpp which now longer handles this)
+        // not that vital to gun for accurate time, minding (stolen from mainwindow.cpp which now no longer handles this)
         //end = std::chrono::system_clock::now();
         //printf("woden %ld\n", std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
     }
@@ -390,11 +389,6 @@ void universe_update(int64_t delta_t)
     foreach (Orbit *t, trajectories)
     {
         t->update_position();
-    }
-
-    foreach (Spacecraft *s, spacecraft)
-    {
-        s->update(delta_t);
     }
 
     //TODO: ?

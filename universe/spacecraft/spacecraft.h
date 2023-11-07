@@ -101,9 +101,6 @@ public:
     // TODO: this may turn out to be a bit trash
     // damage in joules
     void take_damage(uint64_t damage);
-
-    // drive regular operating of the craft
-    void update(int64_t delta_t);
 };
 
 #endif // SPACECRAFT_H

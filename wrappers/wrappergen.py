@@ -206,9 +206,9 @@ for cfg in loaded_cfgs:
     elif attr_type == "fixeddistance":
       source.write(f"return PyFloat_FromDouble(DISTANCE_FIXED_TO_M(self->ref->{name}));")
     elif attr_type == "fixedtime":
-      source.write(f"return PyFloat_FromDouble(TIME_FIXED_TO_S(self->ref->{name}));")
+      source.write(f"return PyFloat_FromDouble(FIXEDTIME_TO_SECONDS(self->ref->{name}));")
     elif attr_type == "fixedmass":
-      source.write(f"return PyFloat_FromDouble(MASS_FIXED_TO_KG(self->ref->{name}));")
+      source.write(f"return PyFloat_FromDouble(FIXEDMASS_TO_KG(self->ref->{name}));")
     elif attr_type == "QString":
       source.write(f"return PyUnicode_FromString(self->ref->{name}.toStdString().c_str());")
     elif attr_type == "QList":
@@ -299,7 +299,7 @@ for cfg in loaded_cfgs:
       source.indent()
       source.write(f"return -1;")
       source.dedent()
-      source.write(f"self->ref->{name} = SECONDS_TO_TIME(v);")
+      source.write(f"self->ref->{name} = SECONDS_TO_FIXEDTIME(v);")
     elif attr_type == "fixedmass":
       source.write(f"PyErr_SetString(PyExc_NotImplementedError, \"Setter for fixedmass type not implemented.\");")
       source.write("return -1;")

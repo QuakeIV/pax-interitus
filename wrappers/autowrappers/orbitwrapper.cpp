@@ -115,7 +115,7 @@ static int set_orbital_radius(PyOrbitObject *self, PyObject *value, void *closur
 }
 static PyObject* get_orbital_period(PyOrbitObject *self, void *closure)
 {
-    return PyFloat_FromDouble(TIME_FIXED_TO_S(self->ref->orbital_period));
+    return PyFloat_FromDouble(FIXEDTIME_TO_SECONDS(self->ref->orbital_period));
 }
 static int set_orbital_period(PyOrbitObject *self, PyObject *value, void *closure)
 {
@@ -128,7 +128,7 @@ static int set_orbital_period(PyOrbitObject *self, PyObject *value, void *closur
     PyObject *exception = PyErr_Occurred();
     if (exception)
         return -1;
-    self->ref->orbital_period = SECONDS_TO_TIME(v);
+    self->ref->orbital_period = SECONDS_TO_FIXEDTIME(v);
     return 0;
 }
 static PyObject* get_parent(PyOrbitObject *self, void *closure)

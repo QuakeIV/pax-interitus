@@ -2,20 +2,20 @@
     "type":"celestial_mineralogy",
     "init":false,
     "metatype":"struct",
-    "header":"universe/minerals.h",
+    "header":"universe/mining/minerals.h",
     "attrs":
     [
-        {
-            "name":"quantity_conventional",
-            "type":"fixedmass",
-        },
-        {
-            "name":"quantity_fuel",
-            "type":"fixedmass",
-        },
-        {
-            "name":"quantity_duranium",
-            "type":"fixedmass",
-        },
+        //{
+        //    "name":"quantity_conventional",
+        //    "type":"fixedmass",
+        //},
+        //{
+        //    "name":"quantity_fuel",
+        //    "type":"fixedmass",
+        //},
+        //{
+        //    "name":"quantity_duranium",
+        //    "type":"fixedmass",
+        //},
     ],
 }

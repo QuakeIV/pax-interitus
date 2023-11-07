@@ -17,8 +17,8 @@
 //TODO: poor effeciency given current use case in universe
 #define MILLISECONDS_TO_TIME(x) ((int64_t)(((double)x)*(TIME_FACTOR/1000.0)))
 #define MICROSECONDS_TO_TIME(x) ((int64_t)(((double)x)*(TIME_FACTOR/1000000.0)))
-#define SECONDS_TO_TIME(x) ((int64_t)(((double)x)*(TIME_FACTOR)))
-#define TIME_FIXED_TO_S(x) (((double)x)/TIME_FACTOR)
+#define SECONDS_TO_FIXEDTIME(x) ((int64_t)(((double)x)*(TIME_FACTOR)))
+#define FIXEDTIME_TO_SECONDS(x) (((double)x)/TIME_FACTOR)
 
 #define RELATIVE_DIALECTRIC_TO_ABSOLUTE(x) (0.000000000008854*((double)x))
 #define VOLT_UM_TO_VOLT_M(x) (1000000.0*((double)x))
@@ -29,8 +29,8 @@
 
 #define CUBIC_METER_TO_LITER(x) ((x)*1000)
 
-#define MASS_FIXED_TO_KG(x) (((double)x)/1024.0)
-#define MASS_KG_TO_FIXED(x) ((x)*1024) // TODO: ensure better casting?
+#define FIXEDMASS_TO_KG(x) (((double)x)/1024.0)
+#define KG_TO_FIXEDMASS(x) ((x)*1024) // TODO: ensure better casting?
 
 const double G = 0.000000000066743; //gravitational constant (standard SI)
 

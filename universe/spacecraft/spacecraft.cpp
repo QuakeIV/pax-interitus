@@ -78,7 +78,3 @@ int64_t Spacecraft::max_acceleration(void)
 void Spacecraft::take_damage(uint64_t damage)
 {
 }
-// drive regular operating of the craft
-void Spacecraft::update(int64_t delta_t)
-{
-}
