@@ -170,6 +170,11 @@ QTabBar::tab {
            <string>M</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>L</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
