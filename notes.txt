@@ -85,6 +85,9 @@ industry
 have every body of industry retain the ability to 'bid' on a contract, or try to produce something
 if a more specialized industry outcompetes it, that puts pressure on the remainder to specialize or simply die out (not necessarily a practical difference, so whichever way feels better i guess?)
 
+consider a flux economy?  so consumers pump resources in, other things draw resources out, and when events bend the supply curve it totalizes and re-sets? no that would be really unstable
+  as long as the suppliers minimally keep ahead of actual usage when making their deliveries, construction can proceed on a curve of some sort
+
 deployments
 any base with a presence at all should require some degree of resupply, and probably some degree of manning
 there should be an upper limit on deployment length so that even if well provisioned it still eventually must be visited (maybe there are ways to at least reparameterize how the current deployment is relieved)
@@ -103,7 +106,7 @@ allow ai to price in anticipated availability issues in advance
   -ai starts bidding ahead for their future supplies of goods, before they actually need them
     -i guess this implies they normally think and purchase ahead by a set amount anyhow
 
-change mines to not set next_event but to instead edge detect when they ran out of ore or supplies and compute their quantity based on that, and then they can become truly inactive and stop doing work (rather than staggering the frame rate and causing everything to be reevaluated forever.  actually, this is an issue in general because there will need to be an imposition of delta T limits.  maybe company planning cycles will actually impose next_events, some industries will need to trigger sub framing to allow things to happen on schedule)
+change mines to not set next_event but to instead edge detect when they ran out of ore or supplies and compute their quantity based on that, and then they can become truly inactive and stop doing work (rather than staggering the frame rate and causing everything to be reevaluated forever.  actually, this is an issue in general because there will need to be an imposition of delta T limits.  maybe company planning cycles will actually impose next_events, some industries will need to trigger that or sub framing or something to allow things to happen on schedule)
 
 
 fix:

@@ -2,7 +2,7 @@
 #include <structmember.h> // additional python context (forgot what exactly)
 #include "units.h" // conversion factors and so on
 #include "celestial_mineralogywrapper.h"
-#include "universe/mining/minerals.h"
+#include "universe/mining/deposit.h"
 
 static void type_dealloc(Pycelestial_mineralogyObject *self)
 {

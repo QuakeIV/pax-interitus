@@ -5,7 +5,8 @@
 #include "solarsystem.h"
 #include "spacecraft/spacecraft.h"
 #include "units.h"
-#include "mining/minerals.h"
+#include "mining/deposit.h"
+#include "mining/mine.h"
 #include <thread>
 #include <chrono>
 #include <QDebug>

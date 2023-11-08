@@ -1,6 +1,6 @@
 #include "celestial.h"
 #include "solarsystem.h"
-#include "mining/minerals.h"
+#include "mining/deposit.h"
 
 // for stars
 Celestial::Celestial(double r, double m, SolarSystem *s):

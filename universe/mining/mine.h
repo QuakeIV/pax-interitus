@@ -50,7 +50,9 @@ public:
 
     uint64_t take_ore(uint64_t requested_amount);
     void add_supplies(uint64_t amount);
+    uint64_t take_supplies(uint64_t amount);
     void add_machinery(uint64_t amount);
+    uint64_t take_machinery(uint64_t amount);
 
     MiningMachineryDesign *machinery_design;
     mineral_deposit *deposit;
@@ -84,6 +86,8 @@ public:
     int64_t time_ore_depletion;
 
     bool active;
+    bool supply_depletion;
+    bool ore_depletion;
 };
 
 extern QList<Mine*> all_mines;

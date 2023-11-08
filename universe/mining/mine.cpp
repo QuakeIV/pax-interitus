@@ -1,5 +1,5 @@
 #include "mine.h"
-#include "minerals.h"
+#include "deposit.h"
 #include "universe.h"
 #include <stdint.h>
 #include <limits.h>
@@ -62,41 +62,36 @@ void Mine::update(void)
 {
     active = time_ore_depletion > universe_time && time_supply_depletion > universe_time;
 
-    // TODO: instead of this, its probably better to just do edge detection and then update once, rather than trying to detect when we are the next event
-    // i think for capacitors and stuff in combat, it probably should actually cause this to fire, but this doesn't really need to evaluate at any time other than top of frame
-    // industry should possibly actually make decisions at a much slower rate anyways, although that should probably be more like each company has its own decision cycle, rather than them all marching in microbisecond lock step
-    if (universe_next_event > time_supply_depletion)
-        universe_next_event = time_supply_depletion;
-    if (universe_next_event > time_ore_depletion)
-        universe_next_event = time_ore_depletion;
-
-    // TODO: maybe dont update this unless someone looks (so make a function call), if its a meaningful performance impact
-    //   go ahead and change to that, then it just gets recalculated as part of take_ore instead
-    //   of relying on the pre calculated value
+    // TODO: maybe dont update this unless someone looks (so make quantity a function call) if its a meaningful performance impact
     if (active)
     {
         uint64_t delta_ore = KG_TO_FIXEDMASS(((double)machinery)*machinery_design->extraction_rate)*FIXEDTIME_TO_SECONDS(universe_time - time_ore_0);
         stored_ore  = stored_ore_0 + delta_ore;
         unmined_ore = unmined_ore_0 - delta_ore;
         supply = supply_0 - KG_TO_FIXEDMASS(((double)machinery)*machinery_design->supply_rate*FIXEDTIME_TO_SECONDS(universe_time - time_supply_0));
+        // TODO: doesn't feel right
+        supply_depletion = false;
+        ore_depletion = false;
     }
-    else if (time_supply_depletion == universe_time)
-    {
-        uint64_t delta_ore = KG_TO_FIXEDMASS(((double)machinery)*machinery_design->extraction_rate)*FIXEDTIME_TO_SECONDS(time_supply_depletion - time_ore_0);
-        stored_ore  = stored_ore_0 + delta_ore;
-        stored_ore_0 = stored_ore;
-        unmined_ore = unmined_ore_0 - delta_ore;
-        unmined_ore_0 = unmined_ore;
-        time_ore_0 = time_supply_depletion;
-    }
-    else if (time_ore_depletion == universe_time)
+    else if (!ore_depletion && time_ore_depletion > universe_time && time_ore_depletion <= time_supply_depletion)
     {
         uint64_t delta_ore = KG_TO_FIXEDMASS(((double)machinery)*machinery_design->extraction_rate)*FIXEDTIME_TO_SECONDS(time_ore_depletion - time_ore_0);
-        stored_ore  = stored_ore_0 + delta_ore;
-        stored_ore_0 = stored_ore;
-        unmined_ore = unmined_ore_0 - delta_ore;
+        stored_ore    = stored_ore_0 + delta_ore;
+        stored_ore_0  = stored_ore;
+        unmined_ore   = unmined_ore_0 - delta_ore;
         unmined_ore_0 = unmined_ore;
-        time_ore_0 = time_ore_depletion;
+        time_ore_0    = time_ore_depletion;
+        ore_depletion = true;
+    }
+    else if (!supply_depletion && time_supply_depletion > universe_time && time_supply_depletion <= time_ore_depletion)
+    {
+        uint64_t delta_ore = KG_TO_FIXEDMASS(((double)machinery)*machinery_design->extraction_rate)*FIXEDTIME_TO_SECONDS(time_supply_depletion - time_ore_0);
+        stored_ore       = stored_ore_0 + delta_ore;
+        stored_ore_0     = stored_ore;
+        unmined_ore      = unmined_ore_0 - delta_ore;
+        unmined_ore_0    = unmined_ore;
+        time_ore_0       = time_supply_depletion;
+        supply_depletion = true;
     }
 }
 
@@ -122,8 +117,29 @@ void Mine::add_supplies(uint64_t amount)
     supply = supply_0 = supply + amount;
     time_supply_0 = universe_time;
 
+    // reset ore mining clocks if needed
+    if (supply_depletion)
+    {
+        time_ore_0 = universe_time;
+        time_ore_depletion = universe_time + SECONDS_TO_FIXEDTIME(FIXEDMASS_TO_KG(stored_ore)/(machinery*machinery_design->extraction_rate));
+    }
+
     // recalculate supply depletion time
-    time_supply_depletion = universe_time + (FIXEDMASS_TO_KG(supply)/(machinery*machinery_design->supply_rate));
+    time_supply_depletion = universe_time + SECONDS_TO_FIXEDTIME(FIXEDMASS_TO_KG(supply)/(machinery*machinery_design->supply_rate));
+}
+uint64_t Mine::take_supplies(uint64_t amount)
+{
+    if (amount > supply)
+        amount = supply;
+
+    // recalculate supply curve
+    supply = supply_0 = supply - amount;
+    time_supply_0 = universe_time;
+
+    // recalculate supply depletion time
+    time_supply_depletion = universe_time + SECONDS_TO_FIXEDTIME(FIXEDMASS_TO_KG(supply)/(machinery*machinery_design->supply_rate));
+
+    return amount;
 }
 
 void Mine::add_machinery(uint64_t amount)
@@ -139,6 +155,28 @@ void Mine::add_machinery(uint64_t amount)
     time_supply_0 = universe_time;
 
     // recalculate supply depletion time AND ore depletion time
-    time_supply_depletion = universe_time + (FIXEDMASS_TO_KG(supply)/(machinery*machinery_design->supply_rate));
-    time_ore_depletion    = universe_time + (FIXEDMASS_TO_KG(stored_ore)/(machinery*machinery_design->extraction_rate));
+    time_supply_depletion = universe_time + SECONDS_TO_FIXEDTIME(FIXEDMASS_TO_KG(supply)/(machinery*machinery_design->supply_rate));
+    time_ore_depletion    = universe_time + SECONDS_TO_FIXEDTIME(FIXEDMASS_TO_KG(stored_ore)/(machinery*machinery_design->extraction_rate));
+}
+uint64_t Mine::take_machinery(uint64_t amount)
+{
+    // TODO: this kind of thing may be rather unnecessary
+    if (amount > machinery)
+        amount = machinery;
+
+    // recalculate ore extraction curve
+    machinery -= amount;
+    stored_ore_0 = stored_ore;
+    unmined_ore_0 = unmined_ore;
+    time_ore_0 = universe_time;
+
+    // recalculate supply curve
+    supply_0 = supply;
+    time_supply_0 = universe_time;
+
+    // recalculate supply depletion time AND ore depletion time
+    time_supply_depletion = universe_time + SECONDS_TO_FIXEDTIME(FIXEDMASS_TO_KG(supply)/(machinery*machinery_design->supply_rate));
+    time_ore_depletion    = universe_time + SECONDS_TO_FIXEDTIME(FIXEDMASS_TO_KG(stored_ore)/(machinery*machinery_design->extraction_rate));
+
+    return amount;
 }

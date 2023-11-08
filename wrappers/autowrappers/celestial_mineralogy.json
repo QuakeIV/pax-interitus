@@ -2,7 +2,7 @@
     "type":"celestial_mineralogy",
     "init":false,
     "metatype":"struct",
-    "header":"universe/mining/minerals.h",
+    "header":"universe/mining/deposit.h",
     "attrs":
     [
         //{
